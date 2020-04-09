@@ -1,0 +1,24 @@
+{
+  "name": "spokestack",
+  "version": "0.0.1",
+  "description": "Middleware and tools for Node.js for easy integration with the Spokestack API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spokestack/node-spokestack.git"
+  },
+  "keywords": [
+    "spokestack",
+    "voice",
+    "node"
+  ],
+  "author": "Timmy Willison <4timmywil@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/spokestack/node-spokestack/issues"
+  },
+  "homepage": "https://github.com/spokestack/node-spokestack#readme"
+}
