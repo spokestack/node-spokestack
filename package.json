@@ -1,7 +1,7 @@
 {
   "name": "spokestack",
-  "version": "0.0.1",
-  "description": "Middleware and tools for Node.js for easy integration with the Spokestack API",
+  "version": "0.0.1-alpha.1",
+  "description": "Tools for integration with the Spokestack API in Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -16,6 +16,12 @@
     "test": "npm run lint",
     "type-check": "tsc -p tsconfig.json --noEmit"
   },
+  "files": [
+    "dist",
+    "src",
+    "MIT-License.txt",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spokestack/node-spokestack.git"

@@ -1,5 +1,5 @@
 # node-spokestack
 
-A set of tools for Node.js to help integrate ASR and the Spokestack API
+A set of tools for integration with the Spokestack API in Node.js
 
 This package is a work in progress.
