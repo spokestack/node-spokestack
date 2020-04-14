@@ -1,33 +1,57 @@
 import typescript from 'rollup-plugin-typescript2'
-import path from 'path'
 
-const declarationDir = path.join(__dirname, 'types')
-console.log(`Writing type declaration files to ${declarationDir}`)
-
-export default {
-  input: './src/index.ts',
-  external: ['crypto', 'uuid', 'ws', '@google-cloud/speech'],
-  plugins: [
-    typescript({
-      tsconfigOverride: {
-        exclude: ['node_modules'],
-        compilerOptions: {
-          declaration: true
+export default [
+  {
+    input: './src/index.ts',
+    external: ['crypto', 'uuid', 'ws', '@google-cloud/speech', 'node-fetch'],
+    plugins: [
+      typescript({
+        tsconfigOverride: {
+          exclude: ['node_modules'],
+          compilerOptions: {
+            declaration: true
+          }
         }
-      }
-    })
-  ],
-  output: {
-    banner: `/**
+      })
+    ],
+    output: {
+      banner: `/**
  * Custom tools for easy integration with the Spokestack API
  * Copyright Spokestack
  * https://github.com/spokestack/node-spokestack/blob/master/MIT-License.txt
  */`,
-    format: 'cjs',
-    name: 'Spokestack',
-    file: 'dist/index.js'
+      format: 'cjs',
+      name: 'Spokestack',
+      file: 'index.js'
+    },
+    watch: {
+      include: ['src/server/**', 'src/utils/**']
+    }
   },
-  watch: {
-    include: 'src/**'
+  {
+    input: './src/client.ts',
+    plugins: [
+      typescript({
+        tsconfigOverride: {
+          exclude: ['node_modules'],
+          compilerOptions: {
+            declaration: false
+          }
+        }
+      })
+    ],
+    output: {
+      banner: `/**
+ * Custom tools for recording audio and processing voice on the client
+ * Copyright Spokestack
+ * https://github.com/spokestack/node-spokestack/blob/master/MIT-License.txt
+ */`,
+      format: 'cjs',
+      name: 'Spokestack',
+      file: 'client.js'
+    },
+    watch: {
+      include: ['src/client/**', 'src/utils/**']
+    }
   }
-}
+]

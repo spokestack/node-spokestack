@@ -1,7 +1,6 @@
 import { SpeechClient } from '@google-cloud/speech'
 
-export default async function asr(content: string | Uint8Array, sampleRate: number) {
-  console.log(`Calling recognize with sampleRateHertz: ${sampleRate}`)
+export async function googleASR(content: string | Uint8Array, sampleRate: number) {
   const client = new SpeechClient()
   const fullResponse = await client.recognize({
     audio: { content },

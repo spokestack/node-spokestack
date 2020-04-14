@@ -1,10 +1,10 @@
 import { Server } from 'http'
 import { SpeechClient } from '@google-cloud/speech'
 import WebSocket from 'ws'
-import { getCookie } from './cookies'
+import { getCookie } from '../cookies'
 import { google } from '@google-cloud/speech/build/protos/protos'
 
-export default function createSocketServer(server: Server) {
+export function googleASRSocketServer(server: Server) {
   const wss = new WebSocket.Server({ server })
   console.log('Websocket started')
 
