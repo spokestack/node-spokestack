@@ -17,7 +17,13 @@
     "type-check": "tsc -p tsconfig.json --noEmit"
   },
   "files": [
-    "dist",
+    "index.js",
+    "client.js",
+    "index.d.ts",
+    "client.d.ts",
+    "cookies.d.ts",
+    "client",
+    "server",
     "src",
     "MIT-License.txt",
     "README.md"
