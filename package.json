@@ -8,10 +8,10 @@
     "build": "npm run clean && rollup --config",
     "clean": "rm -rf index.js client.js *.d.ts client/ server/",
     "eslint": "eslint .",
-    "format": "prettier --write \"**/*.tsx\" \"**/*.ts\" \"**/*.js\" \"**/*.md\"",
+    "format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\"",
     "lint": "concurrently --raw \"npm run type-check\" \"npm run eslint\" \"npm run prettier\"",
     "lint:fix": "concurrently --raw \"npm run type-check\" \"lint-staged\"",
-    "prettier": "prettier --check \"**/*.tsx\" \"**/*.ts\" \"**/*.js\"",
+    "prettier": "prettier --check \"**/*.ts\" \"**/*.js\"",
     "release": "cross-env HUSKY_SKIP_HOOKS=1 semantic-release",
     "test": "npm run lint",
     "type-check": "tsc -p tsconfig.json --noEmit"
