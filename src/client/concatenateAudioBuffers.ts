@@ -1,3 +1,6 @@
+/**
+ * A utility method to concatenate AudioBuffer
+ */
 export default function concatenateAudioBuffers(
   buffer1: AudioBuffer,
   buffer2: AudioBuffer,

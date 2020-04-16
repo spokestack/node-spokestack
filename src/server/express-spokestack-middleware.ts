@@ -4,9 +4,36 @@ import { v4 as uuid } from 'uuid'
 import fetch from 'node-fetch'
 
 /**
- * Express middleware for adding a proxy to the Spokestack API
+ * Express middleware for adding a proxy to the Spokestack GraphQL API.
+ * A proxy is necessary to avoid exposing your Spokestack token secret on the client.
+ * Once a graphql route is in place, your client
+ * can use that with <a href="https://graphql.org/">GraphQL</a>.
+ *
+ * ```js
+ * import { spokestackMiddleware } from 'spokestack'
+ * import bodyParser from 'body-parser'
+ * import express from 'express'
+ *
+ * const expressApp = express()
+ *
+ * expressApp.post('/graphql', bodyParser.json(), spokestackMiddleware())
+ * ```
+ *
+ * This is also convenient for setting up <a href="https://github.com/graphql/graphiql">graphiql introspection</a>.
+ * An example fetcher for graphiql on the client (browser only) might look like this:
+ *
+ * ```js
+ * const graphQLFetcher = (graphQLParams) =>
+ *   fetch('/graphql', {
+ *     method: 'post',
+ *     headers: { 'Content-Type': 'application/json' },
+ *     body: JSON.stringify(graphQLParams)
+ *   })
+ *     .then((response) => response.json())
+ *     .catch((response) => response.text())
+ * ```
  */
-export default function spokestackMiddleware() {
+export default function spokestackMiddleware(): (req: Request, res: Response) => void {
   return function (req: Request, res: Response) {
     if (!process.env.SS_API_URL) {
       res.status(500)

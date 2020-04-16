@@ -6,9 +6,22 @@ import { setCookie } from '../cookies'
 let stop: (() => void) | undefined
 
 /**
- * Returns a function to stop recording
+ * Returns a function to start recording using a WebSocket.
+ * This assumes the socket is hosted on the current server.
  * @param isPlaying A function returning whether audio is currently playing.
  *   This is necessary to prevent recording played audio.
+ *
+ * ```js
+ * import { startStream } from 'spokestack/client'
+ * try {
+ *   const ws = await startStream(() => isPlaying)
+ *   ws.addEventListener('open', () => console.log('Recording started'))
+ *   ws.addEventListener('close', () => console.log('Recording stopped'))
+ *   ws.addEventListener('message', (e) => console.log('Speech processed: ', e.data))
+ * } catch (e) {
+ *   console.error(e)
+ * }
+ * ```
  */
 export async function startStream(isPlaying: () => boolean) {
   const [error, result] = await startProcessor()
@@ -45,6 +58,14 @@ export async function startStream(isPlaying: () => boolean) {
   return ws
 }
 
+/**
+ * Stop the current recording stream if one exists.
+ *
+ * ```js
+ * import { stopStream } from 'spokestack/client'
+ * stopStream()
+ * ```
+ */
 export function stopStream() {
   if (stop) {
     stop()

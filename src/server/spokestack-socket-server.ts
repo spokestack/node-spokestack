@@ -4,7 +4,21 @@ import WebSocket from 'ws'
 import { getCookie } from '../cookies'
 import { google } from '@google-cloud/speech/build/protos/protos'
 
-export function googleASRSocketServer(server: Server) {
+/**
+ * Adds a web socket server to the given HTTP server
+ * to stream ASR using Google Speech.
+ *
+ * ```js
+ * import { createServer } from 'http'
+ * const port = parseInt(process.env.PORT || '3000', 10)
+ * const server = createServer() // Optionally pass an express app
+ * googleASRSocketServer(server)
+ * server.listen(port, () => {
+ *   console.log(`Listening at http://localhost:${port}`)
+ * })
+ * ```
+ */
+export function googleASRSocketServer(server: Server): void {
   const wss = new WebSocket.Server({ server })
   console.log('Websocket started')
 

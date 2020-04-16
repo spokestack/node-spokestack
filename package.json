@@ -7,6 +7,7 @@
   "scripts": {
     "build": "npm run clean && rollup --config",
     "clean": "rm -rf index.js client.js *.d.ts client/ server/",
+    "docs": "typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
     "eslint": "eslint .",
     "format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\"",
     "lint": "concurrently --raw \"npm run type-check\" \"npm run eslint\" \"npm run prettier\"",
@@ -71,6 +72,8 @@
     "rollup": "^2.3.4",
     "rollup-plugin-typescript2": "^0.27.0",
     "semantic-release": "^17.0.4",
+    "typedoc": "^0.17.4",
+    "typedoc-plugin-markdown": "^2.2.17",
     "typescript": "^3.8.3"
   },
   "prettier": {
@@ -108,7 +111,7 @@
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": "npm run build"
+          "prepareCmd": "npm run docs && npm run build"
         }
       ],
       [

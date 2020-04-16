@@ -1,4 +1,5 @@
 node_modules
+docs
 index.js
 client.js
 *.d.ts

@@ -1,6 +1,16 @@
 import crypto from 'crypto'
 
-export default function encryptSecret(body: string) {
+/**
+ * This is a convenience method for properly authorizing
+ * requests to the Spokestack graphql API.
+ *
+ * **Note:** Do not to expose your key's secret on the client.
+ * This should only be done on the server.
+ *
+ * See <a href="https://github.com/spokestack/node-spokestack/blob/develop/src/server/express-spokestack-middleware.ts">server/express-spokestack-middleware.ts</a>
+ * for example usage.
+ */
+export default function encryptSecret(body: string): string {
   if (!process.env.SS_API_CLIENT_SECRET) {
     throw new Error('SS_API_CLIENT_SECRET is not set in the environment.')
   }

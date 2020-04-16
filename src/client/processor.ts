@@ -19,6 +19,16 @@ export interface ProcessorReturnValue {
   processor: ScriptProcessorNode
 }
 
+/**
+ * Underlying utility method for recording audio,
+ * used by the `record` and `recordStream` methods.
+ *
+ * While createScriptProcessor is deprecated, the replacement (AudioWorklet)
+ * does not yet have broad support (currently only supported in Blink browsers).
+ * See https://caniuse.com/#feat=mdn-api_audioworkletnode
+ *
+ * We'll switch to AudioWorklet when it does.
+ */
 export async function startProcessor(): Promise<[Error] | [null, ProcessorReturnValue]> {
   stopProcessor()
   const stream = await startRecord()
@@ -43,6 +53,10 @@ export async function startProcessor(): Promise<[Error] | [null, ProcessorReturn
   return [null, { context, processor }]
 }
 
+/**
+ * Underlying utility method to stop the current processor
+ * if it exists and disconnect the microphone.
+ */
 export function stopProcessor() {
   stopRecord()
   if (context && source && processor) {
