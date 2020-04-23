@@ -1,4 +1,4 @@
-# Spokestack
+# Spokestack [![CircleCI](https://circleci.com/gh/spokestack/node-spokestack.svg?style=svg)](https://circleci.com/gh/spokestack/node-spokestack)
 
 A set of tools for integration with the [Spokestack API](https://spokestack.io) in Node.js
 
