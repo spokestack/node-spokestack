@@ -14,6 +14,7 @@ export default function countdown(
     progress(time)
     setTimeout(() => countdown(time - 1, progress, complete), 1000)
   } else {
+    progress(time)
     complete()
   }
 }

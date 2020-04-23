@@ -6,7 +6,7 @@ import { setCookie } from '../cookies'
 let stop: (() => void) | undefined
 
 /**
- * Returns a function to start recording using a WebSocket.
+ * Returns a function to start recording using a native WebSocket.
  * This assumes the socket is hosted on the current server.
  * @param isPlaying A function returning whether audio is currently playing.
  *   This is necessary to prevent recording played audio.

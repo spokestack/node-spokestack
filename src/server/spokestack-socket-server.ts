@@ -7,6 +7,7 @@ import { google } from '@google-cloud/speech/build/protos/protos'
 /**
  * Adds a web socket server to the given HTTP server
  * to stream ASR using Google Speech.
+ * This uses the "ws" node package for the socket server.
  *
  * ```js
  * import { createServer } from 'http'
