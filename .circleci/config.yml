@@ -34,11 +34,6 @@ jobs:
           name: Run build
           command: npm run build
 
-      - persist_to_workspace:
-          root: ~/spokestack
-          paths:
-            - public
-
 workflows:
   version: 2
 
