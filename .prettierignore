@@ -1,5 +1,6 @@
 client/**
 server/**
+examples/**
 *.d.ts
 index.js
 client.js
