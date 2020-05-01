@@ -12,7 +12,7 @@
     "format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\"",
     "lint": "concurrently --raw \"npm run type-check\" \"npm run eslint\" \"npm run prettier\"",
     "lint:fix": "concurrently --raw \"npm run type-check\" \"lint-staged\"",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "prettier": "prettier --check \"**/*.ts\" \"**/*.js\"",
     "release": "cross-env HUSKY_SKIP_HOOKS=1 semantic-release",
     "test": "npm run lint && npm run test:unit",
