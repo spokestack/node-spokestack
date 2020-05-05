@@ -2,6 +2,7 @@ import * as theme from '../theme'
 
 import Head from 'next/head'
 import React from 'react'
+import Header from '../components/Header'
 
 interface Props {
   title?: string
@@ -13,25 +14,27 @@ export default function Layout({
   children
 }: Props) {
   return (
-    <div className="container">
+    <>
       <Head>
         <title>{title}</title>
       </Head>
+      <Header />
 
-      {children}
+      <main className="content">{children}</main>
 
       <style jsx global>{`
         * {
           box-sizing: border-box;
         }
         body {
+          margin: 0;
           padding: 0;
           background-color: ${theme.mainBackground};
           color: ${theme.text};
           font-size: ${theme.fontSize};
           line-height: ${theme.lineHeight};
         }
-        .container {
+        .content {
           padding: 30px;
         }
         a {
@@ -123,6 +126,6 @@ export default function Layout({
           color: ${theme.error};
         }
       `}</style>
-    </div>
+    </>
   )
 }

@@ -189,21 +189,19 @@ export default class Index extends PureComponent {
     } = this.state
     return (
       <Layout>
-        <header className="header">
-          <h1>Spokestack Web Speech Demo</h1>
-          <p>Search GitHub repos with voice</p>
-        </header>
+        <h1>Search GitHub for repositories using your voice</h1>
         <div className="buttons">
-          <button className="btn" onClick={this.record3Seconds}>
+          <button className="btn btn-primary" onClick={this.record3Seconds}>
             Record 3 seconds
           </button>
-          <button className="btn" onClick={this.toggleRecordStream}>
+          <button className="btn btn-primary" onClick={this.toggleRecordStream}>
             {streaming ? 'Stop' : 'Start'} streaming
           </button>
         </div>
         <h4>
           Status: <span id="status">{status}</span>
         </h4>
+        <hr />
         {error && <p className="error">{error}</p>}
         {term && <p className="wrapper">Search term: {term}</p>}
         {searching ? (
