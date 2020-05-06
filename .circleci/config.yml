@@ -34,13 +34,75 @@ jobs:
           name: Run build
           command: npm run build
 
+  deploy_integration:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/spokestack
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # attach build already done
+      - attach_workspace:
+          at: ~/spokestack
+
+      # update the service
+      - run:
+          name: Push the node server and update the ecs service
+          command: |
+            python3 -m venv ~/venv
+            source ~/venv/bin/activate
+            pip install awscli
+            cd examples/with-next
+            aws configure set region us-east-1
+            deploy/update.sh integration
+
+  deploy_production:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/spokestack
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # attach build already done
+      - attach_workspace:
+          at: ~/spokestack
+
+      # update the service
+      - run:
+          name: Push the node server and update the ecs service
+          command: |
+            python3 -m venv ~/venv
+            source ~/venv/bin/activate
+            pip install awscli
+            cd examples/with-next
+            aws configure set region us-east-1
+            deploy/update.sh production
+
+
 workflows:
   version: 2
 
-  test:
+  test_and_deploy:
     jobs:
       - build:
           filters:
             tags:
               only:
                 - /\d+\.\d+\.\d+/
+      - deploy_integration:
+          filters:
+            branches:
+              only: develop
+          requires:
+            - build
+      - deploy_production:
+          filters:
+            branches:
+              only: production
+            tags:
+              only:
+                - /\d+\.\d+\.\d+/
+          requires:
+            - build
