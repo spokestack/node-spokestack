@@ -23,10 +23,7 @@ export default function GraphiQLPage() {
   return (
     <>
       <Head>
-        <link
-          href="https://unpkg.com/graphiql/graphiql.min.css"
-          rel="stylesheet"
-        />
+        <link href="https://unpkg.com/graphiql/graphiql.min.css" rel="stylesheet" />
       </Head>
       <style jsx global>{`
         body {

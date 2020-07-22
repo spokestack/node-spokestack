@@ -9,10 +9,7 @@ interface Props {
   children: React.ReactNode
 }
 
-export default function Layout({
-  title = 'Spokestack Web Demo',
-  children
-}: Props) {
+export default function Layout({ title = 'Spokestack Web Demo', children }: Props) {
   return (
     <>
       <Head>
@@ -85,8 +82,7 @@ export default function Layout({
           padding: 0 30px;
           white-space: nowrap;
           transition: background-color 0.2s ${theme.transitionEasing},
-            border-color 0.2s ${theme.transitionEasing},
-            color 0.2s ${theme.transitionEasing};
+            border-color 0.2s ${theme.transitionEasing}, color 0.2s ${theme.transitionEasing};
           cursor: pointer;
           text-decoration: none;
           color: ${theme.text};

@@ -1,7 +1,7 @@
 import ApolloClient from 'apollo-boost'
 
 export default function createClient() {
-  return new ApolloClient<{}>({
+  return new ApolloClient<Record<string, unknown>>({
     uri: '/graphql',
     onError: (error) => {
       if (!error) {

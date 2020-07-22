@@ -24,7 +24,7 @@ interface State {
 
 export default class Index extends PureComponent {
   private audio: HTMLAudioElement | undefined
-  private client: ApolloClient<{}> | undefined
+  private client: ApolloClient<Record<string, unknown>> | undefined
   private playing = false
   private initialized = false
   state: State = {
@@ -42,7 +42,7 @@ export default class Index extends PureComponent {
     }
   }, 250)
 
-  componentDidUpdate(_: {}, { term: prevTerm }: State) {
+  componentDidUpdate(_: Record<string, unknown>, { term: prevTerm }: State) {
     const { searching, term } = this.state
     if (!searching && term && term !== prevTerm) {
       this.search()
@@ -83,8 +83,7 @@ export default class Index extends PureComponent {
     const result = search(term)
     if (!result) {
       this.setState({
-        error:
-          'There was a problem with the search. Please check your connection.',
+        error: 'There was a problem with the search. Please check your connection.',
         results: [],
         total: 0
       })
@@ -144,9 +143,7 @@ export default class Index extends PureComponent {
         this.updateTerm(text)
       } else {
         this.setState({
-          status:
-            message ||
-            'There was a problem uploading the audio data. Please try again'
+          status: message || 'There was a problem uploading the audio data. Please try again'
         })
       }
     })
@@ -162,31 +159,20 @@ export default class Index extends PureComponent {
       try {
         const ws = await startStream(() => this.playing)
         this.setState({ streaming: true })
-        ws.addEventListener('open', () =>
-          this.setState({ status: 'Recording...' })
-        )
+        ws.addEventListener('open', () => this.setState({ status: 'Recording...' }))
         ws.addEventListener('close', () => this.setState({ status: 'Idle' }))
         ws.addEventListener('message', (e) => this.updateTerm(e.data))
       } catch (e) {
         console.error(e)
         this.setState({
-          status:
-            'There was a problem starting the record stream. Please refresh and try again.'
+          status: 'There was a problem starting the record stream. Please refresh and try again.'
         })
       }
     }
   }
 
   render() {
-    const {
-      error,
-      results,
-      searching,
-      status,
-      streaming,
-      term,
-      total
-    } = this.state
+    const { error, results, searching, status, streaming, term, total } = this.state
     return (
       <Layout>
         <h1>Search GitHub for repositories using your voice</h1>

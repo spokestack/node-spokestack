@@ -1,9 +1,5 @@
 import fileUpload, { UploadedFile } from 'express-fileupload'
-import {
-  googleASR,
-  googleASRSocketServer,
-  spokestackMiddleware
-} from 'spokestack'
+import { googleASR, googleASRSocketServer, spokestackMiddleware } from 'spokestack'
 import bodyParser from 'body-parser'
 import { createServer } from 'http'
 import express from 'express'
