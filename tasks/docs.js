@@ -50,5 +50,13 @@ data += getInterfaceContent('_client_record_.recordconfig.md', 'RecordConfig')
 data += getModuleContent('_client_recordstream_.md')
 data += getModuleContent('_client_convertfloat32toint16_.md')
 
+data += '\n---\n\n### Utility functions for the client'
+data +=
+  '\n\nThese are low-level functions for working with your own processors, available from `spokestack/client`.'
+data += getModuleContent('_client_processor_.md')
+data += getInterfaceContent('_client_processor_.processorreturnvalue.md', 'ProcessorReturnValue')
+data += getModuleContent('_client_concatenateaudiobuffers_.md')
+data += getModuleContent('_client_countdown_.md')
+
 // Write a pretty version
 write('../README.md', prettier.format(data, { ...pkg.prettier, parser: 'markdown' }))

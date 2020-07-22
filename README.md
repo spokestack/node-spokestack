@@ -30,7 +30,7 @@ export SS_API_CLIENT_SECRET=#"Secret key" field from Spokestack API token
 
 ▸ **googleASR**(`content`: string | Uint8Array, `sampleRate`: number): _Promise‹string | null›_
 
-_Defined in [server/asr.ts:42](https://github.com/spokestack/node-spokestack/blob/04fc169/src/server/asr.ts#L42)_
+_Defined in [server/asr.ts:42](https://github.com/spokestack/node-spokestack/blob/4bac497/src/server/asr.ts#L42)_
 
 A one-off method for processing speech to text
 using Google Speech.
@@ -81,7 +81,7 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 
 ▸ **spokestackMiddleware**(): _function_
 
-_Defined in [server/express-spokestack-middleware.ts:36](https://github.com/spokestack/node-spokestack/blob/04fc169/src/server/express-spokestack-middleware.ts#L36)_
+_Defined in [server/express-spokestack-middleware.ts:36](https://github.com/spokestack/node-spokestack/blob/4bac497/src/server/express-spokestack-middleware.ts#L36)_
 
 Express middleware for adding a proxy to the Spokestack GraphQL API.
 A proxy is necessary to avoid exposing your Spokestack token secret on the client.
@@ -127,7 +127,7 @@ const graphQLFetcher = (graphQLParams) =>
 
 ▸ **googleASRSocketServer**(`server`: Server): _void_
 
-_Defined in [server/spokestack-socket-server.ts:22](https://github.com/spokestack/node-spokestack/blob/04fc169/src/server/spokestack-socket-server.ts#L22)_
+_Defined in [server/spokestack-socket-server.ts:22](https://github.com/spokestack/node-spokestack/blob/4bac497/src/server/spokestack-socket-server.ts#L22)_
 
 Adds a web socket server to the given HTTP server
 to stream ASR using Google Speech.
@@ -155,7 +155,7 @@ server.listen(port, () => {
 
 ▸ **encryptSecret**(`body`: string): _string_
 
-_Defined in [server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/04fc169/src/server/encryptSecret.ts#L13)_
+_Defined in [server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/4bac497/src/server/encryptSecret.ts#L13)_
 
 This is a convenience method for properly authorizing
 requests to the Spokestack graphql API.
@@ -184,7 +184,7 @@ These functions are available exports from `spokestack/client`.
 
 ▸ **record**(`config`: RecordConfig): _Promise‹AudioBuffer›_
 
-_Defined in [client/record.ts:69](https://github.com/spokestack/node-spokestack/blob/04fc169/src/client/record.ts#L69)_
+_Defined in [client/record.ts:69](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/record.ts#L69)_
 
 A method to record audio for a given number of seconds
 
@@ -251,7 +251,7 @@ fetch('/asr', {
 
 • **onProgress**? : _undefined | function_
 
-_Defined in [client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/04fc169/src/client/record.ts#L14)_
+_Defined in [client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/record.ts#L14)_
 
 A callback function to be called each second of recording.
 
@@ -259,7 +259,7 @@ A callback function to be called each second of recording.
 
 • **time**? : _undefined | number_
 
-_Defined in [client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/04fc169/src/client/record.ts#L12)_
+_Defined in [client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/record.ts#L12)_
 
 The total time to record. Default: 3
 
@@ -267,7 +267,7 @@ The total time to record. Default: 3
 
 ▸ **startStream**(`isPlaying`: function): _Promise‹WebSocket›_
 
-_Defined in [client/recordStream.ts:26](https://github.com/spokestack/node-spokestack/blob/04fc169/src/client/recordStream.ts#L26)_
+_Defined in [client/recordStream.ts:26](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/recordStream.ts#L26)_
 
 Returns a function to start recording using a native WebSocket.
 This assumes the socket is hosted on the current server.
@@ -301,7 +301,7 @@ try {
 
 ▸ **stopStream**(): _void_
 
-_Defined in [client/recordStream.ts:69](https://github.com/spokestack/node-spokestack/blob/04fc169/src/client/recordStream.ts#L69)_
+_Defined in [client/recordStream.ts:69](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/recordStream.ts#L69)_
 
 Stop the current recording stream if one exists.
 
@@ -316,7 +316,7 @@ stopStream()
 
 ▸ **convertFloat32ToInt16**(`fp32Samples`: Float32Array): _Int16Array‹›_
 
-_Defined in [client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/04fc169/src/client/convertFloat32ToInt16.ts#L16)_
+_Defined in [client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/convertFloat32ToInt16.ts#L16)_
 
 A utility method to convert Float32Array audio
 to an Int16Array to be passed directly to Speech APIs
@@ -336,3 +336,105 @@ const file = new File([convertFloat32ToInt16(buffer.getChannelData(0))], 'record
 | `fp32Samples` | Float32Array |
 
 **Returns:** _Int16Array‹›_
+
+---
+
+### Utility functions for the client
+
+These are low-level functions for working with your own processors, available from `spokestack/client`.
+
+### startProcessor
+
+▸ **startProcessor**(): _Promise‹Error] | [null, [ProcessorReturnValue]›_
+
+_Defined in [client/processor.ts:32](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/processor.ts#L32)_
+
+Underlying utility method for recording audio,
+used by the `record` and `recordStream` methods.
+
+While createScriptProcessor is deprecated, the replacement (AudioWorklet)
+does not yet have broad support (currently only supported in Blink browsers).
+See https://caniuse.com/#feat=mdn-api_audioworkletnode
+
+We'll switch to AudioWorklet when it does.
+
+**Returns:** _Promise‹Error] | [null, [ProcessorReturnValue]›_
+
+---
+
+### stopProcessor
+
+▸ **stopProcessor**(): _void_
+
+_Defined in [client/processor.ts:60](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/processor.ts#L60)_
+
+Underlying utility method to stop the current processor
+if it exists and disconnect the microphone.
+
+**Returns:** _void_
+
+#### ProcessorReturnValue
+
+##### context
+
+• **context**: _AudioContext_
+
+_Defined in [client/processor.ts:18](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/processor.ts#L18)_
+
+##### processor
+
+• **processor**: _ScriptProcessorNode_
+
+_Defined in [client/processor.ts:19](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/processor.ts#L19)_
+
+### concatenateAudioBuffers
+
+▸ **concatenateAudioBuffers**(`buffer1`: AudioBuffer, `buffer2`: AudioBuffer, `context`: AudioContext): _null | AudioBuffer_
+
+_Defined in [client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/concatenateAudioBuffers.ts#L4)_
+
+A utility method to concatenate two AudioBuffers
+
+**Parameters:**
+
+| Name      | Type         |
+| --------- | ------------ |
+| `buffer1` | AudioBuffer  |
+| `buffer2` | AudioBuffer  |
+| `context` | AudioContext |
+
+**Returns:** _null | AudioBuffer_
+
+### countdown
+
+▸ **countdown**(`time`: number, `progress`: function, `complete`: function): _void_
+
+_Defined in [client/countdown.ts:7](https://github.com/spokestack/node-spokestack/blob/4bac497/src/client/countdown.ts#L7)_
+
+Countdown a number of seconds
+
+**Parameters:**
+
+▪ **time**: _number_
+
+Number of seconds
+
+▪ **progress**: _function_
+
+Callback for each second (includes first second)
+
+▸ (`remaining`: number): _void_
+
+**Parameters:**
+
+| Name        | Type   |
+| ----------- | ------ |
+| `remaining` | number |
+
+▪ **complete**: _function_
+
+Callback for completion
+
+▸ (): _void_
+
+**Returns:** _void_
