@@ -5,7 +5,7 @@ references:
     restore_cache:
       keys:
         # when lock file changes, use increasingly general patterns to restore cache
-        - npm-packages-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+        - npm-packages-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}-{{ checksum "examples/with-next/package-lock.json" }}
         - npm-packages-v1-{{ .Branch }}-
         - npm-packages-v1-
 
@@ -13,7 +13,8 @@ references:
     save_cache:
       paths:
         - node_modules/
-      key: npm-packages-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+        - examples/with-next/node_modules/
+      key: npm-packages-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}-{{ checksum "examples/with-next/package-lock.json" }}
 
 jobs:
   build:
@@ -24,6 +25,7 @@ jobs:
       - checkout
       - *restore_npm_cache
       - run: npm install --no-save
+      - run: cd examples/with-next && npm install --no-save
       - *save_npm_cache
 
       - run:
@@ -33,6 +35,10 @@ jobs:
       - run:
           name: Run build
           command: npm run build
+
+      - run:
+          name: Run build examples/with-next
+          command: cd examples/with-next && npm run build
 
   deploy_integration:
     docker:
@@ -79,7 +85,6 @@ jobs:
             cd examples/with-next
             aws configure set region us-east-1
             deploy/update.sh production
-
 
 workflows:
   version: 2
