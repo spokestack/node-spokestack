@@ -10,6 +10,8 @@ import countdown from './countdown'
 interface RecordConfig {
   /** The total time to record. Default: 3 */
   time?: number
+  /** A callback function to be called when recording starts */
+  onStart?: () => void
   /** A callback function to be called each second of recording. */
   onProgress?: (remaining: number) => void
 }
@@ -20,10 +22,23 @@ interface RecordConfig {
  * ```js
  * import { record } from 'spokestack/client'
  *
+ * // Record for 3 seconds and return an AudioBuffer
+ * const buffer = await record()
+ *
+ * // Record for 5 seconds, calling onProgress every second
  * const buffer = await record({
- *   time: 3,
+ *   time: 5,
  *   onProgress: (remaining) => {
  *     console.log(`Recording..${remaining}`)
+ *   }
+ * })
+ *
+ * // Record for 3 seconds, calling onStart when recording starts
+ * // Note: recording stops when the Promise resolves
+ * const buffer = await record({
+ *   time: 5,
+ *   onStart: () => {
+ *     console.log('Recording started')
  *   }
  * })
  * ```
@@ -67,7 +82,7 @@ interface RecordConfig {
  * ```
  */
 export default async function record(config: RecordConfig = { time: 3 }) {
-  const { time = 3, onProgress } = config
+  const { time = 3, onProgress, onStart } = config
   const [error, result] = await startProcessor()
   if (error) {
     throw error
@@ -80,6 +95,9 @@ export default async function record(config: RecordConfig = { time: 3 }) {
     buffer = buffer ? concatenateAudioBuffers(buffer, e.inputBuffer, context) : e.inputBuffer
   }
   processor.addEventListener('audioprocess', addToBuffer)
+  if (onStart) {
+    onStart()
+  }
 
   return new Promise<AudioBuffer>((resolve, reject) => {
     countdown(
@@ -95,7 +113,9 @@ export default async function record(config: RecordConfig = { time: 3 }) {
         if (buffer) {
           resolve(buffer)
         } else {
-          reject('There was a problem creating the audio buffer. Please reload and try again.')
+          reject(
+            new Error('There was a problem creating the audio buffer. Please reload and try again.')
+          )
         }
       }
     )
