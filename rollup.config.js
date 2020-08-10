@@ -6,10 +6,12 @@ export default [
     external: ['crypto', 'uuid', 'ws', '@google-cloud/speech', 'node-fetch'],
     plugins: [
       typescript({
+        useTsconfigDeclarationDir: true,
         tsconfigOverride: {
           exclude: ['node_modules'],
           compilerOptions: {
-            declaration: true
+            declaration: true,
+            declarationDir: './dist'
           }
         }
       })
@@ -22,7 +24,7 @@ export default [
  */`,
       format: 'cjs',
       name: 'Spokestack',
-      file: 'index.js'
+      file: 'dist/index.js'
     },
     watch: {
       include: ['src/server/**', 'src/utils/**']
@@ -32,10 +34,12 @@ export default [
     input: './src/client.ts',
     plugins: [
       typescript({
+        useTsconfigDeclarationDir: true,
         tsconfigOverride: {
           exclude: ['node_modules'],
           compilerOptions: {
-            declaration: false
+            declaration: false,
+            declarationDir: './dist'
           }
         }
       })
@@ -48,7 +52,7 @@ export default [
  */`,
       format: 'cjs',
       name: 'Spokestack',
-      file: 'client.js'
+      file: 'dist/client.js'
     },
     watch: {
       include: ['src/client/**', 'src/utils/**']
