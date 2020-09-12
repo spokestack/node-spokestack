@@ -38,7 +38,7 @@
     "lodash": "^4.17.19",
     "next": "^9.5.1",
     "next-transpile-modules": "^4.0.2",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "spokestack": "^0.3.0",
