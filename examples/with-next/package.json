@@ -36,7 +36,7 @@
     "graphql": "^15.3.0",
     "graphql-tag": "^2.11.0",
     "lodash": "^4.17.19",
-    "next": "^9.5.1",
+    "next": "^9.5.4",
     "next-transpile-modules": "^4.0.2",
     "node-fetch": "^2.6.0",
     "react": "^16.13.1",
