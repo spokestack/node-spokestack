@@ -8,15 +8,12 @@
     "build": "next build && tsc --project tsconfig.server.json",
     "clean": "rm -rf .next/",
     "dev": "nodemon",
-    "eslint": "eslint .",
-    "format": "prettier --write \"**/*.tsx\" \"**/*.ts\" \"**/*.js\" \"**/*.md\"",
-    "lint": "concurrently --raw \"npm run type-check\" \"npm run eslint\" \"npm run prettier\"",
-    "lint:fix": "concurrently --raw \"npm run type-check\" \"lint-staged\"",
-    "prettier": "prettier --check \"**/*.tsx\" \"**/*.ts\" \"**/*.js\" \"**/*.md\"",
+    "format": "prettier --write \"**/*.tsx\" \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",
+    "lint": "eslint \"**/*.{tsx,ts,js}\" && prettier --check \"**/*.md\" \"**/*.json\"",
     "start": "cross-env NODE_ENV=production node dist/index.js",
-    "test": "npm run lint",
+    "test": "concurrently --raw \"npm run lint\" \"npm run typescript\"",
     "test:encrypt": "ts-node --project tsconfig.server.json server/encryptSecret.ts",
-    "type-check": "tsc -p tsconfig.json --noEmit"
+    "typescript": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [
     "spokestack",
@@ -71,5 +68,41 @@
     "jsxBracketSameLine": true,
     "arrowParens": "always",
     "trailingComma": "none"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint",
+      "react",
+      "prettier"
+    ],
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "plugin:react/recommended",
+      "prettier/@typescript-eslint",
+      "prettier/react"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "project": "./tsconfig.json",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "globals": {
+      "ga": "readonly"
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/explicit-module-boundary-types": 0,
+      "@typescript-eslint/no-var-requires": 0,
+      "@typescript-eslint/no-use-before-define": 0
+    }
   }
 }

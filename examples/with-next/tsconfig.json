@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "es5",
     "module": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "sourceMap": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -15,5 +19,14 @@
     "isolatedModules": true,
     "jsx": "preserve"
   },
-  "exclude": ["dist", ".next", "node_modules"]
+  "exclude": [
+    "dist",
+    ".next",
+    "node_modules"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }
