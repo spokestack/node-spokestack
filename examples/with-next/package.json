@@ -5,7 +5,7 @@
   "description": "Spokestack web demo to search and read results using voice.",
   "main": "server/index.js",
   "scripts": {
-    "build": "next build && tsc --project tsconfig.server.json",
+    "build": "next build && tsc -p tsconfig.server.json",
     "clean": "rm -rf .next/",
     "dev": "nodemon",
     "format": "prettier --write \"**/*.tsx\" \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",

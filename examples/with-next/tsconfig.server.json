@@ -7,5 +7,5 @@
     "isolatedModules": false,
     "noEmit": false
   },
-  "include": ["next-env.d.ts", "server/**/*.ts", "server/**/*.tsx"]
+  "include": ["next-env.d.ts", "server/**/*.js", "server/**/*.ts", "server/**/*.tsx"]
 }
