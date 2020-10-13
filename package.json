@@ -8,17 +8,14 @@
     "build": "npm run clean && rollup --config",
     "clean": "rm -rf dist/",
     "docs": "typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
-    "eslint": "eslint .",
-    "format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\"",
-    "lint": "concurrently --raw \"npm run type-check\" \"npm run eslint\" \"npm run prettier\"",
-    "lint:fix": "concurrently --raw \"npm run type-check\" \"lint-staged\"",
+    "format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",
+    "lint": "eslint \"**/*.{ts,js}\" && prettier --check \"**/*.md\" \"**/*.json\"",
     "prepublishOnly": "npm run build",
-    "prettier": "prettier --check \"**/*.ts\" \"**/*.js\"",
-    "release": "cross-env HUSKY_SKIP_HOOKS=1 semantic-release",
+    "release": "release-it",
     "test": "npm run lint && npm run test:unit",
     "test:unit": "cross-env TS_NODE_PROJECT=tsconfig.test.json mocha",
     "test:watch": "npm run test:unit -- -w",
-    "type-check": "tsc -p tsconfig.json --noEmit"
+    "typescript": "tsc -p tsconfig.json --noEmit"
   },
   "files": [
     "dist",
@@ -43,15 +40,15 @@
   "homepage": "https://github.com/spokestack/node-spokestack#readme",
   "dependencies": {
     "@google-cloud/speech": "^4.1.3",
+    "@release-it/conventional-changelog": "^2.0.0",
     "node-fetch": "^2.6.1",
+    "release-it": "^14.1.0",
     "uuid": "^8.3.1",
     "ws": "^7.3.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@semantic-release/exec": "^5.0.0",
-    "@semantic-release/git": "^9.0.0",
     "@types/express": "^4.17.8",
     "@types/mocha": "^8.0.3",
     "@types/node-fetch": "^2.5.7",
@@ -66,12 +63,10 @@
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.3.0",
-    "lint-staged": "^10.4.0",
     "mocha": "^8.1.3",
     "prettier": "^2.1.2",
     "rollup": "^2.29.0",
     "rollup-plugin-typescript2": "^0.27.3",
-    "semantic-release": "^17.2.1",
     "sinon": "^9.2.0",
     "ts-node": "^9.0.0",
     "typedoc": "^0.17.8",
@@ -86,48 +81,55 @@
     "arrowParens": "always",
     "trailingComma": "none"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:fix",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "prettier/@typescript-eslint"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "project": "./tsconfig.test.json"
+    },
+    "globals": {
+      "ga": "readonly"
+    },
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/explicit-module-boundary-types": 0,
+      "@typescript-eslint/no-var-requires": 0,
+      "@typescript-eslint/no-use-before-define": 0
     }
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "prettier --write",
-      "eslint --fix ."
-    ],
-    "*.md": [
-      "prettier --write"
-    ]
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "concurrently --raw \"npm run lint\" \"npm run typescript\""
+    }
   },
-  "release": {
-    "ci": false,
-    "branches": [
-      "develop"
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/npm",
-      [
-        "@semantic-release/exec",
-        {
-          "prepareCmd": "npm run docs && npm run build"
-        }
-      ],
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "README.md",
-            "package.json",
-            "package-lock.json"
-          ]
-        }
-      ],
-      "@semantic-release/github"
-    ],
-    "tagFormat": "${version}"
+  "release-it": {
+    "hooks": {
+      "after:bump": "npm run docs && git add README.md"
+    },
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular"
+      }
+    }
   }
 }
