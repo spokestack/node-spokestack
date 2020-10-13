@@ -1,7 +1,3 @@
-client/**
-server/**
-examples/**
-*.d.ts
-index.js
-client.js
+dist/**
 docs/**
+examples/**
