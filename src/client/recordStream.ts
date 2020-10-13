@@ -8,13 +8,13 @@ let stop: (() => void) | undefined
 /**
  * Returns a function to start recording using a native WebSocket.
  * This assumes the socket is hosted on the current server.
- * @param isPlaying A function returning whether audio is currently playing.
- *   This is necessary to prevent recording played audio.
  *
  * ```js
  * import { startStream } from 'spokestack/client'
+ *
+ * // ...
  * try {
- *   const ws = await startStream(() => isPlaying)
+ *   const ws = await startStream(() => this.isPlaying)
  *   ws.addEventListener('open', () => console.log('Recording started'))
  *   ws.addEventListener('close', () => console.log('Recording stopped'))
  *   ws.addEventListener('message', (e) => console.log('Speech processed: ', e.data))
@@ -22,6 +22,9 @@ let stop: (() => void) | undefined
  *   console.error(e)
  * }
  * ```
+ *
+ * @param isPlaying A function returning whether audio is currently playing.
+ *   This is necessary to prevent recording played audio.
  */
 export async function startStream(isPlaying: () => boolean) {
   const [error, result] = await startProcessor()
