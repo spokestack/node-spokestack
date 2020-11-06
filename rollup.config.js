@@ -38,8 +38,7 @@ export default [
         tsconfigOverride: {
           exclude: ['node_modules'],
           compilerOptions: {
-            declaration: false,
-            declarationDir: './dist'
+            declaration: false
           }
         }
       })
