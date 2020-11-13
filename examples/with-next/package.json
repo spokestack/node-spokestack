@@ -12,7 +12,7 @@
     "lint": "eslint \"**/*.{tsx,ts,js}\" && prettier --check \"**/*.md\" \"**/*.json\"",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "test": "concurrently --raw \"npm run lint\" \"npm run typescript\"",
-    "test:encrypt": "ts-node --project tsconfig.server.json server/encryptSecret.ts",
+    "test:encrypt": "ts-node -p tsconfig.server.json server/encryptSecret.ts",
     "typescript": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [
@@ -23,6 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "apollo-boost": "^0.4.9",
+    "babel-plugin-module-resolver": "^4.0.0",
     "babel-plugin-transform-optional-chaining": "^7.0.0-beta.3",
     "body-parser": "^1.19.0",
     "color": "^3.1.3",

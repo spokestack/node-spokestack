@@ -1,11 +1,21 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "module": "commonjs",
     "outDir": "dist",
     "target": "es2017",
     "isolatedModules": false,
-    "noEmit": false
+    "noEmit": false,
+    "paths": {
+      "spokestack": ["../../src/"]
+    }
   },
-  "include": ["next-env.d.ts", "server/**/*.js", "server/**/*.ts", "server/**/*.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "server/**/*.js",
+    "server/**/*.ts",
+    "server/**/*.tsx",
+    "../../src/**/*.ts"
+  ]
 }
