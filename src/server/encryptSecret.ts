@@ -7,7 +7,7 @@ import crypto from 'crypto'
  * **Note:** Do not to expose your key's secret on the client.
  * This should only be done on the server.
  *
- * See <a href="https://github.com/spokestack/node-spokestack/blob/develop/src/server/express-spokestack-middleware.ts">server/express-spokestack-middleware.ts</a>
+ * See <a href="https://github.com/spokestack/node-spokestack/blob/develop/src/server/expressMiddleware.ts">server/expressMiddleware.ts</a>
  * for example usage.
  */
 export default function encryptSecret(body: string): string {

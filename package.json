@@ -1,10 +1,9 @@
 {
   "name": "spokestack",
-  "version": "0.3.0",
+  "version": "1.0.0-beta.3",
   "description": "Tools for integration with the Spokestack API in Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "source": "src/",
   "scripts": {
     "build": "npm run clean && rollup --config",
     "clean": "rm -rf dist/",
@@ -13,6 +12,7 @@
     "lint": "eslint \"**/*.{ts,js}\" && prettier --check \"**/*.md\" \"**/*.json\"",
     "prepublishOnly": "npm run build",
     "release": "release-it",
+    "start": "rollup --config -w",
     "test": "npm run lint && npm run test:unit",
     "test:next": "cd examples/with-next && npm test",
     "test:unit": "cross-env TS_NODE_PROJECT=tsconfig.test.json mocha",
@@ -22,6 +22,8 @@
   "files": [
     "dist",
     "src",
+    "client.js",
+    "client.d.ts",
     "MIT-License.txt",
     "README.md"
   ],
@@ -109,6 +111,12 @@
       "@typescript-eslint/no-use-before-define": 0
     }
   },
+  "eslintIgnore": [
+    "dist",
+    "examples",
+    ".next",
+    "*.d.ts"
+  ],
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",

@@ -10,9 +10,9 @@ This package is a work in progress.
 $ npm install spokestack --save
 ```
 
-## Requirements
+## Setup
 
-1. Go to [spokestack.io](https://spokestack.io) and create an account. Create a token at [spokestack.io/account/settings#api](https://spokestack.io/account/settings#api). Note that you'll only be able to see the token secret once. If you accidentally leave the page, create another token. Once you have a token, set the following environment variables in your `.bash_profile` or `.zshenv`:
+Go to [spokestack.io](https://spokestack.io) and create an account. Create a token at [spokestack.io/account/settings#api](https://spokestack.io/account/settings#api). Note that you'll only be able to see the token secret once. If you accidentally leave the page, create another token. Once you have a token, set the following environment variables in your `.bash_profile` or `.zshenv`:
 
 ```bash
 export SS_API_URL=https://api.spokestack.io
@@ -20,7 +20,9 @@ export SS_API_CLIENT_ID=#"Identity" field from Spokestack API token
 export SS_API_CLIENT_SECRET=#"Secret key" field from Spokestack API token
 ```
 
-2. [Set up Google Cloud Speech](https://github.com/googleapis/nodejs-speech#before-you-begin). Ensure `GOOGLE_APPLICATION_CREDENTIALS` is set in your environment.
+## Using Google ASR instead of Spokestack ASR
+
+If you'd prefer to use Google ASR, follow these [instructions for setting up Google Cloud Speech](https://github.com/googleapis/nodejs-speech#before-you-begin). Ensure `GOOGLE_APPLICATION_CREDENTIALS` is set in your environment.
 
 ---
 

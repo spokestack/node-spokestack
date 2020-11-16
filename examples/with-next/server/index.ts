@@ -1,5 +1,12 @@
+import {
+  asr,
+  asrSocketServer,
+  googleASR,
+  googleASRSocketServer,
+  spokestackMiddleware
+} from 'spokestack'
 import fileUpload, { UploadedFile } from 'express-fileupload'
-import { googleASR, googleASRSocketServer, spokestackMiddleware } from 'spokestack'
+
 import bodyParser from 'body-parser'
 import { createServer } from 'http'
 import express from 'express'
@@ -10,6 +17,7 @@ const port = parseInt(process.env.PORT || '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
+const useGoogleAsr = process.env.ASR_SERVICE === 'google'
 
 app.prepare().then(() => {
   const expressApp = express()
@@ -41,7 +49,10 @@ app.prepare().then(() => {
       })
       return
     }
-    googleASR(content, Number(req.body.sampleRate))
+    const fetcher = useGoogleAsr
+      ? googleASR(content, Number(req.body.sampleRate))
+      : asr(content, Number(req.body.sampleRate))
+    fetcher
       .then((text) => {
         res.status(200)
         res.json({ text })
@@ -78,7 +89,11 @@ app.prepare().then(() => {
   expressApp.all('*', (req, res) => handle(req, res))
 
   const server = createServer(expressApp)
-  googleASRSocketServer(server)
+  if (useGoogleAsr) {
+    googleASRSocketServer(server)
+  } else {
+    asrSocketServer(server)
+  }
   server.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`)
   })

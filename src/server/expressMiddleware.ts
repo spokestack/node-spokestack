@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
+
 import encryptSecret from './encryptSecret'
-import { v4 as uuid } from 'uuid'
 import fetch from 'node-fetch'
+import { v4 as uuid } from 'uuid'
 
 /**
  * Express middleware for adding a proxy to the Spokestack GraphQL API.

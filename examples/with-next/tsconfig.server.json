@@ -6,16 +6,7 @@
     "outDir": "dist",
     "target": "es2017",
     "isolatedModules": false,
-    "noEmit": false,
-    "paths": {
-      "spokestack": ["../../src/"]
-    }
+    "noEmit": false
   },
-  "include": [
-    "next-env.d.ts",
-    "server/**/*.js",
-    "server/**/*.ts",
-    "server/**/*.tsx",
-    "../../src/**/*.ts"
-  ]
+  "include": ["next-env.d.ts", "server/**/*.js", "server/**/*.ts", "server/**/*.tsx"]
 }
