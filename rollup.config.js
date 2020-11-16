@@ -8,7 +8,6 @@ export default [
       typescript({
         useTsconfigDeclarationDir: true,
         tsconfigOverride: {
-          exclude: ['node_modules'],
           compilerOptions: {
             declaration: true,
             declarationDir: './dist'
@@ -27,7 +26,7 @@ export default [
       file: 'dist/index.js'
     },
     watch: {
-      include: ['src/server/**', 'src/utils/**']
+      include: ['src/index.ts', 'src/cookies.ts', 'src/server/**']
     }
   },
   {
@@ -36,7 +35,6 @@ export default [
       typescript({
         useTsconfigDeclarationDir: true,
         tsconfigOverride: {
-          exclude: ['node_modules'],
           compilerOptions: {
             declaration: false
           }
@@ -54,7 +52,7 @@ export default [
       file: 'dist/client.js'
     },
     watch: {
-      include: ['src/client/**', 'src/utils/**']
+      include: ['src/client.ts', 'src/cookies.ts', 'src/client/**']
     }
   }
 ]

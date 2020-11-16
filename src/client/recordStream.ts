@@ -45,18 +45,25 @@ export async function startStream(isPlaying: () => boolean) {
     if (isPlaying()) {
       return
     }
-    ws.send(convertFloat32ToInt16(e.inputBuffer.getChannelData(0)))
+    if (ws.readyState === ws.OPEN) {
+      ws.send(convertFloat32ToInt16(e.inputBuffer.getChannelData(0)))
+    }
   }
 
   ws.addEventListener('open', () => {
     processor.addEventListener('audioprocess', sendChannelData)
   })
 
-  stop = function stopStream() {
+  ws.addEventListener('close', () => {
     processor.removeEventListener('audioprocess', sendChannelData)
+  })
+
+  stop = function stopStream() {
     ws.close()
     return stopProcessor()
   }
+  // Close on error
+  ws.addEventListener('error', stop)
 
   return ws
 }

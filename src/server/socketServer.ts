@@ -3,6 +3,82 @@ import { SpeechClient } from '@google-cloud/speech'
 import WebSocket from 'ws'
 import { getCookie } from '../cookies'
 import { google } from '@google-cloud/speech/build/protos/protos'
+import spokestackService from './spokestackASRService'
+
+/**
+ * Adds a web socket server to the given HTTP server
+ * to stream ASR using Spokestack ASR.
+ * This uses the "ws" node package for the socket server.
+ *
+ * ```js
+ * import { createServer } from 'http'
+ * const port = parseInt(process.env.PORT || '3000', 10)
+ * const server = createServer() // or express()
+ * // Attach the websocket server to the HTTP server
+ * asrSocketServer(server)
+ * server.listen(port, () => {
+ *   console.log(`Listening at http://localhost:${port}`)
+ * })
+ * ```
+ */
+export function asrSocketServer(server: Server): void {
+  const wss = new WebSocket.Server({ server })
+  console.log('Websocket started')
+
+  wss.on('connection', async (ws, request) => {
+    console.log(`Websocket connected with ${wss.clients.size} clients`)
+    const sampleRate = getCookie('sampleRate', request.headers.cookie)
+    if (!sampleRate) {
+      console.error('No sample rate cookie set')
+      return
+    }
+    const client = await spokestackService(
+      {
+        sampleRate: parseInt(sampleRate, 10)
+      },
+      ({ status, hypotheses }) => {
+        if (status === 'ok') {
+          if (hypotheses.length) {
+            ws.send(hypotheses[0].transcript)
+          }
+        } else {
+          ws.close(1002)
+        }
+      }
+    )
+    client.on('error', () => {
+      try {
+        ws.close(1014)
+      } catch (e) {
+        console.log('Error closing socket connection', e)
+      }
+    })
+    console.log(`Spokestack streaming client created with sampleRate: ${sampleRate}`)
+    ws.binaryType = 'arraybuffer'
+    ws.on('message', (message: ArrayBuffer) => {
+      if (client.readyState === client.OPEN) {
+        client.send(Buffer.from(message))
+      }
+    })
+    ws.on('close', (code, reason) => {
+      console.log(
+        `client closed with ${wss.clients.size} clients. Code: ${code}. Reason: ${reason}`
+      )
+      if (client) {
+        console.log('Closing Spokestack client')
+        client.close(1000)
+      }
+    })
+  })
+
+  wss.on('close', () => {
+    console.log('socket server closed')
+  })
+
+  wss.on('error', (error) => {
+    console.log('Websocket server error', error)
+  })
+}
 
 /**
  * Adds a web socket server to the given HTTP server
@@ -12,7 +88,8 @@ import { google } from '@google-cloud/speech/build/protos/protos'
  * ```js
  * import { createServer } from 'http'
  * const port = parseInt(process.env.PORT || '3000', 10)
- * const server = createServer() // Optionally pass an express app
+ * const server = createServer() // or express()
+ * // Attach the websocket server to the HTTP server
  * googleASRSocketServer(server)
  * server.listen(port, () => {
  *   console.log(`Listening at http://localhost:${port}`)
@@ -51,7 +128,7 @@ export function googleASRSocketServer(server: Server): void {
             client.close()
           } catch (e) {}
           try {
-            ws.close()
+            ws.close(1014)
           } catch (e) {}
         }
       })

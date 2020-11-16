@@ -6,7 +6,7 @@ import { ApolloClient } from 'apollo-boost'
 import { DEFAULT_WIDTH } from '../theme'
 import Layout from '../components/Layout'
 import RepoLink from '../components/RepoLink'
-import { SynthesizeMarkdown } from '../apollo/queries'
+import { SynthesizeText } from '../apollo/queries'
 import createClient from '../apollo/createClient'
 import debounce from 'lodash/debounce'
 import search from '../utils/search'
@@ -40,7 +40,7 @@ export default class Index extends PureComponent {
     if (typeof term === 'string') {
       this.setState({ term })
     }
-  }, 250)
+  }, 500)
 
   componentDidUpdate(_: Record<string, unknown>, { term: prevTerm }: State) {
     const { searching, term } = this.state
@@ -69,12 +69,33 @@ export default class Index extends PureComponent {
       // so future plays do not require a click
       this.audio.play()
       this.audio.addEventListener('pause', this.pause)
+      this.audio.addEventListener('error', () => {
+        this.setState({ status: 'There was an error loading the audio.' })
+        if (this.state.streaming) {
+          this.toggleRecordStream()
+        }
+      })
     }
   }
 
   pause = () => {
     console.log('paused')
     this.playing = false
+    this.setState({ status: this.state.streaming ? 'Recording...' : 'Idle' })
+  }
+
+  getPrompt(response: { total_count: number; items: { name: string }[] }) {
+    if (response.total_count > 0) {
+      const name = response.items[0].name
+      let prompt = `I found ${
+        response.total_count > 1000 ? 'a lot of' : response.total_count
+      } results.`
+      if (name) {
+        prompt += ` The first one is "${name.replace(/-/g, ' ')}".`
+      }
+      return prompt
+    }
+    return "I couldn't find any results."
   }
 
   search = async () => {
@@ -89,7 +110,7 @@ export default class Index extends PureComponent {
       })
       return
     }
-    this.setState({ searching: true })
+    this.setState({ searching: true, status: 'Searching...' })
     result
       .then(async (response) => {
         console.log(`Got response for term: ${term}`)
@@ -99,19 +120,18 @@ export default class Index extends PureComponent {
         })
         if (this.client) {
           const res = await this.client.query<{
-            synthesizeMarkdown: SynthesisResult
+            synthesizeText: SynthesisResult
           }>({
             fetchPolicy: 'no-cache',
-            query: SynthesizeMarkdown,
+            query: SynthesizeText,
             variables: {
-              markdown: `I found ${
-                response.total_count > 1000 ? 'a lot of' : response.total_count
-              } results. The first one is ${response.items[0].name}`,
+              text: this.getPrompt(response),
               voice: 'demo-male'
             }
           })
-          const data = res.data && res.data.synthesizeMarkdown
+          const data = res.data && res.data.synthesizeText
           if (data.url && this.audio) {
+            this.setState({ status: 'Playing audio...' })
             this.playing = true
             this.audio.src = data.url
             this.audio.play()
@@ -158,9 +178,17 @@ export default class Index extends PureComponent {
       this.initialize()
       try {
         const ws = await startStream(() => this.playing)
-        this.setState({ streaming: true })
-        ws.addEventListener('open', () => this.setState({ status: 'Recording...' }))
-        ws.addEventListener('close', () => this.setState({ status: 'Idle' }))
+        ws.addEventListener('open', () =>
+          this.setState({ status: 'Recording...', streaming: true })
+        )
+        ws.addEventListener('close', () => this.setState({ status: 'Idle', streaming: false }))
+        ws.addEventListener('error', (event) => {
+          console.log(event)
+          this.setState({
+            status: 'There was a problem starting the record stream. Please refresh and try again.',
+            streaming: false
+          })
+        })
         ws.addEventListener('message', (e) => this.updateTerm(e.data))
       } catch (e) {
         console.error(e)
