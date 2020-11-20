@@ -8,7 +8,7 @@ A set of tools for integration with the [Spokestack API](https://spokestack.io) 
 $ npm install spokestack --save
 ```
 
-## Usage
+## Speech-to-Text and NLU
 
 Aside from ASR, the main way to use Spokestack is through Spokestack's [GraphQL](https://graphql.org) API, which is available at `https://api.spokestack.io/v1`. It requires [Spokestack credentials](https://spokestack.io/create) to access.
 
@@ -18,7 +18,20 @@ The API is used to synthesize text to speech using various methods including raw
 
 It can also be used for [NLU classification](https://www.spokestack.io/docs/concepts/nlu).
 
-This repo includes [an example app](examples/with-next) that adds a route to view the live documentation (or [introspection](https://graphql.org/learn/introspection/)).
+This repo includes [an example app](examples/with-next) with sample code using [apollo](https://www.apollographql.com) to work with the GraphQL API. Additionally, it adds a route (`/__graphiql`) to view the live documentation (or [introspection](https://graphql.org/learn/introspection/)).
+
+It looks like this...
+
+![Spokestack GraphQL Introspection](./spokestack-graphql.png)
+
+## Automatic Speech Recognition
+
+The one piece missing from the Spokestack GraphQL API is ASR. This is because a websocket is needed to provide continuous processing. node-spokestack includes functions to use either [Spokestack ASR](https://www.spokestack.io/docs/concepts/asr) or [Google Cloud Speech](https://github.com/googleapis/nodejs-speech), and there are two functions for each platform.
+
+1. A [helper function](#asrSocketServer) for adding a websocket to a node server (express or otherwise).
+1. A [one-time function](#asr) for processing speech into text.
+
+We recommend using the websocket if you need to process speech to text more than once in your application.
 
 ## Setup
 
