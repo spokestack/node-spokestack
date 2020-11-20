@@ -43,18 +43,14 @@ export default function asrService(
   config: SpokestackASRConfig,
   onData: (response: SpokestackResponse) => void
 ): Promise<WebSocket> {
-  if (!process.env.SS_API_URL) {
-    throw new Error('SS_API_URL is not set in the server environment.')
-  }
   if (!process.env.SS_API_CLIENT_ID) {
     throw new Error('SS_API_CLIENT_ID is not set in the server environment.')
   }
-  const apiUrl = new URL(process.env.SS_API_URL)
   const clientId = process.env.SS_API_CLIENT_ID
   const timeout = config.timeout || 3000
 
   // Open socket
-  const socket = new WebSocket(`wss:${apiUrl.hostname}/v1/asr/websocket`)
+  const socket = new WebSocket(`wss:api.spokestack.io/v1/asr/websocket`)
 
   let prevTranscript = ''
   let transcriptTimeout: NodeJS.Timeout

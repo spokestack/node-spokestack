@@ -36,11 +36,6 @@ import { v4 as uuid } from 'uuid'
  */
 export default function spokestackMiddleware(): (req: Request, res: Response) => void {
   return function (req: Request, res: Response) {
-    if (!process.env.SS_API_URL) {
-      res.status(500)
-      res.send('SS_API_URL is not set in the server environment.')
-      return
-    }
     if (!process.env.SS_API_CLIENT_ID) {
       res.status(500)
       res.send('SS_API_CLIENT_ID is not set in the server environment.')
@@ -53,7 +48,7 @@ export default function spokestackMiddleware(): (req: Request, res: Response) =>
     }
     const body = JSON.stringify(req.body)
     const Authorization = `Spokestack ${process.env.SS_API_CLIENT_ID}:${encryptSecret(body)}`
-    fetch(`${process.env.SS_API_URL}/v1`, {
+    fetch('https://api.spokestack.io/v1', {
       method: 'POST',
       headers: {
         Authorization,

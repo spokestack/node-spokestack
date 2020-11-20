@@ -34,9 +34,9 @@ function getInterfaceContent(filename, name) {
 }
 
 ;[
+  '_server_expressmiddleware_.md',
   '_server_socketserver_.md',
   '_server_asr_.md',
-  '_server_expressmiddleware_.md',
   '_server_encryptsecret_.md'
 ].forEach((filename) => {
   data += getModuleContent(filename)
