@@ -1,6 +1,6 @@
-# Spokestack [![CircleCI](https://circleci.com/gh/spokestack/node-spokestack.svg?style=svg)](https://circleci.com/gh/spokestack/node-spokestack)
+![Spokestack Node](./images/node-spokestack.png)
 
-A set of tools for integration with the [Spokestack API](https://spokestack.io) in Node.js
+A set of tools for integration with the [Spokestack API](https://spokestack.io) in Node.js [![CircleCI](https://circleci.com/gh/spokestack/node-spokestack.svg?style=svg)](https://circleci.com/gh/spokestack/node-spokestack)
 
 ## Installation
 
