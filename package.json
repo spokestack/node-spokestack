@@ -10,7 +10,7 @@
     "docs": "typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
     "format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",
     "lint": "eslint \"**/*.{ts,js}\" && prettier --check \"**/*.md\" \"**/*.json\"",
-    "prepublishOnly": "npm run build",
+    "prepare": "npm run build",
     "release": "release-it",
     "start": "rollup --config -w",
     "test": "npm run lint && npm run test:unit",

@@ -11,7 +11,9 @@ See `server/index.ts` for example code using [Next.js][next] and [Express][expre
 
 ```bash
 $ git clone git@github.com:spokestack/node-spokestack.git
-$ cd node-spokestack/examples/with-next
+$ cd node-spokestack
+$ npm install
+$ cd examples/with-next
 $ npm install
 $ npm run dev
 ```
