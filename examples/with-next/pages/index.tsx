@@ -1,6 +1,14 @@
+import {
+  EventType,
+  PipelineProfile,
+  startPipeline,
+  stopPipeline,
+  record,
+  startStream,
+  stopStream
+} from 'spokestack/client'
 import React, { PureComponent } from 'react'
 import { Repo, SynthesisResult } from '../types'
-import { record, startStream, stopStream } from 'spokestack/client'
 
 import { ApolloClient } from 'apollo-boost'
 import { DEFAULT_WIDTH } from '../theme'
@@ -12,14 +20,23 @@ import debounce from 'lodash/debounce'
 import search from '../utils/search'
 import upload from '../utils/upload'
 
-interface State {
+interface CommandDemo {
   error: string
+  status: string
+  result: string | boolean
+}
+
+interface State {
+  activeDemo: string | undefined
+  error: string
+  keyword: CommandDemo
   results: Repo[]
   searching: boolean
   status: string
   streaming: boolean
   term: string
   total: number
+  wakeword: CommandDemo
 }
 
 export default class Index extends PureComponent {
@@ -28,13 +45,16 @@ export default class Index extends PureComponent {
   private playing = false
   private initialized = false
   state: State = {
+    activeDemo: undefined,
     error: '',
+    keyword: { error: '', status: 'Idle', result: '' },
     results: [],
     searching: false,
     status: 'Idle',
     streaming: false,
     term: '',
-    total: 0
+    total: 0,
+    wakeword: { error: '', status: 'Idle', result: false }
   }
   updateTerm = debounce((term: string | undefined) => {
     if (typeof term === 'string') {
@@ -79,7 +99,6 @@ export default class Index extends PureComponent {
   }
 
   pause = () => {
-    console.log('paused')
     this.playing = false
     this.setState({ status: this.state.streaming ? 'Recording...' : 'Idle' })
   }
@@ -154,9 +173,10 @@ export default class Index extends PureComponent {
     const buffer = await record({
       time: 3,
       onProgress: (remaining) => {
-        this.setState({ status: `Recording..${remaining}` })
+        this.setState({ activeDemo: 'search', status: `Recording..${remaining}` })
       }
     })
+    this.setState({ activeDemo: undefined })
     upload(buffer).then(({ text, message }) => {
       if (text) {
         this.setState({ status: 'Idle' })
@@ -169,21 +189,110 @@ export default class Index extends PureComponent {
     })
   }
 
+  toggleKeyword = async () => {
+    const isActive = this.state.activeDemo != undefined
+    if (isActive) {
+      this.stopRecording()
+    } else {
+      this.setState({ activeDemo: 'keyword', keyword: { status: 'Calibrating...' } })
+
+      try {
+        await startPipeline({
+          profile: PipelineProfile.Keyword,
+          keywordClasses: [
+            'zero',
+            'one',
+            'two',
+            'three',
+            'four',
+            'five',
+            'six',
+            'seven',
+            'eight',
+            'nine'
+          ],
+          baseUrls: { keyword: 'https://s.spokestack.io/u/UbMeX/js' },
+          onEvent: (evt) => {
+            const { eventType, transcript } = evt
+            switch (eventType) {
+              case EventType.Recognize:
+                this.setState({ keyword: { error: '', result: transcript } })
+                break
+              case EventType.Error:
+                console.error(evt.error)
+                this.stopRecording()
+                break
+            }
+          }
+        })
+        this.setState({ keyword: { status: 'Listening', result: '' } })
+      } catch (e) {
+        console.error(e)
+        this.stopRecording()
+      }
+    }
+  }
+
+  toggleWakeword = async () => {
+    const isActive = this.state.activeDemo != undefined
+    if (isActive) {
+      this.stopRecording()
+    } else {
+      this.setState({ activeDemo: 'wakeword', wakeword: { status: 'Calibrating...' } })
+
+      try {
+        await startPipeline({
+          profile: PipelineProfile.Wakeword,
+          baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
+          onEvent: (evt) => {
+            const { eventType } = evt
+            switch (eventType) {
+              case EventType.Activate:
+                this.setState({ wakeword: { error: '', result: true } })
+                break
+              case EventType.Timeout:
+                this.setState({ wakeword: { error: 'timeout' } })
+                break
+              case EventType.Error:
+                console.error(evt.error)
+                this.stopRecording()
+                break
+            }
+          }
+        })
+        this.setState({ wakeword: { status: 'Listening', result: '' } })
+      } catch (e) {
+        console.error(e)
+        this.stopRecording()
+      }
+    }
+  }
+
+  stopRecording = async () => {
+    stopPipeline()
+    this.setState({
+      activeDemo: undefined,
+      status: 'Idle',
+      keyword: { status: 'Idle' },
+      wakeword: { status: 'Idle' }
+    })
+  }
+
   toggleRecordStream = async () => {
     const { streaming } = this.state
     if (streaming) {
       stopStream()
-      this.setState({ streaming: false })
+      this.setState({ activeDemo: undefined, streaming: false })
     } else {
       this.initialize()
       try {
         const [ws] = await startStream({ isPlaying: () => this.playing })
         ws.addEventListener('open', () =>
-          this.setState({ status: 'Recording...', streaming: true })
+          this.setState({ activeDemo: 'searchStream', status: 'Recording...', streaming: true })
         )
         ws.addEventListener('close', () => this.setState({ status: 'Idle', streaming: false }))
         ws.addEventListener('error', (event) => {
-          console.log(event)
+          console.error(event)
           this.setState({
             status: 'There was a problem starting the record stream. Please refresh and try again.',
             streaming: false
@@ -200,15 +309,62 @@ export default class Index extends PureComponent {
   }
 
   render() {
-    const { error, results, searching, status, streaming, term, total } = this.state
+    const {
+      activeDemo,
+      error,
+      keyword,
+      results,
+      searching,
+      status,
+      streaming,
+      term,
+      total,
+      wakeword
+    } = this.state
     return (
       <Layout>
+        <h1>Test a wakeword model</h1>
+        <div className="buttons">
+          <button
+            disabled={activeDemo != undefined && activeDemo != 'wakeword'}
+            className="btn btn-primary"
+            onClick={this.toggleWakeword}>
+            {activeDemo ? 'Stop' : 'Record'}
+          </button>
+        </div>
+        <h4>
+          Status: <span id="wakeword-status">{wakeword.status}</span>
+        </h4>
+        {wakeword.error && <p className="error">{wakeword.error}</p>}
+        {wakeword.result && <p className="wrapper">Detected!</p>}
+        <hr />
+        <h1>Test a keyword model</h1>
+        <div className="buttons">
+          <button
+            disabled={activeDemo != undefined && activeDemo != 'keyword'}
+            className="btn btn-primary"
+            onClick={this.toggleKeyword}>
+            {activeDemo ? 'Stop' : 'Record'}
+          </button>
+        </div>
+        <h4>
+          Status: <span id="keyword-status">{keyword.status}</span>
+        </h4>
+        {keyword.error && <p className="error">{keyword.error}</p>}
+        {keyword.result && <p className="wrapper">Detected: {keyword.result}</p>}
+        <hr />
         <h1>Search GitHub for repositories using your voice</h1>
         <div className="buttons">
-          <button className="btn btn-primary" onClick={this.record3Seconds}>
+          <button
+            disabled={activeDemo != undefined && activeDemo != 'search'}
+            className="btn btn-primary"
+            onClick={this.record3Seconds}>
             Record 3 seconds
           </button>
-          <button className="btn btn-primary" onClick={this.toggleRecordStream}>
+          <button
+            disabled={activeDemo != undefined && activeDemo != 'searchStream'}
+            className="btn btn-primary"
+            onClick={this.toggleRecordStream}>
             {streaming ? 'Stop' : 'Start'} streaming
           </button>
         </div>

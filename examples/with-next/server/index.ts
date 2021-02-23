@@ -22,6 +22,16 @@ const useGoogleAsr = process.env.ASR_SERVICE === 'google'
 app.prepare().then(() => {
   const expressApp = express()
   const middleware = spokestackMiddleware()
+
+  expressApp.use(
+    '/spokestack-web-worker.js',
+    express.static(`./node_modules/spokestack/dist/web-worker${dev ? '' : '.min'}.js`)
+  )
+  expressApp.use(
+    '/tensorflow.js',
+    express.static(`./node_modules/spokestack/dist/tensorflow${dev ? '' : '.min'}.js`)
+  )
+
   expressApp.use('/graphql', bodyParser.json(), (req, res) => {
     const accept = req.headers.accept || ''
     // Show the playground only in development

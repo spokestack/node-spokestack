@@ -10,11 +10,14 @@
     "moduleResolution": "node",
     "noEmit": true,
     "noImplicitAny": true,
+    "paths": {
+      "analyser-frequency-average": ["./types/analyser-frequency-average"]
+    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "es5"
   },
-  "exclude": ["client.d.ts", "node_modules", "examples", "test", "dist"]
+  "exclude": ["client.d.ts", "node_modules", "examples", "test", "dist", "src/worker"]
 }

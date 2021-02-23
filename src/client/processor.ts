@@ -1,15 +1,5 @@
 import { startRecord, stopRecord } from './mic'
 
-declare global {
-  interface Window {
-    // Support: Safari
-    webkitAudioContext: AudioContext
-  }
-  interface Navigator {
-    __polyfilledMediaDevices: boolean
-  }
-}
-
 let context: AudioContext | undefined
 let source: MediaStreamAudioSourceNode | undefined
 let processor: ScriptProcessorNode | undefined
