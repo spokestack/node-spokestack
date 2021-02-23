@@ -1,5 +1,5 @@
+import * as Client from '../dist/client'
 import assert from 'assert'
-import * as Client from '../src/client'
 
 describe('client', () => {
   it('has the necessary exports', () => {
@@ -7,5 +7,8 @@ describe('client', () => {
     assert.ok(Client.record, 'Client contains record')
     assert.ok(Client.startStream, 'Client contains startStream')
     assert.ok(Client.stopStream, 'Client contains stopStream')
+    assert.ok(Client.startPipeline, 'Client contains startPipeline')
+    assert.ok(Client.stopPipeline, 'Client contains stopPipeline')
+    assert.ok(Client.Stage, 'Client contains Stage')
   })
 })

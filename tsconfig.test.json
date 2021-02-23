@@ -1,8 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "exclude": ["node_modules", "examples"],
+  "paths": {
+    "analyser-frequency-average": ["./types/analyser-frequency-average"],
+    "@tensorflow/tfjs": ["./custom_tfjs/custom_tfjs"]
+  },
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": false
+    "declaration": false,
+    "types": ["./types/tf", "node", "mocha"]
   }
 }
