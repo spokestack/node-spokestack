@@ -33,12 +33,13 @@ function getInterfaceContent(filename, name) {
   )
 }
 
-;[
+const modules = [
   '_server_expressmiddleware_.md',
   '_server_socketserver_.md',
   '_server_asr_.md',
   '_server_encryptsecret_.md'
-].forEach((filename) => {
+]
+modules.forEach((filename) => {
   data += getModuleContent(filename)
 })
 

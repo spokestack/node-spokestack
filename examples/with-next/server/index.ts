@@ -21,8 +21,25 @@ const useGoogleAsr = process.env.ASR_SERVICE === 'google'
 
 app.prepare().then(() => {
   const expressApp = express()
-
-  expressApp.post('/graphql', bodyParser.json(), spokestackMiddleware())
+  const middleware = spokestackMiddleware()
+  expressApp.use('/graphql', bodyParser.json(), (req, res) => {
+    const accept = req.headers.accept || ''
+    // Show the playground only in development
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      accept.includes('text/html') &&
+      !accept.includes('json')
+    ) {
+      const playground = require('graphql-playground-middleware-express').default
+      return playground({
+        endpoint: '/graphql',
+        settings: {
+          'request.credentials': 'same-origin'
+        }
+      })(req, res)
+    }
+    return middleware(req, res)
+  })
 
   expressApp.post('/asr', fileUpload(), (req, res) => {
     if (!req.body || !req.body.sampleRate) {

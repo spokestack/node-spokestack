@@ -20,7 +20,7 @@ $ npm run dev
 
 Then visit http://localhost:3000 in your browser.
 
-Visit http://localhost:3000/\_\_graphiql to view introspection docs on the Spokestack GraphQL API for synthesizing text to speech.
+Visit http://localhost:3000/graphql to view introspection docs on the Spokestack GraphQL API for synthesizing text to speech.
 
 ### Run example using Google ASR instead of Spokestack ASR
 
