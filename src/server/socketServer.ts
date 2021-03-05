@@ -36,7 +36,7 @@ export function asrSocketServer(
       console.error('No sample rate cookie set')
       return
     }
-    const client = await spokestackService(
+    spokestackService(
       {
         ...asrConfig,
         sampleRate: parseInt(sampleRate, 10)
@@ -51,29 +51,35 @@ export function asrSocketServer(
         }
       }
     )
-    client.on('error', () => {
-      try {
-        ws.close(1014)
-      } catch (e) {
-        console.log('Error closing socket connection', e)
-      }
-    })
-    console.log(`Spokestack streaming client created with sampleRate: ${sampleRate}`)
-    ws.binaryType = 'arraybuffer'
-    ws.on('message', (message: ArrayBuffer) => {
-      if (client.readyState === client.OPEN) {
-        client.send(Buffer.from(message))
-      }
-    })
-    ws.on('close', (code, reason) => {
-      console.log(
-        `client closed with ${wss.clients.size} clients. Code: ${code}. Reason: ${reason}`
-      )
-      if (client) {
-        console.log('Closing Spokestack client')
-        client.close(1000)
-      }
-    })
+      .then((client) => {
+        client.on('error', () => {
+          try {
+            ws.close(1014)
+          } catch (e) {
+            console.log('Error closing socket connection', e)
+          }
+        })
+        console.log(`Spokestack streaming client created with sampleRate: ${sampleRate}`)
+        ws.binaryType = 'arraybuffer'
+        ws.on('message', (message: ArrayBuffer) => {
+          if (client.readyState === client.OPEN) {
+            client.send(Buffer.from(message))
+          }
+        })
+        ws.on('close', (code, reason) => {
+          console.log(
+            `client closed with ${wss.clients.size} clients. Code: ${code}. Reason: ${reason}`
+          )
+          if (client) {
+            console.log('Closing Spokestack client')
+            client.close(1000)
+          }
+        })
+      })
+      .catch((error) => {
+        console.error(error)
+        ws.close(1002)
+      })
   })
 
   wss.on('close', () => {
