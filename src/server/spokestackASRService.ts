@@ -47,7 +47,10 @@ export default function asrService(
     throw new Error('SS_API_CLIENT_ID is not set in the server environment.')
   }
   const clientId = process.env.SS_API_CLIENT_ID
-  const timeout = config.timeout || 3000
+  let timeout = Number(config.timeout)
+  if (isNaN(timeout)) {
+    timeout = 3000
+  }
 
   // Open socket
   const socket = new WebSocket(`wss:api.spokestack.io/v1/asr/websocket`)
@@ -85,11 +88,10 @@ export default function asrService(
   }
 
   socket.on('message', (data: string) => {
-    console.log('Message', data)
+    // console.log('Message', data)
     try {
       const json: SpokestackResponse = JSON.parse(data)
       if (
-        timeout > 0 &&
         json.status === 'ok' &&
         json.hypotheses.length &&
         json.hypotheses[0].transcript &&
@@ -97,12 +99,16 @@ export default function asrService(
       ) {
         prevTranscript = json.hypotheses[0].transcript
         console.log('NEW TRANSCRIPT', prevTranscript)
-        clearTimeout(transcriptTimeout)
-        transcriptTimeout = setTimeout(() => {
-          sendAuth()
-          prevTranscript = ''
-        }, timeout)
         onData.call(null, json)
+
+        if (timeout > 0) {
+          clearTimeout(transcriptTimeout)
+          transcriptTimeout = setTimeout(() => {
+            console.log('Still set the timeout somehow: ', timeout)
+            sendAuth()
+            prevTranscript = ''
+          }, timeout)
+        }
       }
     } catch (e) {
       console.error('Data format from Spokestack ASR is unexpected')
@@ -132,6 +138,7 @@ export default function asrService(
           reject(new Error('[Spokestack ASR] Unexpected message format from Spokestack ASR'))
         }
       })
+
       sendAuth()
     })
   })

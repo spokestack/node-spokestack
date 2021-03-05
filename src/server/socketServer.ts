@@ -1,9 +1,10 @@
+import spokestackService, { SpokestackASRConfig } from './spokestackASRService'
+
 import { Server } from 'http'
 import { SpeechClient } from '@google-cloud/speech'
 import WebSocket from 'ws'
 import { getCookie } from '../cookies'
 import { google } from '@google-cloud/speech/build/protos/protos'
-import spokestackService from './spokestackASRService'
 
 /**
  * Adds a web socket server to the given HTTP server
@@ -21,7 +22,10 @@ import spokestackService from './spokestackASRService'
  * })
  * ```
  */
-export function asrSocketServer(server: Server): void {
+export function asrSocketServer(
+  server: Server,
+  asrConfig: Omit<SpokestackASRConfig, 'sampleRate'> = {}
+): void {
   const wss = new WebSocket.Server({ server })
   console.log('Websocket started')
 
@@ -34,6 +38,7 @@ export function asrSocketServer(server: Server): void {
     }
     const client = await spokestackService(
       {
+        ...asrConfig,
         sampleRate: parseInt(sampleRate, 10)
       },
       ({ status, hypotheses }) => {
