@@ -13,7 +13,7 @@
     "prepare": "npm run build",
     "release": "release-it",
     "start": "rollup --config -w",
-    "test": "npm run lint && npm run test:unit",
+    "test": "concurrently --raw \"npm run lint\" \"npm run typescript\" && npm run test:unit",
     "test:next": "cd examples/with-next && npm test",
     "test:unit": "cross-env TS_NODE_PROJECT=tsconfig.test.json mocha",
     "test:watch": "npm run test:unit -- -w",
