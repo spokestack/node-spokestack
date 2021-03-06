@@ -125,6 +125,7 @@
   },
   "release-it": {
     "hooks": {
+      "before:init": "npm test && npm run build",
       "after:bump": "npm run docs && git add README.md"
     },
     "git": {
