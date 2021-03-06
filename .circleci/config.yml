@@ -27,6 +27,7 @@ jobs:
       - run: npm install --no-save
       - run: cd examples/with-next && npm install --no-save
       - *save_npm_cache
+      - run: npm install set-blocking --no-save
 
       - run:
           name: Run tests
