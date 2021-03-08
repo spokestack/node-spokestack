@@ -92,7 +92,7 @@ export default async function record(config: RecordConfig = { time: 3 }) {
   const { processor, context } = result as ProcessorReturnValue
 
   function addToBuffer(e: AudioProcessingEvent) {
-    buffer = buffer ? concatenateAudioBuffers(buffer, e.inputBuffer, context) : e.inputBuffer
+    buffer = concatenateAudioBuffers(buffer, e.inputBuffer, context)
   }
   processor.addEventListener('audioprocess', addToBuffer)
   if (onStart) {
