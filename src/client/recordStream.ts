@@ -14,7 +14,7 @@ let stop: (() => void) | undefined
  *
  * // ...
  * try {
- *   const ws = await startStream(() => this.isPlaying)
+ *   const [ws] = await startStream(() => this.isPlaying)
  *   ws.addEventListener('open', () => console.log('Recording started'))
  *   ws.addEventListener('close', () => console.log('Recording stopped'))
  *   ws.addEventListener('message', (e) => console.log('Speech processed: ', e.data))
@@ -26,7 +26,9 @@ let stop: (() => void) | undefined
  * @param isPlaying A function returning whether audio is currently playing.
  *   This is necessary to prevent recording played audio.
  */
-export async function startStream(isPlaying: () => boolean) {
+export async function startStream(
+  isPlaying: () => boolean
+): Promise<[WebSocket, ProcessorReturnValue]> {
   const [error, result] = await startProcessor()
   if (error) {
     throw error
@@ -35,7 +37,6 @@ export async function startStream(isPlaying: () => boolean) {
   const address = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.hostname}${
     location.port ? `:${location.port}` : ''
   }`
-  console.log(address)
 
   const ws = new WebSocket(address)
   setCookie('sampleRate', context.sampleRate + '')
@@ -65,7 +66,7 @@ export async function startStream(isPlaying: () => boolean) {
   // Close on error
   ws.addEventListener('error', stop)
 
-  return ws
+  return [ws, result as ProcessorReturnValue]
 }
 
 /**

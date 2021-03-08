@@ -177,7 +177,7 @@ export default class Index extends PureComponent {
     } else {
       this.initialize()
       try {
-        const ws = await startStream(() => this.playing)
+        const [ws] = await startStream(() => this.playing)
         ws.addEventListener('open', () =>
           this.setState({ status: 'Recording...', streaming: true })
         )
