@@ -13,7 +13,7 @@ export function getCookie(name: string, cookies?: string) {
 
 export function setCookie(name: string, value: string) {
   if (typeof document !== 'undefined') {
-    document.cookie = `${name}=${encodeURIComponent(value)};` + document.cookie
+    document.cookie = `${name}=${encodeURIComponent(value)};path=/`
   }
 }
 
