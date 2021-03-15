@@ -107,9 +107,9 @@ app.prepare().then(() => {
 
   const server = createServer(expressApp)
   if (useGoogleAsr) {
-    googleASRSocketServer(server)
+    googleASRSocketServer({ server })
   } else {
-    asrSocketServer(server)
+    asrSocketServer({ server })
   }
   server.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`)

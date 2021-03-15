@@ -1,6 +1,4 @@
 import spokestackService, { SpokestackASRConfig } from './spokestackASRService'
-
-import { Server } from 'http'
 import { SpeechClient } from '@google-cloud/speech'
 import WebSocket from 'ws'
 import { getCookie } from '../cookies'
@@ -16,17 +14,17 @@ import { google } from '@google-cloud/speech/build/protos/protos'
  * const port = parseInt(process.env.PORT || '3000', 10)
  * const server = createServer() // or express()
  * // Attach the websocket server to the HTTP server
- * asrSocketServer(server)
+ * asrSocketServer({ server })
  * server.listen(port, () => {
  *   console.log(`Listening at http://localhost:${port}`)
  * })
  * ```
  */
 export function asrSocketServer(
-  server: Server,
+  serverConfig: WebSocket.ServerOptions,
   asrConfig: Omit<SpokestackASRConfig, 'sampleRate'> = {}
 ): void {
-  const wss = new WebSocket.Server({ server })
+  const wss = new WebSocket.Server(serverConfig)
   console.log('Websocket started')
 
   wss.on('connection', async (ws, request) => {
@@ -101,14 +99,14 @@ export function asrSocketServer(
  * const port = parseInt(process.env.PORT || '3000', 10)
  * const server = createServer() // or express()
  * // Attach the websocket server to the HTTP server
- * googleASRSocketServer(server)
+ * googleASRSocketServer({ server })
  * server.listen(port, () => {
  *   console.log(`Listening at http://localhost:${port}`)
  * })
  * ```
  */
-export function googleASRSocketServer(server: Server): void {
-  const wss = new WebSocket.Server({ server })
+export function googleASRSocketServer(serverConfig: WebSocket.ServerOptions): void {
+  const wss = new WebSocket.Server(serverConfig)
   console.log('Websocket started')
 
   wss.on('connection', (ws, request) => {
