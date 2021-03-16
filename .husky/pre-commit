@@ -1,0 +1,2 @@
+npx --no-install concurrently --raw "npm run lint" "npm run typescript"
+npm run test:next

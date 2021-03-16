@@ -117,12 +117,6 @@
     ".next",
     "*.d.ts"
   ],
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "concurrently --raw \"npm run lint\" \"npm run typescript\" \"npm run test:next\""
-    }
-  },
   "release-it": {
     "hooks": {
       "before:init": "npm run build && npm test",
