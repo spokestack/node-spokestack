@@ -10,7 +10,7 @@
     "docs": "typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
     "format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",
     "lint": "eslint \"**/*.{ts,js}\" && prettier --check \"**/*.md\" \"**/*.json\"",
-    "prepare": "npm run build",
+    "prepare": "husky install && npm run build",
     "release": "release-it",
     "start": "rollup --config -w",
     "test": "concurrently --raw \"npm run lint\" \"npm run typescript\" && npm run test:unit",
