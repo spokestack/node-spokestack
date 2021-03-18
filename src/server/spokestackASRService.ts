@@ -98,13 +98,12 @@ export default function asrService(
         json.hypotheses[0].transcript !== prevTranscript
       ) {
         prevTranscript = json.hypotheses[0].transcript
-        console.log('NEW TRANSCRIPT', prevTranscript)
+        // console.log('NEW TRANSCRIPT', prevTranscript)
         onData.call(null, json)
 
         if (timeout > 0) {
           clearTimeout(transcriptTimeout)
           transcriptTimeout = setTimeout(() => {
-            console.log('Still set the timeout somehow: ', timeout)
             sendAuth()
             prevTranscript = ''
           }, timeout)
@@ -121,7 +120,7 @@ export default function asrService(
     socket.on('error', reject)
     socket.once('open', () => {
       socket.once('message', (data: string) => {
-        console.log('Auth response', data)
+        // console.log('Auth response', data)
         socket.removeEventListener('error', reject)
         try {
           const json: SpokestackResponse = JSON.parse(data)
