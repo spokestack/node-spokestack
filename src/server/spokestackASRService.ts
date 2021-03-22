@@ -51,6 +51,12 @@ export default function asrService(
   if (isNaN(timeout)) {
     timeout = 3000
   }
+  const rate = Number(config.sampleRate)
+  if (isNaN(rate)) {
+    throw new Error(
+      'sampleRate should be a number. It can be found as a property on the AudioBuffer returned from record or on the audio context returned from startStream.'
+    )
+  }
 
   // Open socket
   const socket = new WebSocket(`wss:api.spokestack.io/v1/asr/websocket`)
@@ -76,7 +82,7 @@ export default function asrService(
       format: config.format || ASRFormat.LINEAR16,
       language: config.language || 'en',
       limit: config.limit || 1,
-      rate: config.sampleRate
+      rate
     })
     const signature = encryptSecret(body)
     const message: SpokestackMessage = {
