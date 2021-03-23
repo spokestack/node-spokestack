@@ -1,5 +1,25 @@
-import { DefaultVadConfig, SpeechConfig, VadConfig, VadStatus } from './types'
+import { SpeechConfig, VadConfig, VadStatus } from './types'
 import analyserFrequencyAverage from 'analyser-frequency-average'
+
+const defaultConfig: VadConfig = {
+  bufferLen: 1024,
+  smoothingTimeConstant: 0.2,
+  minCaptureFreq: 85, // in Hz
+  maxCaptureFreq: 255, // in Hz
+  noiseCaptureDuration: 1, // in s
+  minNoiseLevel: 0.3, // from 0 to 1
+  maxNoiseLevel: 0.7, // from 0 to 1
+  avgNoiseMultiplier: 1.2,
+  riseDelay: 0,
+  fallDelay: 250,
+  maxActive: 2000,
+  onUpdate: () => {
+    // noop
+  },
+  onVadChange: () => {
+    // noop
+  }
+}
 
 /**
  *  average frequency-based VAD
@@ -25,7 +45,10 @@ export default class Vad {
   private captureTimeout: number
 
   constructor(audioContext: AudioContext, config: SpeechConfig) {
-    this.config = config.vad || DefaultVadConfig
+    this.config = {
+      ...defaultConfig,
+      ...config.vad
+    }
 
     this.baseLevel = 0.3
     this.voiceScale = 1

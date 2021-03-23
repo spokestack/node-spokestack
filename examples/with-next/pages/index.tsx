@@ -244,9 +244,8 @@ export default class Index extends PureComponent {
         await startPipeline({
           profile: PipelineProfile.Wakeword,
           baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
-          onEvent: (evt) => {
-            const { eventType } = evt
-            switch (eventType) {
+          onEvent: (event) => {
+            switch (event.eventType) {
               case EventType.Activate:
                 this.setState({ wakeword: { error: '', result: true } })
                 break
@@ -254,7 +253,7 @@ export default class Index extends PureComponent {
                 this.setState({ wakeword: { error: 'timeout' } })
                 break
               case EventType.Error:
-                console.error(evt.error)
+                console.error(event.error)
                 this.stopRecording()
                 break
             }
