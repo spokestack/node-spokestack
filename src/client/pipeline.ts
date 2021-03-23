@@ -2,16 +2,16 @@ import { SpeechConfig, Stage } from './types'
 import SpeechPipeline, { PipelineEventHandler } from './SpeechPipeline'
 
 /**
- * Preset profiles for use with {@link startPipeline} that include both
+ * Preset profiles for use with startPipeline that include both
  * default configuration and lists of processing stages. Individual
  * stages may require additional configuration that cannot be provided
  * automatically, so see each stage for more details. The stages used
  * by each profile are as follows:
  *
- * - **Keyword**: {@link VadTrigger} and {@link KeywordRecognizer}:
+ * - **Keyword**: VadTrigger and KeywordRecognizer:
  *   actively listens for any user speech and delivers a transcript if
  *   a keyword is recognized.
- * - **Wakeword**: {@link WakewordTrigger}:
+ * - **Wakeword**: WakewordTrigger:
  *   listens passively until a wakeword is recognized, then activates the
  *   pipeline so that ASR can be performed.
  *
@@ -93,8 +93,12 @@ type Overwrite<T, U> = Omit<T, keyof U> & U
 
 /**
  * All possible pipeline configurations. See
- * {@link PipelineProfile} and the individual
+ * PipelineProfile and the individual
  * configuration interfaces for more details.
+ *
+ * Specifies which pipeline components should be active.
+ * Configuration includes either a profile (a predefined collection of stages),
+ * or a custom list of stages. See Stage for more details.
  */
 export type PipelineConfig =
   | Overwrite<BaseConfig, StagesConfig>
@@ -104,16 +108,59 @@ export type PipelineConfig =
 let pipeline: SpeechPipeline | undefined
 
 /**
- * Create and immediately start a {@link SpeechPipeline} to process user
+ * Create and immediately start a SpeechPipeline to process user
  * speech using the specified configuration.
  *
  * To simplify configuration, preset pipeline profiles are provided and
  * can be passed in the config object's `profile` key. See
- * {@link PipelineProfile} for more details.
+ * PipelineProfile for more details.
  *
- * @param config A {@link PipelineConfig} object that specifies which pipeline
- * components should be active and configuration for both the pipeline in
- * general and the stages themselves. See each stage for more details.
+ * **NOTE: The speech pipeline (specifically tensorflow's webgl backend)
+ * currently only works in Blink browsers
+ * (Chrome, Edge, Opera, Vivaldi, Brave, and most Android browsers)
+ * as it requires the use of the experimental
+ * [OffscreenCanvas API](https://caniuse.com/?search=offscreencanvas).**
+ *
+ * First make sure to serve the web worker and tensorflow.js
+ * from your node server at the expected locations.
+ *
+ * For example, with express:
+ *
+ * ```ts
+ * app.use(
+ *   '/spokestack-web-worker.js',
+ *   express.static(`./node_modules/spokestack/dist/web-worker.min.js`)
+ * )
+ * app.use(
+ *   '/tensorflow.js',
+ *   express.static(`./node_modules/spokestack/dist/tensorflow.min.js`)
+ * )
+ * ```
+ *
+ * ```ts
+ * // Starts a speech pipeline for wakeword processing.
+ * try {
+ *   await startPipeline({
+ *     profile: PipelineProfile.Wakeword,
+ *     baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
+ *     onEvent: (event) => {
+ *       switch (event.eventType) {
+ *         case EventType.Activate:
+ *           this.setState({ wakeword: { error: '', result: true } })
+ *           break
+ *         case EventType.Timeout:
+ *           this.setState({ wakeword: { error: 'timeout' } })
+ *           break
+ *         case EventType.Error:
+ *           console.error(event.error)
+ *           break
+ *       }
+ *     }
+ *   })
+ * } catch (e) {
+ *   console.error(e)
+ * }
+ * ```
  */
 export async function startPipeline(config: PipelineConfig): Promise<SpeechPipeline> {
   if (pipeline) {
@@ -144,6 +191,10 @@ export async function startPipeline(config: PipelineConfig): Promise<SpeechPipel
 /**
  * Stop the speech pipeline and relinquish its resources,
  * including the microphone.
+ *
+ * ```ts
+ * stopPipeline()
+ * ```
  */
 export function stopPipeline() {
   if (pipeline) {

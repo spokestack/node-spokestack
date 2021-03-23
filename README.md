@@ -1,4 +1,4 @@
-![Spokestack Node](./images/node-spokestack.png)
+![node-spokestack](./images/node-spokestack.png)
 
 A set of tools for integration with the [Spokestack API](https://spokestack.io) in Node.js [![CircleCI](https://circleci.com/gh/spokestack/node-spokestack.svg?style=svg)](https://circleci.com/gh/spokestack/node-spokestack)
 
@@ -8,28 +8,53 @@ A set of tools for integration with the [Spokestack API](https://spokestack.io) 
 $ npm install spokestack --save
 ```
 
-## Speech-to-Text and NLU
+## Features
 
-Aside from ASR, the main way to use Spokestack is through Spokestack's [GraphQL](https://graphql.org) API, which is available at `https://api.spokestack.io/v1`. It requires [Spokestack credentials](https://spokestack.io/create) to access.
+Spokestack has all the tools you need to build amazing user experiences for speech. Here are some of the features included in node-spokestack:
 
-node-spokestack includes [Express middleware](#spokestackmiddleware) to help integrate a proxy for the GraphQL API into any node server. A proxy is necessary to avoid exposing your Spokestack credentials.
+- Automatic Speech Recognition (ASR): We provide multiple ways to hook up either [Spokestack ASR](https://www.spokestack.io/docs/concepts/asr) or [Google Cloud Speech](https://github.com/googleapis/nodejs-speech) to your node/express server, including asr functions for one-off ASR requests and websocket server integrations for ASR streaming. Or, use the ASR services directly for more advanced integrations.
+- Speech-to-Text: Through the use of our [GraphQL](https://graphql.org) API (see below), Spokestack offers multiple ways to generate voice audio from text. Send raw text, [speech markdown](https://www.speechmarkdown.org), or [SSML](https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language) and get back a URL for audio to play in the browser.
+- Wake word and Keyword: Wake word and keyword processing are supported through the use of our speech pipeline (see [startPipeline](#startPipeline)). One of the most powerful features we provide is the ability to define and train custom wake word and keyword models directly on [spokestack.io](https://www.spokestack.io/account). When training is finished, we host the model files for you on a CDN. Pass the CDN URLs to `startPipeline()` and the Speech Pipeline will start listening These same models can be used in [spokestack-python](https://github.com/spokestack/spokestack-python), [spokestack-android](https://github.com/spokestack/spokestack-android), [spokestack-ios](https://github.com/spokestack/spokestack-ios), and [react-native-spokestack](https://github.com/spokestack/react-native-spokestack). The pipeline uses a web worker in the browser to keep all of the speech processing off the main thread so your UI never gets blocked. **NOTE: The speech pipeline (specifically tensorflow's webgl backend) currently only works in Blink browsers (Chrome, Edge, Opera, Vivaldi, Brave, and most Android browsers) as it requires the use of the experimental [OffscreenCanvas API](https://caniuse.com/?search=offscreencanvas). Firefox is close to full support for that API, and we'll look into supporting Firefox when that's available.**
+- Natural Language Understanding (NLU): The [GraphQL](https://graphql.org) API (see below) also provides a way to convert the text from ASR to actionable "intents", or functions that apps can understand. For instance, if a user says, "Find a recipe for chocolate cake", an NLU might return a "SEARCH_RECIPE" intent. To use the NLU, you'll need an NLU model. While we have plans to release an NLU editor, the best way right now to create an NLU model is to use Alexa, DialogFlow, or Jovo and [upload the exported model to your Spokestack account](https://www.spokestack.io/docs/concepts/export). We support exports from all of those platforms.
 
-The API is used to synthesize text to speech using various methods including raw text, [speech markdown](https://www.speechmarkdown.org), and [SSML](https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language).
+**This repo includes [an example app](examples/with-next) that demonstrates ASR, speech-to-text, and wake word and keyword processing. It also includes a route for viewing live docs (or "introspection") of the Spokestack API (`/graphql`).**
+
+## The GraphQL API
+
+Speech-to-text and NLU are available through Spokestack's [GraphQL](https://graphql.org) API, which is available at `https://api.spokestack.io/v1`. It requires [Spokestack credentials](https://spokestack.io/create) to access (creating an account is quick and free).
+
+To use the GraphQL API, node-spokestack includes [Express middleware](#spokestackmiddleware) to help integrate a proxy into any node/express server. A proxy is necessary to avoid exposing your Spokestack credentials.
+
+The API is used to synthesize text-to-speech using various methods including raw text, [speech markdown](https://www.speechmarkdown.org), and [SSML](https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language).
 
 It can also be used for [NLU classification](https://www.spokestack.io/docs/concepts/nlu).
 
-This repo includes [an example app](examples/with-next) with sample code using [apollo](https://www.apollographql.com) to work with the GraphQL API. The example app also includes a route for viewing live docs (or "introspection") of the Spokestack api (`/graphql`).
-
 ![Spokestack GraphQL Introspection](./spokestack-graphql.png)
 
-## Automatic Speech Recognition
+## Automatic Speech Recognition (ASR)
 
-The one piece missing from the Spokestack GraphQL API is ASR. This is because a websocket is needed to provide continuous processing. node-spokestack includes functions to use either [Spokestack ASR](https://www.spokestack.io/docs/concepts/asr) or [Google Cloud Speech](https://github.com/googleapis/nodejs-speech), and there are two functions for each platform.
+ASR is accomplished through the use of a websocket (rather than GraphQL). node-spokestack includes functions to use either [Spokestack ASR](https://www.spokestack.io/docs/concepts/asr) or [Google Cloud Speech](https://github.com/googleapis/nodejs-speech), and there are two functions for each platform.
 
-1. A [helper function](#asrSocketServer) for adding a websocket to a node server (express or otherwise).
-1. A [one-time function](#asr) for processing speech into text.
+1. A [helper function](#asrSocketServer) for adding a websocket to a node server (express or otherwise). This is the main way to use ASR.
+1. A [function](#asr) for processing speech into text in one-off requests. This is useful if you have all of the speech up-front.
 
-We recommend using the websocket if you need to process speech to text more than once in your application.
+### Using Google ASR instead of Spokestack ASR
+
+If you'd prefer to use Google ASR, follow these [instructions for setting up Google Cloud Speech](https://github.com/googleapis/nodejs-speech#before-you-begin). Ensure `GOOGLE_APPLICATION_CREDENTIALS` is set in your environment, and then use the `googleASR` and `googleASRSocketServer` functions instead of their Spokestack equivalents.
+
+## Wake Word and Keyword (Speech Pipeline)
+
+The speech pipeline uses a custom build of [Tensorflow JS](https://github.com/tensorflow/tfjs) in a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) to process speech. It notifies the user when something matches the specified wake word or keyword models. The main function for this is the [`startPipeline()`](#startPipeline) function. To use `startPipeline()`, you'll need to serve the web worker and tensorflow from your node/express server. Our [example next.js app](examples/with-next) demonstrates how you might accomplish this in express:
+
+```ts
+app.use(
+  '/spokestack-web-worker.js',
+  express.static(`./node_modules/spokestack/dist/web-worker.min.js`)
+)
+app.use('/tensorflow.js', express.static(`./node_modules/spokestack/dist/tensorflow.min.js`))
+```
+
+With these made available to your front-end, the speech pipeline can be started.
 
 ## Setup
 
@@ -40,19 +65,13 @@ export SS_API_CLIENT_ID=#"Identity" field from Spokestack API token
 export SS_API_CLIENT_SECRET=#"Secret key" field from Spokestack API token
 ```
 
-## Using Google ASR instead of Spokestack ASR
-
-If you'd prefer to use Google ASR, follow these [instructions for setting up Google Cloud Speech](https://github.com/googleapis/nodejs-speech#before-you-begin). Ensure `GOOGLE_APPLICATION_CREDENTIALS` is set in your environment.
-
 ---
 
 ## Convenience functions for Node.js servers
 
 ### spokestackMiddleware
 
-▸ **spokestackMiddleware**(): function
-
-_Defined in [server/expressMiddleware.ts:37](https://github.com/spokestack/node-spokestack/blob/6d92288/src/server/expressMiddleware.ts#L37)_
+▸ **spokestackMiddleware**(): _function_
 
 Express middleware for adding a proxy to the Spokestack GraphQL API.
 A proxy is necessary to avoid exposing your Spokestack token secret on the client.
@@ -83,13 +102,13 @@ const graphQLFetcher = (graphQLParams) =>
     .catch((response) => response.text())
 ```
 
-**Returns:** function
+**Returns:** (`req`: Request, `res`: Response) => _void_
+
+Defined in: [server/expressMiddleware.ts:37](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/server/expressMiddleware.ts#L37)
 
 ### asrSocketServer
 
-▸ **asrSocketServer**(`serverConfig`: ServerOptions, `asrConfig?`: Omit<SpokestackASRConfig, \"sampleRate\"\>): void
-
-_Defined in [server/socketServer.ts:23](https://github.com/spokestack/node-spokestack/blob/6d92288/src/server/socketServer.ts#L23)_
+▸ **asrSocketServer**(`serverConfig`: WebSocket.ServerOptions, `asrConfig?`: _Omit_<SpokestackASRConfig, _sampleRate_\>): _void_
 
 Adds a web socket server to the given HTTP server
 to stream ASR using Spokestack ASR.
@@ -108,49 +127,18 @@ server.listen(port, () => {
 
 #### Parameters:
 
-| Name           | Type                                       | Default value |
-| -------------- | ------------------------------------------ | ------------- |
-| `serverConfig` | ServerOptions                              | -             |
-| `asrConfig`    | Omit<SpokestackASRConfig, \"sampleRate\"\> | {}            |
+| Name           | Type                                       |
+| :------------- | :----------------------------------------- |
+| `serverConfig` | WebSocket.ServerOptions                    |
+| `asrConfig`    | _Omit_<SpokestackASRConfig, _sampleRate_\> |
 
-**Returns:** void
+**Returns:** _void_
 
----
-
-### googleASRSocketServer
-
-▸ **googleASRSocketServer**(`serverConfig`: ServerOptions): void
-
-_Defined in [server/socketServer.ts:108](https://github.com/spokestack/node-spokestack/blob/6d92288/src/server/socketServer.ts#L108)_
-
-Adds a web socket server to the given HTTP server
-to stream ASR using Google Speech.
-This uses the "ws" node package for the socket server.
-
-```js
-import { createServer } from 'http'
-const port = parseInt(process.env.PORT || '3000', 10)
-const server = createServer() // or express()
-// Attach the websocket server to the HTTP server
-googleASRSocketServer({ server })
-server.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}`)
-})
-```
-
-#### Parameters:
-
-| Name           | Type          |
-| -------------- | ------------- |
-| `serverConfig` | ServerOptions |
-
-**Returns:** void
+Defined in: [server/socketServer.ts:23](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/server/socketServer.ts#L23)
 
 ### asr
 
-▸ **asr**(`content`: string \| Uint8Array, `sampleRate`: number): Promise<string \| null\>
-
-_Defined in [server/asr.ts:43](https://github.com/spokestack/node-spokestack/blob/6d92288/src/server/asr.ts#L43)_
+▸ **asr**(`content`: _string_ \| Uint8Array, `sampleRate`: _number_): _Promise_<string \| _null_\>
 
 A one-off method for processing speech to text
 using Spokestack ASR.
@@ -190,20 +178,47 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 
 #### Parameters:
 
-| Name         | Type                 |
-| ------------ | -------------------- |
-| `content`    | string \| Uint8Array |
-| `sampleRate` | number               |
+| Name         | Type                   |
+| :----------- | :--------------------- |
+| `content`    | _string_ \| Uint8Array |
+| `sampleRate` | _number_               |
 
-**Returns:** Promise<string \| null\>
+**Returns:** _Promise_<string \| _null_\>
 
----
+Defined in: [server/asr.ts:43](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/server/asr.ts#L43)
+
+### googleASRSocketServer
+
+▸ **googleASRSocketServer**(`serverConfig`: WebSocket.ServerOptions): _void_
+
+Adds a web socket server to the given HTTP server
+to stream ASR using Google Speech.
+This uses the "ws" node package for the socket server.
+
+```js
+import { createServer } from 'http'
+const port = parseInt(process.env.PORT || '3000', 10)
+const server = createServer() // or express()
+// Attach the websocket server to the HTTP server
+googleASRSocketServer({ server })
+server.listen(port, () => {
+  console.log(`Listening at http://localhost:${port}`)
+})
+```
+
+#### Parameters:
+
+| Name           | Type                    |
+| :------------- | :---------------------- |
+| `serverConfig` | WebSocket.ServerOptions |
+
+**Returns:** _void_
+
+Defined in: [server/socketServer.ts:108](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/server/socketServer.ts#L108)
 
 ### googleASR
 
-▸ **googleASR**(`content`: string \| Uint8Array, `sampleRate`: number): Promise<string \| null\>
-
-_Defined in [server/asr.ts:97](https://github.com/spokestack/node-spokestack/blob/6d92288/src/server/asr.ts#L97)_
+▸ **googleASR**(`content`: _string_ \| Uint8Array, `sampleRate`: _number_): _Promise_<string \| _null_\>
 
 A one-off method for processing speech to text
 using Google Speech.
@@ -243,18 +258,18 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 
 #### Parameters:
 
-| Name         | Type                 |
-| ------------ | -------------------- |
-| `content`    | string \| Uint8Array |
-| `sampleRate` | number               |
+| Name         | Type                   |
+| :----------- | :--------------------- |
+| `content`    | _string_ \| Uint8Array |
+| `sampleRate` | _number_               |
 
-**Returns:** Promise<string \| null\>
+**Returns:** _Promise_<string \| _null_\>
+
+Defined in: [server/asr.ts:97](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/server/asr.ts#L97)
 
 ### encryptSecret
 
-▸ **encryptSecret**(`body`: string): string
-
-_Defined in [server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/6d92288/src/server/encryptSecret.ts#L13)_
+▸ **encryptSecret**(`body`: _string_): _string_
 
 This is a convenience method for properly authorizing
 requests to the Spokestack graphql API.
@@ -267,11 +282,13 @@ for example usage.
 
 #### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `body` | string |
+| Name   | Type     |
+| :----- | :------- |
+| `body` | _string_ |
 
-**Returns:** string
+**Returns:** _string_
+
+Defined in: [server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/server/encryptSecret.ts#L13)
 
 ---
 
@@ -281,9 +298,7 @@ These functions are available exports from `spokestack/client`.
 
 ### record
 
-▸ **record**(`config?`: RecordConfig): Promise<AudioBuffer\>
-
-_Defined in [client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/record.ts#L84)_
+▸ **record**(`config?`: _[RecordConfig](#RecordConfig)_): _Promise_<AudioBuffer\>
 
 A method to record audio for a given number of seconds
 
@@ -351,43 +366,53 @@ fetch('/asr', {
 
 #### Parameters:
 
-| Name     | Type         | Default value |
-| -------- | ------------ | ------------- |
-| `config` | RecordConfig | { time: 3 }   |
+| Name     | Type                            |
+| :------- | :------------------------------ |
+| `config` | _[RecordConfig](#RecordConfig)_ |
 
-**Returns:** Promise<AudioBuffer\>
+**Returns:** _Promise_<AudioBuffer\>
 
-#### RecordConfig
+Defined in: [client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/record.ts#L84)
+
+#### [RecordConfig](#RecordConfig)
 
 ##### onProgress
 
-• `Optional` **onProgress**: undefined \| (remaining: number) => void
-
-_Defined in [client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/record.ts#L16)_
+• `Optional` **onProgress**: (`remaining`: _number_) => _void_
 
 A callback function to be called each second of recording.
 
+#### Parameters:
+
+| Name        | Type     |
+| :---------- | :------- |
+| `remaining` | _number_ |
+
+**Returns:** _void_
+
+Defined in: [client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/record.ts#L16)
+
 ##### onStart
 
-• `Optional` **onStart**: undefined \| () => void
-
-_Defined in [client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/record.ts#L14)_
+• `Optional` **onStart**: () => _void_
 
 A callback function to be called when recording starts
 
+**Returns:** _void_
+
+Defined in: [client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/record.ts#L14)
+
 ##### time
 
-• `Optional` **time**: undefined \| number
-
-_Defined in [client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/record.ts#L12)_
+• `Optional` **time**: _number_
 
 The total time to record. Default: 3
 
+Defined in: [client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/record.ts#L12)
+
 ### startStream
 
-▸ **startStream**(`__namedParameters`: { address: undefined \| string ; isPlaying: () => boolean }): Promise<WebSocket, [ProcessorReturnValue]\>
-
-_Defined in [client/recordStream.ts:44](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/recordStream.ts#L44)_
+▸ **startStream**(`__namedParameters`: StartStreamOptions): _Promise_<WebSocket, [*ProcessorReturnValue*]\>
 
 Returns a function to start recording using a native WebSocket.
 This assumes the socket is hosted on the current server.
@@ -411,19 +436,17 @@ try {
 
 #### Parameters:
 
-| Name                | Type                                                        |
-| ------------------- | ----------------------------------------------------------- |
-| `__namedParameters` | { address: undefined \| string ; isPlaying: () => boolean } |
+| Name                | Type               |
+| :------------------ | :----------------- |
+| `__namedParameters` | StartStreamOptions |
 
-**Returns:** Promise<WebSocket, [ProcessorReturnValue]\>
+**Returns:** _Promise_<WebSocket, [*ProcessorReturnValue*]\>
 
----
+Defined in: [client/recordStream.ts:44](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/recordStream.ts#L44)
 
 ### stopStream
 
-▸ **stopStream**(): void
-
-_Defined in [client/recordStream.ts:97](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/recordStream.ts#L97)_
+▸ **stopStream**(): _void_
 
 Stop the current recording stream if one exists.
 
@@ -432,13 +455,13 @@ import { stopStream } from 'spokestack/client'
 stopStream()
 ```
 
-**Returns:** void
+**Returns:** _void_
+
+Defined in: [client/recordStream.ts:97](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/recordStream.ts#L97)
 
 ### convertFloat32ToInt16
 
-▸ **convertFloat32ToInt16**(`fp32Samples`: Float32Array): Int16Array
-
-_Defined in [client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/convertFloat32ToInt16.ts#L16)_
+▸ **convertFloat32ToInt16**(`fp32Samples`: Float32Array): _Int16Array_
 
 A utility method to convert Float32Array audio
 to an Int16Array to be passed directly to Speech APIs
@@ -454,22 +477,121 @@ const file = new File([convertFloat32ToInt16(buffer.getChannelData(0))], 'record
 #### Parameters:
 
 | Name          | Type         |
-| ------------- | ------------ |
+| :------------ | :----------- |
 | `fp32Samples` | Float32Array |
 
-**Returns:** Int16Array
+**Returns:** _Int16Array_
+
+Defined in: [client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/convertFloat32ToInt16.ts#L16)
+
+### startPipeline
+
+▸ **startPipeline**(`config`: _PipelineConfig_): _Promise_<SpeechPipeline\>
+
+Create and immediately start a SpeechPipeline to process user
+speech using the specified configuration.
+
+To simplify configuration, preset pipeline profiles are provided and
+can be passed in the config object's `profile` key. See
+[PipelineProfile](#PipelineProfile) for more details.
+
+**NOTE: The speech pipeline (specifically tensorflow's webgl backend)
+currently only works in Blink browsers
+(Chrome, Edge, Opera, Vivaldi, Brave, and most Android browsers)
+as it requires the use of the experimental
+OffscreenCanvas API.**
+
+First make sure to serve the web worker and tensorflow.js
+from your node server at the expected locations.
+
+For example, with express:
+
+```ts
+app.use(
+  '/spokestack-web-worker.js',
+  express.static(`./node_modules/spokestack/dist/web-worker.min.js`)
+)
+app.use('/tensorflow.js', express.static(`./node_modules/spokestack/dist/tensorflow.min.js`))
+```
+
+```ts
+// Starts a speech pipeline for wakeword processing.
+try {
+  await startPipeline({
+    profile: PipelineProfile.Wakeword,
+    baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
+    onEvent: (event) => {
+      switch (event.eventType) {
+        case EventType.Activate:
+          this.setState({ wakeword: { error: '', result: true } })
+          break
+        case EventType.Timeout:
+          this.setState({ wakeword: { error: 'timeout' } })
+          break
+        case EventType.Error:
+          console.error(event.error)
+          break
+      }
+    }
+  })
+} catch (e) {
+  console.error(e)
+}
+```
+
+#### Parameters:
+
+| Name     | Type             |
+| :------- | :--------------- |
+| `config` | _PipelineConfig_ |
+
+**Returns:** _Promise_<SpeechPipeline\>
+
+Defined in: [client/pipeline.ts:165](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/pipeline.ts#L165)
+
+### stopPipeline
+
+▸ **stopPipeline**(): _void_
+
+Stop the speech pipeline and relinquish its resources,
+including the microphone.
+
+```ts
+stopPipeline()
+```
+
+**Returns:** _void_
+
+Defined in: [client/pipeline.ts:199](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/pipeline.ts#L199)
+
+### countdown
+
+▸ **countdown**(`time`: _number_, `progress`: (`remaining`: _number_) => _void_, `complete`: () => _void_): _void_
+
+Countdown a number of seconds.
+This is used by record() to record a certain number of seconds.
+
+#### Parameters:
+
+| Name       | Type                              | Description                                      |
+| :--------- | :-------------------------------- | :----------------------------------------------- |
+| `time`     | _number_                          | Number of seconds                                |
+| `progress` | (`remaining`: _number_) => _void_ | Callback for each second (includes first second) |
+| `complete` | () => _void_                      | Callback for completion                          |
+
+**Returns:** _void_
+
+Defined in: [client/countdown.ts:8](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/countdown.ts#L8)
 
 ---
 
-### Utility functions for the client
+## Low-level processor functions
 
-These are low-level functions for working with your own processors, available from `spokestack/client`.
+These are low-level functions if you need to work with your own audio processors, available from `spokestack/client`.
 
 ### startProcessor
 
-▸ **startProcessor**(): Promise<Error] \| [null, [ProcessorReturnValue]\>
-
-_Defined in [client/processor.ts:32](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/processor.ts#L32)_
+▸ **startProcessor**(): _Promise_<Error] \| [_null_, [*ProcessorReturnValue*]\>
 
 Underlying utility method for recording audio,
 used by the `record` and `recordStream` methods.
@@ -480,20 +602,9 @@ See https://caniuse.com/#feat=mdn-api_audioworkletnode
 
 We'll switch to AudioWorklet when it does.
 
-**Returns:** Promise<Error] \| [null, [ProcessorReturnValue]\>
+**Returns:** _Promise_<Error] \| [_null_, [*ProcessorReturnValue*]\>
 
----
-
-### stopProcessor
-
-▸ **stopProcessor**(): void
-
-_Defined in [client/processor.ts:60](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/processor.ts#L60)_
-
-Underlying utility method to stop the current processor
-if it exists and disconnect the microphone.
-
-**Returns:** void
+Defined in: [client/processor.ts:22](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/processor.ts#L22)
 
 #### ProcessorReturnValue
 
@@ -501,46 +612,39 @@ if it exists and disconnect the microphone.
 
 • **context**: AudioContext
 
-_Defined in [client/processor.ts:18](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/processor.ts#L18)_
+Defined in: [client/processor.ts:8](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/processor.ts#L8)
 
 ##### processor
 
 • **processor**: ScriptProcessorNode
 
-_Defined in [client/processor.ts:19](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/processor.ts#L19)_
+Defined in: [client/processor.ts:9](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/processor.ts#L9)
+
+### stopProcessor
+
+▸ **stopProcessor**(): _void_
+
+Underlying utility method to stop the current processor
+if it exists and disconnect the microphone.
+
+**Returns:** _void_
+
+Defined in: [client/processor.ts:50](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/processor.ts#L50)
 
 ### concatenateAudioBuffers
 
-▸ **concatenateAudioBuffers**(`buffer1`: AudioBuffer \| null, `buffer2`: AudioBuffer \| null, `context`: AudioContext): null \| AudioBuffer
-
-_Defined in [client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/concatenateAudioBuffers.ts#L4)_
+▸ **concatenateAudioBuffers**(`buffer1`: AudioBuffer \| _null_, `buffer2`: AudioBuffer \| _null_, `context`: AudioContext): _null_ \| AudioBuffer
 
 A utility method to concatenate two AudioBuffers
 
 #### Parameters:
 
-| Name      | Type                |
-| --------- | ------------------- |
-| `buffer1` | AudioBuffer \| null |
-| `buffer2` | AudioBuffer \| null |
-| `context` | AudioContext        |
+| Name      | Type                  |
+| :-------- | :-------------------- |
+| `buffer1` | AudioBuffer \| _null_ |
+| `buffer2` | AudioBuffer \| _null_ |
+| `context` | AudioContext          |
 
-**Returns:** null \| AudioBuffer
+**Returns:** _null_ \| AudioBuffer
 
-### countdown
-
-▸ **countdown**(`time`: number, `progress`: (remaining: number) => void, `complete`: () => void): void
-
-_Defined in [client/countdown.ts:7](https://github.com/spokestack/node-spokestack/blob/6d92288/src/client/countdown.ts#L7)_
-
-Countdown a number of seconds
-
-#### Parameters:
-
-| Name       | Type                        | Description                                      |
-| ---------- | --------------------------- | ------------------------------------------------ |
-| `time`     | number                      | Number of seconds                                |
-| `progress` | (remaining: number) => void | Callback for each second (includes first second) |
-| `complete` | () => void                  | Callback for completion                          |
-
-**Returns:** void
+Defined in: [client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/4245c0e/src/client/concatenateAudioBuffers.ts#L4)

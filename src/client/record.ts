@@ -7,7 +7,7 @@ import { ProcessorReturnValue, startProcessor, stopProcessor } from './processor
 import concatenateAudioBuffers from './concatenateAudioBuffers'
 import countdown from './countdown'
 
-interface RecordConfig {
+export interface RecordConfig {
   /** The total time to record. Default: 3 */
   time?: number
   /** A callback function to be called when recording starts */

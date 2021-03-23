@@ -1,5 +1,6 @@
 /**
- * Countdown a number of seconds
+ * Countdown a number of seconds.
+ * This is used by record() to record a certain number of seconds.
  * @param {number} time Number of seconds
  * @param {Function} progress Callback for each second (includes first second)
  * @param {Function} complete Callback for completion

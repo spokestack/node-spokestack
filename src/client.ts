@@ -1,5 +1,5 @@
 // To be imported with 'spokestack/client'
-export { default as record } from './client/record'
+export { default as record, RecordConfig } from './client/record'
 export * from './client/recordStream'
 export * from './client/pipeline'
 export * from './client/types'

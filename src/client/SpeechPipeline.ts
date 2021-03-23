@@ -41,7 +41,7 @@ export default class SpeechPipeline {
   /**
    * Create a new speech pipeline.
    *
-   * @param config A {@link SpeechPipelineConfig} object describing basic
+   * @param config A SpeechPipelineConfig object describing basic
    * pipeline configuration as well as options specific to certain stages
    * (URLs to models, classes for keyword models, etc.).
    */
