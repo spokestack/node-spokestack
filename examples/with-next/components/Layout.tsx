@@ -1,8 +1,8 @@
 import * as theme from '../theme'
 
 import Head from 'next/head'
-import React from 'react'
 import Header from '../components/Header'
+import React from 'react'
 
 interface Props {
   title?: string
@@ -41,7 +41,6 @@ export default function Layout({ title = 'Spokestack Web Demo', children }: Prop
         p {
           margin: 0 0 0.8em;
         }
-        h1,
         h2,
         h3,
         h4 {
@@ -49,6 +48,7 @@ export default function Layout({ title = 'Spokestack Web Demo', children }: Prop
         }
         h1 {
           font-size: ${42 / 18}rem;
+          margin: 0;
         }
         h2 {
           font-size: ${33 / 18}rem;

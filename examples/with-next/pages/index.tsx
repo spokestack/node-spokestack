@@ -268,9 +268,16 @@ export default class Index extends PureComponent {
     this.setState({ activeDemo: null })
     upload(buffer)
       .then(({ text, message }) => {
-        if (text) {
-          this.setState({ status: 'Idle' })
-          this.updateTerm(text)
+        if (typeof text === 'string') {
+          if (text) {
+            this.setState({ status: 'Idle' })
+            this.updateTerm(text)
+          } else {
+            this.setState({
+              status:
+                'The audio was uploaded successfully, but the transcript was empty. Please check your microphone.'
+            })
+          }
         } else {
           this.setState({
             status: message || 'There was a problem uploading the audio data. Please try again'
@@ -425,7 +432,7 @@ export default class Index extends PureComponent {
             grid-template-columns: 1fr;
             grid-gap: 20px;
             max-width: 300px;
-            margin-bottom: 1em;
+            margin: 1em 0;
           }
           .wrapper {
             width: 100%;
