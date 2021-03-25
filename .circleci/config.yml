@@ -27,7 +27,6 @@ jobs:
       - run: npm install --no-save
       - run: cd examples/with-next && npm install --no-save
       - *save_npm_cache
-      - run: npm install set-blocking --no-save
 
       - run:
           name: Run tests
@@ -41,15 +40,6 @@ jobs:
           name: Run build examples/with-next
           command: cd examples/with-next && npm run build
 
-      - persist_to_workspace:
-          root: ~/spokestack
-          paths:
-            - node_modules
-            - dist
-            - examples/with-next/node_modules
-            - examples/with-next/dist
-            - examples/with-next/.next
-
   deploy_integration:
     docker:
       - image: circleci/python:3.7
@@ -57,10 +47,6 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-
-      # attach build already done
-      - attach_workspace:
-          at: ~/spokestack
 
       # update the service
       - run:
@@ -80,10 +66,6 @@ jobs:
       - checkout
       - setup_remote_docker
 
-      # attach build already done
-      - attach_workspace:
-          at: ~/spokestack
-
       # update the service
       - run:
           name: Push the node server and update the ecs service
@@ -97,19 +79,20 @@ jobs:
 workflows:
   version: 2
 
-  test_and_deploy:
+  test:
     jobs:
       - build:
           filters:
-            tags:
-              only:
-                - /\d+\.\d+\.\d+/
+            branches:
+              ignore:
+                - develop
+                - production
+  deploy:
+    jobs:
       - deploy_integration:
           filters:
             branches:
               only: develop
-          requires:
-            - build
       - deploy_production:
           filters:
             branches:
@@ -117,5 +100,3 @@ workflows:
             tags:
               only:
                 - /\d+\.\d+\.\d+/
-          requires:
-            - build
