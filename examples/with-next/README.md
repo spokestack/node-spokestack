@@ -7,7 +7,7 @@ searching a database with voice using ASR and reading off the first result with 
 
 ## Usage
 
-See `server/index.ts` for example code using [Next.js][next] and [Express][express].
+This example is deployed publicly at https://demo.spokestack.io.
 
 ```bash
 $ git clone git@github.com:spokestack/node-spokestack.git
@@ -21,6 +21,8 @@ $ npm run dev
 Then visit http://localhost:3000 in your browser.
 
 Visit http://localhost:3000/graphql to view introspection docs on the Spokestack GraphQL API for synthesizing text to speech.
+
+See `server/index.ts` for example code using [Next.js][next] and [Express][express].
 
 ### Run example using Google ASR instead of Spokestack ASR
 
