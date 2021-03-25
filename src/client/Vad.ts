@@ -1,4 +1,5 @@
 import { SpeechConfig, VadConfig, VadStatus } from './types'
+
 import analyserFrequencyAverage from 'analyser-frequency-average'
 
 const defaultConfig: VadConfig = {
@@ -187,14 +188,14 @@ export default class Vad {
     )
 
     const isSpeech = average >= this.baseLevel
-    if (isSpeech == this.curVadState) {
+    if (isSpeech === this.curVadState) {
       this.activityCounter++
     } else {
       this.curVadState = isSpeech
       this.activityCounter = 1
     }
 
-    if (this.curVadState != this.vadActive) {
+    if (this.curVadState !== this.vadActive) {
       if (this.curVadState && this.activityCounter >= this.riseFrames) {
         this.vadActive = true
       }

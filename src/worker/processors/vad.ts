@@ -1,5 +1,5 @@
-import { SpeechContext, SpeechProcessor } from '../types'
 import { EventType, SpeechConfig } from '../../client/types'
+import { SpeechContext, SpeechProcessor } from '../types'
 
 export default class VadTrigger implements SpeechProcessor {
   static async create(_config: SpeechConfig) {
@@ -8,7 +8,7 @@ export default class VadTrigger implements SpeechProcessor {
 
   process(context: SpeechContext) {
     // dispatch pipeline events on activation edge
-    if (context.isSpeech != context.isActive) {
+    if (context.isSpeech !== context.isActive) {
       if (context.isSpeech) {
         context.dispatch({ eventType: EventType.Activate })
       } else {

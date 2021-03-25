@@ -1,6 +1,7 @@
-import { startRecord, stopRecord } from './mic'
-import Vad from './Vad'
 import { SpeechConfig, SpeechEvent, Stage } from './types'
+import { startRecord, stopRecord } from './mic'
+
+import Vad from './Vad'
 
 /** A callback function to be called when an event occurs */
 export type PipelineEventHandler = (evt: SpeechEvent) => void
@@ -59,7 +60,7 @@ export default class SpeechPipeline {
       opts = { sampleRate: speechConfig.sampleRate }
     }
     const context = (this.context = new (window.AudioContext || window.webkitAudioContext)(opts))
-    if (context.sampleRate != speechConfig.sampleRate) {
+    if (context.sampleRate !== speechConfig.sampleRate) {
       console.error('Could not set sampleRate on the AudioContext')
       throw new Error('unsupported_browser')
     }
@@ -104,7 +105,7 @@ export default class SpeechPipeline {
       // with a different sample rate, or expose `sampleRate` in the
       // constraints, capabilities, or settings of the stream's tracks
       // so you can make a new context before the error happens.
-      if (err instanceof DOMException && err.name == 'NotSupportedError') {
+      if (err instanceof DOMException && err.name === 'NotSupportedError') {
         throw new Error('unsupported_browser')
       } else {
         throw err

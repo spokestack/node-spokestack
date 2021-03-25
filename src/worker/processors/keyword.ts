@@ -1,6 +1,7 @@
-import RingBuffer from '../RingBuffer'
-import { EventType, SpeechConfig, SpeechEvent } from '../../client/types'
 import { CommandModels, SpeechContext, SpeechProcessor } from '../types'
+import { EventType, SpeechConfig, SpeechEvent } from '../../client/types'
+
+import RingBuffer from '../RingBuffer'
 import type { Tensor } from '@tensorflow/tfjs'
 
 const defaultConfig = {
@@ -87,7 +88,7 @@ export default class KeywordRecognizer implements SpeechProcessor {
     if (!config.baseKeywordUrl) {
       throw new Error('keyword URL required')
     }
-    if (!config.keywordClasses || config.keywordClasses.length == 0) {
+    if (!config.keywordClasses || config.keywordClasses.length === 0) {
       throw new Error('keyword classes required')
     }
     config.sampleRate = Number(config.sampleRate)

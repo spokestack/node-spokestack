@@ -30,7 +30,6 @@ interface StartStreamOptions {
  * // ...
  * try {
  *   const [ws] = await startStream({
- *    address: 'wss://localhost:3000',
  *    isPlaying: () => this.isPlaying
  *   })
  *   ws.addEventListener('open', () => console.log('Recording started'))

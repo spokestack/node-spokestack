@@ -19,12 +19,11 @@ export default function upload(audioBuffer: AudioBuffer) {
     headers: {
       Accept: 'application/json'
     }
+  }).then((res) => {
+    if (!res.ok) {
+      console.log(`Response status: ${res.status}`)
+      throw new Error(res.statusText)
+    }
+    return res.json()
   })
-    .then((res) => {
-      if (!res.ok) {
-        console.log(`Response status: ${res.status}`)
-      }
-      return res.json()
-    })
-    .catch(console.error.bind(console))
 }

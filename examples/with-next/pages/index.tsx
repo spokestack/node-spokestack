@@ -1,10 +1,10 @@
 import {
   EventType,
   PipelineProfile,
-  startPipeline,
-  stopPipeline,
   record,
+  startPipeline,
   startStream,
+  stopPipeline,
   stopStream
 } from 'spokestack/client'
 import React, { PureComponent } from 'react'
@@ -170,27 +170,35 @@ export default class Index extends PureComponent {
 
   record3Seconds = async () => {
     this.initialize()
+    this.setState({ activeDemo: 'search' })
     const buffer = await record({
       time: 3,
       onProgress: (remaining) => {
-        this.setState({ activeDemo: 'search', status: `Recording..${remaining}` })
+        this.setState({ status: `Recording..${remaining}` })
       }
     })
-    this.setState({ activeDemo: undefined })
-    upload(buffer).then(({ text, message }) => {
-      if (text) {
-        this.setState({ status: 'Idle' })
-        this.updateTerm(text)
-      } else {
+    this.setState({ activeDemo: null })
+    upload(buffer)
+      .then(({ text, message }) => {
+        if (text) {
+          this.setState({ status: 'Idle' })
+          this.updateTerm(text)
+        } else {
+          this.setState({
+            status: message || 'There was a problem uploading the audio data. Please try again'
+          })
+        }
+      })
+      .catch((error) => {
+        console.error(error)
         this.setState({
-          status: message || 'There was a problem uploading the audio data. Please try again'
+          status: 'There was a problem uploading the audio data. Please try again'
         })
-      }
-    })
+      })
   }
 
   toggleKeyword = async () => {
-    const isActive = this.state.activeDemo != undefined
+    const isActive = !!this.state.activeDemo
     if (isActive) {
       this.stopRecording()
     } else {
@@ -234,7 +242,7 @@ export default class Index extends PureComponent {
   }
 
   toggleWakeword = async () => {
-    const isActive = this.state.activeDemo != undefined
+    const isActive = !!this.state.activeDemo
     if (isActive) {
       this.stopRecording()
     } else {
@@ -267,10 +275,10 @@ export default class Index extends PureComponent {
     }
   }
 
-  stopRecording = async () => {
+  stopRecording = () => {
     stopPipeline()
     this.setState({
-      activeDemo: undefined,
+      activeDemo: null,
       status: 'Idle',
       keyword: { status: 'Idle' },
       wakeword: { status: 'Idle' }
@@ -281,7 +289,7 @@ export default class Index extends PureComponent {
     const { streaming } = this.state
     if (streaming) {
       stopStream()
-      this.setState({ activeDemo: undefined, streaming: false })
+      this.setState({ activeDemo: null, streaming: false })
     } else {
       this.initialize()
       try {
@@ -289,10 +297,20 @@ export default class Index extends PureComponent {
         ws.addEventListener('open', () =>
           this.setState({ activeDemo: 'searchStream', status: 'Recording...', streaming: true })
         )
-        ws.addEventListener('close', () => this.setState({ status: 'Idle', streaming: false }))
+        ws.addEventListener('close', (event) => {
+          this.setState({
+            activeDemo: null,
+            status:
+              event.code === 1002
+                ? 'There was a problem starting the record stream. Please refresh and try again.'
+                : 'Idle',
+            streaming: false
+          })
+        })
         ws.addEventListener('error', (event) => {
           console.error(event)
           this.setState({
+            activeDemo: null,
             status: 'There was a problem starting the record stream. Please refresh and try again.',
             streaming: false
           })
@@ -301,6 +319,7 @@ export default class Index extends PureComponent {
       } catch (e) {
         console.error(e)
         this.setState({
+          activeDemo: null,
           status: 'There was a problem starting the record stream. Please refresh and try again.'
         })
       }
@@ -320,12 +339,13 @@ export default class Index extends PureComponent {
       total,
       wakeword
     } = this.state
+    const isActive = !!activeDemo
     return (
       <Layout>
         <h1>Test a wakeword model</h1>
         <div className="buttons">
           <button
-            disabled={activeDemo != undefined && activeDemo != 'wakeword'}
+            disabled={isActive && activeDemo !== 'wakeword'}
             className="btn btn-primary"
             onClick={this.toggleWakeword}>
             {activeDemo ? 'Stop' : 'Record'}
@@ -340,7 +360,7 @@ export default class Index extends PureComponent {
         <h1>Test a keyword model</h1>
         <div className="buttons">
           <button
-            disabled={activeDemo != undefined && activeDemo != 'keyword'}
+            disabled={isActive && activeDemo !== 'keyword'}
             className="btn btn-primary"
             onClick={this.toggleKeyword}>
             {activeDemo ? 'Stop' : 'Record'}
@@ -355,13 +375,13 @@ export default class Index extends PureComponent {
         <h1>Search GitHub for repositories using your voice</h1>
         <div className="buttons">
           <button
-            disabled={activeDemo != undefined && activeDemo != 'search'}
+            disabled={isActive && activeDemo !== 'search'}
             className="btn btn-primary"
             onClick={this.record3Seconds}>
             Record 3 seconds
           </button>
           <button
-            disabled={activeDemo != undefined && activeDemo != 'searchStream'}
+            disabled={isActive && activeDemo !== 'searchStream'}
             className="btn btn-primary"
             onClick={this.toggleRecordStream}>
             {streaming ? 'Stop' : 'Start'} streaming

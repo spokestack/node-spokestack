@@ -86,6 +86,13 @@ app.prepare().then(() => {
       })
       .catch((error: Error) => {
         console.error(error)
+        if (error.message.includes('Authentication')) {
+          res.status(400)
+          res.json({
+            message: 'Spokestack Authentication Failed. Please check credentials.'
+          })
+          return
+        }
         res.status(500)
         res.json({
           message: 'Unknown error during speech recognition. Check server logs.'

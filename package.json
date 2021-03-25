@@ -114,6 +114,13 @@
       "ga": "readonly"
     },
     "rules": {
+      "eqeqeq": [
+        "error",
+        "always",
+        {
+          "null": "ignore"
+        }
+      ],
       "prettier/prettier": "error",
       "no-unused-vars": "off",
       "@typescript-eslint/explicit-module-boundary-types": 0,

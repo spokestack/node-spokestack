@@ -98,10 +98,25 @@
       }
     },
     "rules": {
+      "eqeqeq": [
+        "error",
+        "always",
+        {
+          "null": "ignore"
+        }
+      ],
       "prettier/prettier": "error",
+      "no-unused-vars": "off",
       "@typescript-eslint/explicit-module-boundary-types": 0,
       "@typescript-eslint/no-var-requires": 0,
-      "@typescript-eslint/no-use-before-define": 0
+      "@typescript-eslint/no-use-before-define": 0,
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
     }
   },
   "eslintIgnore": [

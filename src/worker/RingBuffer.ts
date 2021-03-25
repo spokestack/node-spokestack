@@ -21,14 +21,14 @@ export default class RingBuffer<T> {
    * Returns true if no elements can be read, false otherwise
    */
   isEmpty(): boolean {
-    return this.readPos == this.writePos
+    return this.readPos === this.writePos
   }
 
   /**
    * Returns true if no elements can be written, false otherwise
    */
   isFull(): boolean {
-    return this.pos(this.writePos + 1) == this.readPos
+    return this.pos(this.writePos + 1) === this.readPos
   }
 
   /**

@@ -41,8 +41,8 @@ import spokestackService from './spokestackASRService'
  * ```
  */
 export function asr(content: string | Uint8Array, sampleRate: number): Promise<string | null> {
-  return new Promise(async (resolve, reject) => {
-    const spokestack = await spokestackService({ sampleRate }, (response) => {
+  return new Promise((resolve, reject) => {
+    spokestackService({ sampleRate }, (response) => {
       resolve(
         response.hypotheses
           .map((value) => value && value.transcript)
@@ -50,8 +50,11 @@ export function asr(content: string | Uint8Array, sampleRate: number): Promise<s
           .join('\n')
       )
     })
-    spokestack.on('error', reject)
-    spokestack.send(content)
+      .then((spokestack) => {
+        spokestack.on('error', reject)
+        spokestack.send(content)
+      })
+      .catch(reject)
   })
 }
 
