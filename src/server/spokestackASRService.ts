@@ -61,7 +61,7 @@ export default function asrService(
   // Open socket
   const socket = new WebSocket(`wss:api.spokestack.io/v1/asr/websocket`)
 
-  let prevTranscript = ''
+  let prevTranscript: string | null = null
   let transcriptTimeout: NodeJS.Timeout
 
   socket.on('close', (code) => {
@@ -95,24 +95,22 @@ export default function asrService(
   }
 
   socket.on('message', (data: string) => {
-    console.log('Spokestack ASR socket message', data)
+    // console.log('Spokestack ASR socket message', data)
     try {
       const json: SpokestackResponse = JSON.parse(data)
       if (
         json.status === 'ok' &&
-        json.hypotheses.length &&
-        json.hypotheses[0].transcript &&
-        json.hypotheses[0].transcript !== prevTranscript
+        (json.final || (json.hypotheses.length && json.hypotheses[0].transcript !== prevTranscript))
       ) {
         prevTranscript = json.hypotheses[0].transcript
-        console.log('NEW TRANSCRIPT', prevTranscript)
+        // console.log('NEW TRANSCRIPT', prevTranscript)
         onData.call(null, json)
 
         if (timeout > 0) {
           clearTimeout(transcriptTimeout)
           transcriptTimeout = setTimeout(() => {
             sendAuth()
-            prevTranscript = ''
+            prevTranscript = null
           }, timeout)
         }
       }

@@ -57,7 +57,7 @@ export default class Index extends PureComponent {
     wakeword: { error: '', status: 'Idle', result: false }
   }
   updateTerm = debounce((term: string | undefined) => {
-    if (typeof term === 'string') {
+    if (term) {
       this.setState({ term })
     }
   }, 500)
@@ -77,6 +77,94 @@ export default class Index extends PureComponent {
   componentWillUnmount() {
     this.client?.stop()
     this.audio?.removeEventListener('pause', this.pause)
+  }
+
+  toggleWakeword = async () => {
+    const isActive = !!this.state.activeDemo
+    if (isActive) {
+      this.stopRecording()
+    } else {
+      this.setState({ activeDemo: 'wakeword', wakeword: { status: 'Calibrating...' } })
+
+      try {
+        await startPipeline({
+          profile: PipelineProfile.Wakeword,
+          baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
+          onEvent: (event) => {
+            switch (event.eventType) {
+              case EventType.Activate:
+                this.setState({ wakeword: { error: '', result: true } })
+                break
+              case EventType.Timeout:
+                this.setState({ wakeword: { error: 'timeout' } })
+                break
+              case EventType.Error:
+                console.error(event.error)
+                this.stopRecording()
+                break
+            }
+          }
+        })
+        this.setState({ wakeword: { status: 'Listening', result: '' } })
+      } catch (e) {
+        console.error(e)
+        this.stopRecording()
+      }
+    }
+  }
+
+  toggleKeyword = async () => {
+    const isActive = !!this.state.activeDemo
+    if (isActive) {
+      this.stopRecording()
+    } else {
+      this.setState({ activeDemo: 'keyword', keyword: { status: 'Calibrating...' } })
+
+      try {
+        await startPipeline({
+          profile: PipelineProfile.Keyword,
+          keywordClasses: [
+            'zero',
+            'one',
+            'two',
+            'three',
+            'four',
+            'five',
+            'six',
+            'seven',
+            'eight',
+            'nine'
+          ],
+          baseUrls: { keyword: 'https://s.spokestack.io/u/UbMeX/js' },
+          onEvent: (evt) => {
+            const { eventType, transcript } = evt
+            switch (eventType) {
+              case EventType.Recognize:
+                this.setState({ keyword: { error: '', result: transcript } })
+                break
+              case EventType.Error:
+                console.error(evt.error)
+                this.stopRecording()
+                break
+            }
+          }
+        })
+        this.setState({ keyword: { status: 'Listening', result: '' } })
+      } catch (e) {
+        console.error(e)
+        this.stopRecording()
+      }
+    }
+  }
+
+  stopRecording = () => {
+    stopPipeline()
+    this.setState({
+      activeDemo: null,
+      status: 'Idle',
+      keyword: { status: 'Idle' },
+      wakeword: { status: 'Idle' }
+    })
   }
 
   initialize() {
@@ -197,94 +285,6 @@ export default class Index extends PureComponent {
       })
   }
 
-  toggleKeyword = async () => {
-    const isActive = !!this.state.activeDemo
-    if (isActive) {
-      this.stopRecording()
-    } else {
-      this.setState({ activeDemo: 'keyword', keyword: { status: 'Calibrating...' } })
-
-      try {
-        await startPipeline({
-          profile: PipelineProfile.Keyword,
-          keywordClasses: [
-            'zero',
-            'one',
-            'two',
-            'three',
-            'four',
-            'five',
-            'six',
-            'seven',
-            'eight',
-            'nine'
-          ],
-          baseUrls: { keyword: 'https://s.spokestack.io/u/UbMeX/js' },
-          onEvent: (evt) => {
-            const { eventType, transcript } = evt
-            switch (eventType) {
-              case EventType.Recognize:
-                this.setState({ keyword: { error: '', result: transcript } })
-                break
-              case EventType.Error:
-                console.error(evt.error)
-                this.stopRecording()
-                break
-            }
-          }
-        })
-        this.setState({ keyword: { status: 'Listening', result: '' } })
-      } catch (e) {
-        console.error(e)
-        this.stopRecording()
-      }
-    }
-  }
-
-  toggleWakeword = async () => {
-    const isActive = !!this.state.activeDemo
-    if (isActive) {
-      this.stopRecording()
-    } else {
-      this.setState({ activeDemo: 'wakeword', wakeword: { status: 'Calibrating...' } })
-
-      try {
-        await startPipeline({
-          profile: PipelineProfile.Wakeword,
-          baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
-          onEvent: (event) => {
-            switch (event.eventType) {
-              case EventType.Activate:
-                this.setState({ wakeword: { error: '', result: true } })
-                break
-              case EventType.Timeout:
-                this.setState({ wakeword: { error: 'timeout' } })
-                break
-              case EventType.Error:
-                console.error(event.error)
-                this.stopRecording()
-                break
-            }
-          }
-        })
-        this.setState({ wakeword: { status: 'Listening', result: '' } })
-      } catch (e) {
-        console.error(e)
-        this.stopRecording()
-      }
-    }
-  }
-
-  stopRecording = () => {
-    stopPipeline()
-    this.setState({
-      activeDemo: null,
-      status: 'Idle',
-      keyword: { status: 'Idle' },
-      wakeword: { status: 'Idle' }
-    })
-  }
-
   toggleRecordStream = async () => {
     const { streaming } = this.state
     if (streaming) {
@@ -343,6 +343,7 @@ export default class Index extends PureComponent {
     return (
       <Layout>
         <h1>Test a wakeword model</h1>
+        <p>Press record and say, "Spokestack"</p>
         <div className="buttons">
           <button
             disabled={isActive && activeDemo !== 'wakeword'}
@@ -358,6 +359,7 @@ export default class Index extends PureComponent {
         {wakeword.result && <p className="wrapper">Detected!</p>}
         <hr />
         <h1>Test a keyword model</h1>
+        <p>Press record and say a number between 0 and 9.</p>
         <div className="buttons">
           <button
             disabled={isActive && activeDemo !== 'keyword'}

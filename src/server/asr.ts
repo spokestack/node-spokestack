@@ -43,16 +43,20 @@ import spokestackService from './spokestackASRService'
 export function asr(content: string | Uint8Array, sampleRate: number): Promise<string | null> {
   return new Promise((resolve, reject) => {
     spokestackService({ sampleRate }, (response) => {
-      resolve(
-        response.hypotheses
-          .map((value) => value && value.transcript)
-          .filter(Boolean)
-          .join('\n')
-      )
+      if (response.final) {
+        resolve(
+          response.hypotheses
+            .map((value) => value && value.transcript)
+            .filter(Boolean)
+            .join('\n')
+        )
+      }
     })
-      .then((spokestack) => {
-        spokestack.on('error', reject)
-        spokestack.send(content)
+      .then((spokestackSocket) => {
+        spokestackSocket.on('error', reject)
+        spokestackSocket.send(content)
+        // Send an empty buffer to signal that the transaction is done
+        spokestackSocket.send(Buffer.from(''))
       })
       .catch(reject)
   })
