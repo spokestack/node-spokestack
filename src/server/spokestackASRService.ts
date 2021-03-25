@@ -64,7 +64,8 @@ export default function asrService(
   let prevTranscript = ''
   let transcriptTimeout: NodeJS.Timeout
 
-  socket.on('close', () => {
+  socket.on('close', (code) => {
+    console.log(`Spokestack ASR socket closed with code: ${code}`)
     clearTimeout(transcriptTimeout)
   })
   socket.on('error', function error(err: Error) {
@@ -94,7 +95,7 @@ export default function asrService(
   }
 
   socket.on('message', (data: string) => {
-    // console.log('Message', data)
+    console.log('Spokestack ASR socket message', data)
     try {
       const json: SpokestackResponse = JSON.parse(data)
       if (
@@ -104,7 +105,7 @@ export default function asrService(
         json.hypotheses[0].transcript !== prevTranscript
       ) {
         prevTranscript = json.hypotheses[0].transcript
-        // console.log('NEW TRANSCRIPT', prevTranscript)
+        console.log('NEW TRANSCRIPT', prevTranscript)
         onData.call(null, json)
 
         if (timeout > 0) {
@@ -124,10 +125,11 @@ export default function asrService(
 
   return new Promise((resolve, reject) => {
     socket.on('error', reject)
+    socket.on('close', reject)
     socket.once('open', () => {
       socket.once('message', (data: string) => {
-        // console.log('Auth response', data)
         socket.removeEventListener('error', reject)
+        socket.removeEventListener('close', reject)
         try {
           const json: SpokestackResponse = JSON.parse(data)
           if (json.status === 'ok') {
