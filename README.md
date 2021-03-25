@@ -104,7 +104,7 @@ const graphQLFetcher = (graphQLParams) =>
 
 **Returns:** (`req`: Request, `res`: Response) => _void_
 
-Defined in: [server/expressMiddleware.ts:37](https://github.com/spokestack/node-spokestack/blob/917952d/src/server/expressMiddleware.ts#L37)
+Defined in: [server/expressMiddleware.ts:37](https://github.com/spokestack/node-spokestack/blob/e50d648/src/server/expressMiddleware.ts#L37)
 
 ### asrSocketServer
 
@@ -134,7 +134,7 @@ server.listen(port, () => {
 
 **Returns:** _void_
 
-Defined in: [server/socketServer.ts:23](https://github.com/spokestack/node-spokestack/blob/917952d/src/server/socketServer.ts#L23)
+Defined in: [server/socketServer.ts:23](https://github.com/spokestack/node-spokestack/blob/e50d648/src/server/socketServer.ts#L23)
 
 ### asr
 
@@ -185,7 +185,7 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 
 **Returns:** _Promise_<string \| _null_\>
 
-Defined in: [server/asr.ts:43](https://github.com/spokestack/node-spokestack/blob/917952d/src/server/asr.ts#L43)
+Defined in: [server/asr.ts:43](https://github.com/spokestack/node-spokestack/blob/e50d648/src/server/asr.ts#L43)
 
 ### googleASRSocketServer
 
@@ -214,7 +214,7 @@ server.listen(port, () => {
 
 **Returns:** _void_
 
-Defined in: [server/socketServer.ts:108](https://github.com/spokestack/node-spokestack/blob/917952d/src/server/socketServer.ts#L108)
+Defined in: [server/socketServer.ts:108](https://github.com/spokestack/node-spokestack/blob/e50d648/src/server/socketServer.ts#L108)
 
 ### googleASR
 
@@ -265,7 +265,7 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 
 **Returns:** _Promise_<string \| _null_\>
 
-Defined in: [server/asr.ts:97](https://github.com/spokestack/node-spokestack/blob/917952d/src/server/asr.ts#L97)
+Defined in: [server/asr.ts:104](https://github.com/spokestack/node-spokestack/blob/e50d648/src/server/asr.ts#L104)
 
 ### encryptSecret
 
@@ -288,7 +288,7 @@ for example usage.
 
 **Returns:** _string_
 
-Defined in: [server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/917952d/src/server/encryptSecret.ts#L13)
+Defined in: [server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/e50d648/src/server/encryptSecret.ts#L13)
 
 ---
 
@@ -372,7 +372,7 @@ fetch('/asr', {
 
 **Returns:** _Promise_<AudioBuffer\>
 
-Defined in: [client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/record.ts#L84)
+Defined in: [client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/record.ts#L84)
 
 #### [RecordConfig](#RecordConfig)
 
@@ -390,7 +390,7 @@ A callback function to be called each second of recording.
 
 **Returns:** _void_
 
-Defined in: [client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/record.ts#L16)
+Defined in: [client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/record.ts#L16)
 
 ##### onStart
 
@@ -400,7 +400,7 @@ A callback function to be called when recording starts
 
 **Returns:** _void_
 
-Defined in: [client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/record.ts#L14)
+Defined in: [client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/record.ts#L14)
 
 ##### time
 
@@ -408,7 +408,7 @@ Defined in: [client/record.ts:14](https://github.com/spokestack/node-spokestack/
 
 The total time to record. Default: 3
 
-Defined in: [client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/record.ts#L12)
+Defined in: [client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/record.ts#L12)
 
 ### startStream
 
@@ -423,7 +423,6 @@ import { startStream } from 'spokestack/client'
 // ...
 try {
   const [ws] = await startStream({
-    address: 'wss://localhost:3000',
     isPlaying: () => this.isPlaying
   })
   ws.addEventListener('open', () => console.log('Recording started'))
@@ -442,7 +441,7 @@ try {
 
 **Returns:** _Promise_<WebSocket, [*ProcessorReturnValue*]\>
 
-Defined in: [client/recordStream.ts:44](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/recordStream.ts#L44)
+Defined in: [client/recordStream.ts:43](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/recordStream.ts#L43)
 
 ### stopStream
 
@@ -457,7 +456,7 @@ stopStream()
 
 **Returns:** _void_
 
-Defined in: [client/recordStream.ts:97](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/recordStream.ts#L97)
+Defined in: [client/recordStream.ts:96](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/recordStream.ts#L96)
 
 ### convertFloat32ToInt16
 
@@ -482,7 +481,7 @@ const file = new File([convertFloat32ToInt16(buffer.getChannelData(0))], 'record
 
 **Returns:** _Int16Array_
 
-Defined in: [client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/convertFloat32ToInt16.ts#L16)
+Defined in: [client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/convertFloat32ToInt16.ts#L16)
 
 ### startPipeline
 
@@ -547,7 +546,7 @@ try {
 
 **Returns:** _Promise_<SpeechPipeline\>
 
-Defined in: [client/pipeline.ts:165](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/pipeline.ts#L165)
+Defined in: [client/pipeline.ts:165](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/pipeline.ts#L165)
 
 ### stopPipeline
 
@@ -562,7 +561,7 @@ stopPipeline()
 
 **Returns:** _void_
 
-Defined in: [client/pipeline.ts:199](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/pipeline.ts#L199)
+Defined in: [client/pipeline.ts:199](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/pipeline.ts#L199)
 
 ### countdown
 
@@ -581,7 +580,7 @@ This is used by record() to record a certain number of seconds.
 
 **Returns:** _void_
 
-Defined in: [client/countdown.ts:8](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/countdown.ts#L8)
+Defined in: [client/countdown.ts:8](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/countdown.ts#L8)
 
 ---
 
@@ -604,7 +603,7 @@ We'll switch to AudioWorklet when it does.
 
 **Returns:** _Promise_<Error] \| [_null_, [*ProcessorReturnValue*]\>
 
-Defined in: [client/processor.ts:22](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/processor.ts#L22)
+Defined in: [client/processor.ts:22](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/processor.ts#L22)
 
 #### ProcessorReturnValue
 
@@ -612,13 +611,13 @@ Defined in: [client/processor.ts:22](https://github.com/spokestack/node-spokesta
 
 • **context**: AudioContext
 
-Defined in: [client/processor.ts:8](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/processor.ts#L8)
+Defined in: [client/processor.ts:8](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/processor.ts#L8)
 
 ##### processor
 
 • **processor**: ScriptProcessorNode
 
-Defined in: [client/processor.ts:9](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/processor.ts#L9)
+Defined in: [client/processor.ts:9](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/processor.ts#L9)
 
 ### stopProcessor
 
@@ -629,7 +628,7 @@ if it exists and disconnect the microphone.
 
 **Returns:** _void_
 
-Defined in: [client/processor.ts:50](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/processor.ts#L50)
+Defined in: [client/processor.ts:50](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/processor.ts#L50)
 
 ### concatenateAudioBuffers
 
@@ -647,4 +646,4 @@ A utility method to concatenate two AudioBuffers
 
 **Returns:** _null_ \| AudioBuffer
 
-Defined in: [client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/917952d/src/client/concatenateAudioBuffers.ts#L4)
+Defined in: [client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/e50d648/src/client/concatenateAudioBuffers.ts#L4)

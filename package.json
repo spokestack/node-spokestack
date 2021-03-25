@@ -1,6 +1,6 @@
 {
   "name": "spokestack",
-  "version": "3.1.0-beta.0",
+  "version": "3.1.0-beta.1",
   "description": "Tools for integration with the Spokestack API in Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
