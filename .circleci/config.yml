@@ -41,6 +41,15 @@ jobs:
           name: Run build examples/with-next
           command: cd examples/with-next && npm run build
 
+      - persist_to_workspace:
+          root: ~/spokestack
+          paths:
+            - node_modules
+            - dist
+            - examples/with-next/node_modules
+            - examples/with-next/dist
+            - examples/with-next/.next
+
   deploy_integration:
     docker:
       - image: circleci/python:3.7
