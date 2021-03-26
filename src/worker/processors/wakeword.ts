@@ -1,6 +1,7 @@
-import RingBuffer from '../RingBuffer'
-import { EventType, SpeechConfig, SpeechEvent } from '../../client/types'
 import { CommandModels, SpeechContext, SpeechProcessor } from '../types'
+import { SpeechConfig, SpeechEvent, SpeechEventType } from '../../client/types'
+
+import RingBuffer from '../RingBuffer'
 import type { Tensor } from '@tensorflow/tfjs'
 
 const defaultConfig = {
@@ -193,7 +194,7 @@ export default class WakewordTrigger implements SpeechProcessor {
     if (confidence > this.config.wakeThreshold) {
       const event: SpeechEvent = {
         confidence: confidence,
-        eventType: EventType.Activate
+        type: SpeechEventType.Activate
       }
       context.lastEvent = event
 

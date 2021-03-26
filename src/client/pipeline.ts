@@ -144,14 +144,14 @@ let pipeline: SpeechPipeline | undefined
  *     profile: PipelineProfile.Wakeword,
  *     baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
  *     onEvent: (event) => {
- *       switch (event.eventType) {
- *         case EventType.Activate:
+ *       switch (event.type) {
+ *         case SpeechEventType.Activate:
  *           this.setState({ wakeword: { error: '', result: true } })
  *           break
- *         case EventType.Timeout:
+ *         case SpeechEventType.Timeout:
  *           this.setState({ wakeword: { error: 'timeout' } })
  *           break
- *         case EventType.Error:
+ *         case SpeechEventType.Error:
  *           console.error(event.error)
  *           break
  *       }

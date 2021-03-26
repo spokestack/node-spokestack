@@ -1,6 +1,6 @@
 import {
-  EventType,
   PipelineProfile,
+  SpeechEventType,
   record,
   startPipeline,
   startStream,
@@ -91,21 +91,21 @@ export default class Index extends PureComponent {
           profile: PipelineProfile.Wakeword,
           baseUrls: { wakeword: 'https://s.spokestack.io/u/hgmYb/js' },
           onEvent: (event) => {
-            switch (event.eventType) {
-              case EventType.Activate:
+            switch (event.type) {
+              case SpeechEventType.Activate:
                 this.setState({ wakeword: { error: '', result: true } })
                 break
-              case EventType.Timeout:
+              case SpeechEventType.Timeout:
                 this.setState({ wakeword: { error: 'timeout' } })
                 break
-              case EventType.Error:
+              case SpeechEventType.Error:
                 console.error(event.error)
                 this.stopRecording()
                 break
             }
           }
         })
-        this.setState({ wakeword: { status: 'Listening', result: '' } })
+        this.setState({ wakeword: { status: 'Listening...', result: '' } })
       } catch (e) {
         console.error(e)
         this.stopRecording()
@@ -137,19 +137,19 @@ export default class Index extends PureComponent {
           ],
           baseUrls: { keyword: 'https://s.spokestack.io/u/UbMeX/js' },
           onEvent: (evt) => {
-            const { eventType, transcript } = evt
-            switch (eventType) {
-              case EventType.Recognize:
+            const { type, transcript } = evt
+            switch (type) {
+              case SpeechEventType.Recognize:
                 this.setState({ keyword: { error: '', result: transcript } })
                 break
-              case EventType.Error:
+              case SpeechEventType.Error:
                 console.error(evt.error)
                 this.stopRecording()
                 break
             }
           }
         })
-        this.setState({ keyword: { status: 'Listening', result: '' } })
+        this.setState({ keyword: { status: 'Listening...', result: '' } })
       } catch (e) {
         console.error(e)
         this.stopRecording()

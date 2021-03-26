@@ -31,26 +31,6 @@ export interface VadConfig {
   maxActive: number
 }
 
-export const DefaultVadConfig: VadConfig = {
-  bufferLen: 1024,
-  smoothingTimeConstant: 0.2,
-  minCaptureFreq: 85, // in Hz
-  maxCaptureFreq: 255, // in Hz
-  noiseCaptureDuration: 1, // in s
-  minNoiseLevel: 0.3, // from 0 to 1
-  maxNoiseLevel: 0.7, // from 0 to 1
-  avgNoiseMultiplier: 1.2,
-  riseDelay: 0,
-  fallDelay: 250,
-  maxActive: 2000,
-  onUpdate: () => {
-    // noop
-  },
-  onVadChange: () => {
-    // noop
-  }
-}
-
 export interface SpeechConfig {
   sampleRate: number
   /**
@@ -92,7 +72,7 @@ export interface SpeechConfig {
   vad?: VadConfig
 }
 
-export enum EventType {
+export enum SpeechEventType {
   Activate = 'ACTIVATE',
   Deactivate = 'DEACTIVATE',
   Timeout = 'TIMEOUT',
@@ -101,10 +81,10 @@ export enum EventType {
 }
 
 export interface SpeechEvent {
-  transcript?: string
   confidence?: number
   error?: string
-  eventType: EventType
+  transcript?: string
+  type: SpeechEventType
 }
 
 export enum Stage {

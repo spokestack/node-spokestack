@@ -5,18 +5,21 @@
  * https://github.com/spokestack/node-spokestack/blob/develop/MIT-License.txt
  */
 importScripts('/tensorflow.js')
+
 import type * as tf from '@tensorflow/tfjs'
+
+import { SpeechConfig, SpeechEvent, SpeechEventType, Stage } from '../client/types'
+import { SpeechContext, SpeechProcessor } from './types'
+
+import KeywordRecognizer from './processors/keyword'
+import VadTrigger from './processors/vad'
+import WakewordTrigger from './processors/wakeword'
+
 declare global {
   interface WorkerGlobalScope {
     tf: typeof tf
   }
 }
-
-import { SpeechContext, SpeechProcessor } from './types'
-import { EventType, SpeechConfig, SpeechEvent, Stage } from '../client/types'
-import KeywordRecognizer from './processors/keyword'
-import VadTrigger from './processors/vad'
-import WakewordTrigger from './processors/wakeword'
 
 interface Frame {
   vad: boolean
@@ -32,16 +35,17 @@ let context: SpeechContext | undefined
 let frames: Frame[] = []
 let processors: SpeechProcessor[] = []
 
-self.addEventListener('message', (msg: MessageEvent) => {
-  if ('config' in msg.data) {
-    const config: WorkerConfig = msg.data.config
+self.addEventListener('message', (event: MessageEvent) => {
+  if (event.data.config) {
+    const config: WorkerConfig = event.data.config
     initStages(config)
       .then(() => {
         context = initContext(config.speechConfig)
+        self.postMessage({ initialized: true })
       })
       .catch(() => {
         dispatch({
-          eventType: EventType.Error,
+          type: SpeechEventType.Error,
           error: 'unsupported_browser'
         })
       })
@@ -49,8 +53,8 @@ self.addEventListener('message', (msg: MessageEvent) => {
     // the message should contain both a
     // 'vad' key representing speech activity
     // and an 'audio' key with raw float data
-    const vad = msg.data.vad
-    const frame = msg.data.audio
+    const vad = event.data.vad
+    const frame = event.data.audio
 
     if (context === undefined) {
       frames.push({ vad, frame })
@@ -84,7 +88,7 @@ async function initStages(config: WorkerConfig) {
     processors = await Promise.all(promises)
   } catch (e) {
     dispatch({
-      eventType: EventType.Error,
+      type: SpeechEventType.Error,
       error: e.message
     })
   }

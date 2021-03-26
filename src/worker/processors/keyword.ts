@@ -1,5 +1,5 @@
 import { CommandModels, SpeechContext, SpeechProcessor } from '../types'
-import { EventType, SpeechConfig, SpeechEvent } from '../../client/types'
+import { SpeechConfig, SpeechEvent, SpeechEventType } from '../../client/types'
 
 import RingBuffer from '../RingBuffer'
 import type { Tensor } from '@tensorflow/tfjs'
@@ -199,12 +199,12 @@ export default class KeywordRecognizer implements SpeechProcessor {
 
     // console.log(`keyword: ${keyword} (${confidence.toFixed(6)})`)
 
-    const event: SpeechEvent = { eventType: EventType.Timeout }
+    const event: SpeechEvent = { type: SpeechEventType.Timeout }
 
     if (confidence > this.config.keywordThreshold) {
       event.transcript = keyword
       event.confidence = confidence
-      event.eventType = EventType.Recognize
+      event.type = SpeechEventType.Recognize
     }
     context.lastEvent = event
 

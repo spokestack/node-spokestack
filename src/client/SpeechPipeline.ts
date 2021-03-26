@@ -1,4 +1,4 @@
-import { SpeechConfig, SpeechEvent, Stage } from './types'
+import { SpeechConfig, SpeechEvent, SpeechEventType, Stage } from './types'
 import { startRecord, stopRecord } from './mic'
 
 import Vad from './Vad'
@@ -37,7 +37,7 @@ export default class SpeechPipeline {
   private processor: ScriptProcessorNode
   private source?: MediaStreamAudioSourceNode
   private vad: Vad
-  private worker: Worker
+  private worker?: Worker
 
   /**
    * Create a new speech pipeline.
@@ -65,8 +65,6 @@ export default class SpeechPipeline {
       throw new Error('unsupported_browser')
     }
 
-    this.worker = this.initWorker()
-
     const bufferSize = 512
     const processor = (this.processor = context.createScriptProcessor(bufferSize, 1, 1))
 
@@ -85,6 +83,7 @@ export default class SpeechPipeline {
    * they have not already granted it.
    */
   async start(): Promise<SpeechPipeline> {
+    this.worker = await this.initWorker()
     const stream = await startRecord()
     if (!stream) {
       throw new Error(
@@ -122,32 +121,67 @@ export default class SpeechPipeline {
     })
   }
 
-  private initWorker(): Worker {
-    const config = this.config
-    const worker = new Worker(config.workerUrl || '/spokestack-web-worker.js')
-    const workerConfig = { speechConfig: config.speechConfig, stages: config.stages }
-    worker.postMessage({ config: workerConfig })
-    worker.addEventListener('message', (msg: MessageEvent) => {
-      if (msg.data) {
-        // Pass all messages to the client, including errors
-        if (config.onEvent) {
-          config.onEvent(msg.data)
+  private initWorker(): Promise<Worker> {
+    return new Promise((resolve, reject) => {
+      let resolved = false
+      const config = this.config
+      const worker = new Worker(config.workerUrl || '/spokestack-web-worker.js')
+      const workerConfig = { speechConfig: config.speechConfig, stages: config.stages }
+      worker.addEventListener('message', (event) => {
+        if (event.data) {
+          if (event.data.initialized) {
+            resolved = true
+            resolve(worker)
+            return
+          }
+          // Pass all messages to the client, including errors
+          if (config.onEvent) {
+            config.onEvent(event.data)
+          }
+          if (!event.data.error) {
+            return
+          }
         }
-        if (!msg.data.error) {
+        console.error(event)
+        this.stop()
+        if (!resolved) {
+          reject(
+            new Error(
+              event.data?.error || 'Worker encountered an error and stopped the speech pipeline.'
+            )
+          )
           return
         }
-      }
-      console.log('Encountered an error; stopping audio worker')
-      this.stopWorker(worker)
+      })
+      worker.addEventListener('messageerror', (event) => {
+        console.error(event)
+        if (!resolved) {
+          reject(new Error('Worker hit a serialize error on initialize.'))
+          return
+        }
+        if (config.onEvent) {
+          config.onEvent({
+            type: SpeechEventType.Error,
+            error: 'A web worker message could not be serialized'
+          })
+        }
+      })
+      worker.addEventListener('error', (event) => {
+        console.error(event)
+        this.stop()
+        if (!resolved) {
+          reject(new Error('There was a problem initializing the web worker.'))
+          return
+        }
+        if (config.onEvent) {
+          config.onEvent({
+            type: SpeechEventType.Error,
+            error: 'The web worker hit an error: ' + event.message
+          })
+        }
+      })
+      worker.postMessage({ config: workerConfig })
     })
-    return worker
-  }
-
-  private stopWorker(worker: Worker) {
-    this.stop()
-    if (worker) {
-      worker.terminate()
-    }
   }
 
   private sendBuffer = (e: AudioProcessingEvent) => {
@@ -170,13 +204,18 @@ export default class SpeechPipeline {
     stopRecord()
     this.processor.removeEventListener('audioprocess', this.sendBuffer)
     this.disconnect()
+    if (this.worker) {
+      this.worker.terminate()
+    }
   }
 
   private disconnect() {
     if (this.gainNode && this.processor && this.vad) {
+      try {
+        this.processor.disconnect(this.gainNode)
+      } catch (e) {}
       this.vad.disconnect()
       this.gainNode.disconnect()
-      this.processor.disconnect(this.gainNode)
     }
     if (this.source) {
       this.source.disconnect()
