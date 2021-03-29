@@ -96,7 +96,7 @@ export default class KeywordRecognizer implements SpeechProcessor {
     if (isNaN(config.sampleRate)) {
       throw new Error('sampleRate is required')
     }
-    const models = await KeywordRecognizer.loadModels(config.baseKeywordUrl, config.sampleRate)
+    const models = await KeywordRecognizer.loadModels(config.baseKeywordUrl, config.fftWidth)
     return new KeywordRecognizer(models, config as KeywordRecognizerConfig)
   }
 
@@ -133,9 +133,9 @@ export default class KeywordRecognizer implements SpeechProcessor {
     }
   }
 
-  static async loadModels(baseUrl: string, sampleRate: number): Promise<CommandModels> {
+  static async loadModels(baseUrl: string, fftWidth: number): Promise<CommandModels> {
     return Promise.all([
-      tf.loadGraphModel(`${baseUrl}/filter_${sampleRate}/model.json`),
+      tf.loadGraphModel(`${baseUrl}/filter_${fftWidth}/model.json`),
       tf.loadGraphModel(`${baseUrl}/encode/model.json`),
       tf.loadGraphModel(`${baseUrl}/detect/model.json`)
     ]).then((models) => {

@@ -84,7 +84,7 @@ export default class WakewordTrigger implements SpeechProcessor {
     if (!config.baseWakewordUrl) {
       throw new Error('wakeword URL required')
     }
-    const models = await WakewordTrigger.loadModels(config.baseWakewordUrl, config.sampleRate)
+    const models = await WakewordTrigger.loadModels(config.baseWakewordUrl, config.fftWidth)
     return new WakewordTrigger(models, config as WakewordTriggerConfig)
   }
 
@@ -125,9 +125,9 @@ export default class WakewordTrigger implements SpeechProcessor {
     }
   }
 
-  static async loadModels(baseUrl: string, sampleRate: number): Promise<CommandModels> {
+  static async loadModels(baseUrl: string, fftWidth: number): Promise<CommandModels> {
     return Promise.all([
-      tf.loadGraphModel(`${baseUrl}/filter_${sampleRate}/model.json`),
+      tf.loadGraphModel(`${baseUrl}/filter_${fftWidth}/model.json`),
       tf.loadGraphModel(`${baseUrl}/encode/model.json`),
       tf.loadGraphModel(`${baseUrl}/detect/model.json`)
     ]).then((models) => {
