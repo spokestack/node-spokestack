@@ -10,5 +10,6 @@ describe('index', () => {
     assert.ok(Index.googleASRSocketServer, 'Index contains googleASRSocketServer')
     assert.ok(Index.asr, 'Index contains asr')
     assert.ok(Index.googleASR, 'Index contains googleASR')
+    assert.ok(Index.spokestackASRService, 'Index contains spokestackASRService')
   })
 })

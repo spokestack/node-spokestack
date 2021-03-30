@@ -50,13 +50,15 @@ export function asr(content: string | Uint8Array, sampleRate: number): Promise<s
             .filter(Boolean)
             .join('\n')
         )
+      } else if (response.status === 'error') {
+        reject(new Error(response.error))
       }
     })
       .then((spokestackSocket) => {
         spokestackSocket.on('error', reject)
         spokestackSocket.send(content)
-        // Send an empty buffer to signal that the transaction is done
-        spokestackSocket.send(Buffer.from(''))
+        // Send an empty string to signal that the transaction is done
+        spokestackSocket.send('')
       })
       .catch(reject)
   })

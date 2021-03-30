@@ -12,7 +12,7 @@ const defaultSpeechConfig = {
   hopLength: 10
 }
 
-interface SpeechPipelineConfig {
+export interface SpeechPipelineConfig {
   speechConfig: SpeechConfig
   stages: Stage[]
   workerUrl?: string

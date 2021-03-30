@@ -1,5 +1,5 @@
 import { SpeechConfig, Stage } from './types'
-import SpeechPipeline, { PipelineEventHandler } from './SpeechPipeline'
+import SpeechPipeline, { PipelineEventHandler, SpeechPipelineConfig } from './SpeechPipeline'
 
 /**
  * Preset profiles for use with startPipeline that include both
@@ -202,3 +202,5 @@ export function stopPipeline() {
     pipeline = undefined
   }
 }
+
+export { SpeechPipeline, SpeechPipelineConfig, PipelineEventHandler }

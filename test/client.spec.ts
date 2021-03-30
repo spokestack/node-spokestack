@@ -10,5 +10,6 @@ describe('client', () => {
     assert.ok(Client.startPipeline, 'Client contains startPipeline')
     assert.ok(Client.stopPipeline, 'Client contains stopPipeline')
     assert.ok(Client.Stage, 'Client contains Stage')
+    assert.ok(Client.SpeechPipeline, 'Client contains SpeechPipeline')
   })
 })

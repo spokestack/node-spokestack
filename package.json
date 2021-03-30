@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run clean && rollup --config && npm run minify",
     "clean": "rm -rf dist/",
-    "docs": "typedoc --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
+    "docs": "typedoc --excludePrivate --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
     "format": "eslint . --fix && prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",
     "lint": "concurrently --raw \"eslint .\" \"npm run prettier\" \"npm run typescript\"",
     "minify": "concurrently --raw \"npm run minify:tf\" \"npm run minify:worker\"",

@@ -322,7 +322,10 @@ export default class Index extends PureComponent {
             streaming: false
           })
         })
-        ws.addEventListener('message', (e) => this.updateTerm(e.data))
+        ws.addEventListener('message', (e) => {
+          console.log(e)
+          this.updateTerm(e.data)
+        })
       } catch (e) {
         console.error(e)
         this.setState({

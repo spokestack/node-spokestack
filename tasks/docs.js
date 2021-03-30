@@ -11,15 +11,20 @@ function write(filename, data) {
 const header = '\n---\n\n## Convenience functions for Node.js servers'
 let data = read('../README.md').replace(new RegExp(header + '[^]+'), '') + header
 
-function redoLinks(data) {
-  return (
-    data
-      // Remove links that aren't links to source
-      .replace(/\[([^:]+)\]\(.*?\)/g, '$1')
-      .replace(/\bPipelineProfile([^.])/g, '[PipelineProfile](#PipelineProfile)$1')
-      .replace(/\bStage([^.])/g, '[Stage](#Stage)$1')
-      .replace(/\bRecordConfig([^.])/g, '[RecordConfig](#RecordConfig)$1')
-  )
+// Remove links that aren't links to source
+function removeLinks(data) {
+  return data.replace(/\[([^:]+)\]\(.*?\)/g, '$1')
+}
+
+function addLinks(data) {
+  return data
+    .replace(/\bPipelineProfile([^.])/g, '[PipelineProfile](#PipelineProfile)$1')
+    .replace(/\bStage([^.])/g, '[Stage](#Stage)$1')
+    .replace(/\bRecordConfig([^.])/g, '[RecordConfig](#RecordConfig)$1')
+    .replace(/\bSpokestackASRConfig([^.])/g, '[SpokestackASRConfig](#SpokestackASRConfig)$1')
+    .replace(/\bSpokestackResponse([^.])/g, '[SpokestackResponse](#SpokestackResponse)$1')
+    .replace(/\bASRHypothesis([^.])/g, '[ASRHypothesis](#ASRHypothesis)$1')
+    .replace(/\bSpeechPipelineConfig([^.])/g, '[SpeechPipelineConfig](#SpeechPipelineConfig)$1')
 }
 
 /**
@@ -27,7 +32,7 @@ function redoLinks(data) {
  * @param {Array<string>} functions List of functions to extract from docs
  */
 function getModuleFunctions(filename, functions) {
-  const available = redoLinks(read(`../docs/modules/${filename}`))
+  const available = addLinks(removeLinks(read(`../docs/modules/${filename}`)))
     // Remove everything up to functions
     .replace(/[^]+#{2}\s*Functions/, '')
     .split(/___/)
@@ -41,8 +46,8 @@ function getModuleFunctions(filename, functions) {
 }
 
 function getInterfaceContent(filename) {
-  return (
-    redoLinks(read(`../docs/interfaces/${filename}`))
+  return removeLinks(
+    read(`../docs/interfaces/${filename}`)
       .replace(/# Interface:\s*(.+)[^]+##\s*Properties/, '#### $1')
       .replace(/___/g, '')
       .replace(/\n### /g, '\n##### ')
@@ -53,14 +58,42 @@ function getInterfaceContent(filename) {
   )
 }
 
+function getClassContent(filename) {
+  return removeLinks(
+    read(`../docs/classes/${filename}`)
+      .replace(/# Class:\s*(.+)/, '#### $1')
+      .replace(/\[.+\]\([\.\/a-z]+\)\..+/, '')
+      .replace(/\n### .+/g, '')
+      .replace(/## Table of contents[^]+## Constructors/, '')
+      .replace(/___/g, '')
+  )
+}
+
+function getEnumContent(filename) {
+  return removeLinks(
+    read(`../docs/enums/${filename}`)
+      .replace(/# Enumeration:\s*(.+)/, '#### $1')
+      .replace(/\[.+\]\([\.\/a-z]+\)\..+/, '')
+      .replace(/\n### .+/g, '')
+      .replace(/## Table of contents[^]+## Enumeration members/, '')
+      .replace(/___/g, '')
+  )
+}
+
+data += getModuleFunctions('index.md', ['spokestackMiddleware', 'asrSocketServer'])
+
+data += getInterfaceContent('index.spokestackasrconfig.md')
+
 data += getModuleFunctions('index.md', [
-  'spokestackMiddleware',
-  'asrSocketServer',
   'asr',
   'googleASRSocketServer',
   'googleASR',
-  'encryptSecret'
+  'spokestackASRService'
 ])
+data += getInterfaceContent('index.spokestackresponse.md')
+data += getInterfaceContent('index.asrhypothesis.md')
+data += getEnumContent('index.asrformat.md')
+data += getModuleFunctions('index.md', ['encryptSecret'])
 
 data += '\n---\n\n## Convenience functions for the client'
 data += '\n\nThese functions are available exports from `spokestack/client`.'
@@ -71,10 +104,15 @@ data += getModuleFunctions('client.md', [
   'startStream',
   'stopStream',
   'convertFloat32ToInt16',
-  'startPipeline',
-  'stopPipeline',
-  'countdown'
+  'startPipeline'
 ])
+data += getClassContent('client.speechpipeline.md')
+data += getInterfaceContent('client.speechpipelineconfig.md')
+
+data += getEnumContent('client.pipelineprofile.md')
+data += getEnumContent('client.speecheventtype.md')
+data += getEnumContent('client.stage.md')
+data += getModuleFunctions('client.md', ['stopPipeline', 'countdown'])
 
 data += '\n---\n\n## Low-level processor functions'
 data +=
