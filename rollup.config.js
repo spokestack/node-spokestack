@@ -84,7 +84,7 @@ const worker = {
   ],
   output: {
     format: 'iife',
-    file: 'dist/web-worker.js'
+    file: 'dist/spokestack-web-worker.js'
   },
   watch: {
     include: ['src/worker/**']

@@ -25,7 +25,7 @@ app.prepare().then(() => {
 
   expressApp.use(
     '/spokestack-web-worker.js',
-    express.static(`./node_modules/spokestack/dist/web-worker${dev ? '' : '.min'}.js`)
+    express.static(`./node_modules/spokestack/dist/spokestack-web-worker${dev ? '' : '.min'}.js`)
   )
 
   expressApp.use('/graphql', bodyParser.json(), (req, res) => {

@@ -129,7 +129,7 @@ let pipeline: SpeechPipeline | undefined
  * ```ts
  * app.use(
  *   '/spokestack-web-worker.js',
- *   express.static(`./node_modules/spokestack/dist/web-worker.min.js`)
+ *   express.static(`./node_modules/spokestack/dist/spokestack-web-worker.min.js`)
  * )
  * ```
  *

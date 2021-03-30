@@ -1,10 +1,3 @@
-/**
- * @license
- * Copyright 2021 Spokestack, Inc. All Rights Reserved.
- * Licensed under the MIT license.
- * https://github.com/spokestack/node-spokestack/blob/develop/MIT-License.txt
- */
-
 import { SpeechConfig, SpeechEvent, SpeechEventType, Stage } from '../client/types'
 import { SpeechContext, SpeechProcessor } from './types'
 

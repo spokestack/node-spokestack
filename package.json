@@ -10,7 +10,7 @@
     "docs": "typedoc --excludePrivate --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
     "format": "eslint . --fix && prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",
     "lint": "concurrently --raw \"eslint .\" \"npm run prettier\" \"npm run typescript\"",
-    "minify:worker": "uglifyjs --compress --mangle --output dist/web-worker.min.js -- dist/web-worker.js",
+    "minify:worker": "ts-node --skip-project compress.ts",
     "prepare": "husky install && npm run build",
     "prettier": "prettier --check \"**/*.md\" \"**/*.json\"",
     "release": "release-it",
@@ -80,11 +80,11 @@
     "rollup": "^2.44.0",
     "rollup-plugin-typescript2": "^0.30.0",
     "sinon": "^10.0.0",
+    "terser": "^5.6.1",
     "ts-node": "^9.1.1",
     "typedoc": "^0.20.33",
     "typedoc-plugin-markdown": "^3.6.0",
-    "typescript": "^4.2.3",
-    "uglify-js": "^3.13.3"
+    "typescript": "^4.2.3"
   },
   "prettier": {
     "printWidth": 100,
@@ -139,9 +139,7 @@
     "dist",
     "examples",
     ".next",
-    "*.d.ts",
-    "tfjs.js",
-    "web-worker.js"
+    "*.d.ts"
   ],
   "release-it": {
     "hooks": {

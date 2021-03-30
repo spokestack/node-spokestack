@@ -3,6 +3,6 @@
   "compilerOptions": {
     "lib": ["WebWorker", "esnext"]
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "compress.ts"],
   "include": ["./**/*.ts"]
 }
