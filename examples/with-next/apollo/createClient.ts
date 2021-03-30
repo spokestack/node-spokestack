@@ -18,7 +18,7 @@ export default function createClient() {
             )
           })
         } else {
-          console.log(graphQLErrors)
+          console.error(graphQLErrors)
         }
       }
       if (networkError) {

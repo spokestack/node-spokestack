@@ -23,12 +23,12 @@ export default function concatenateAudioBuffers(
   const b2 = buffer2 as AudioBuffer
 
   if (b1.numberOfChannels !== b2.numberOfChannels) {
-    console.log('Number of channels is not the same!')
+    console.error('Number of channels is not the same!')
     return null
   }
 
   if (b1.sampleRate !== b2.sampleRate) {
-    console.log("Sample rates don't match!")
+    console.error("Sample rates don't match!")
     return null
   }
 

@@ -43,7 +43,8 @@ import spokestackService from './spokestackASRService'
 export function asr(content: string | Uint8Array, sampleRate: number): Promise<string | null> {
   return new Promise((resolve, reject) => {
     spokestackService({ sampleRate }, (response) => {
-      if (response.final) {
+      // console.log('[asr] response', response)
+      if (response.status === 'ok' && response.final) {
         resolve(
           response.hypotheses
             .map((value) => value && value.transcript)
@@ -51,14 +52,15 @@ export function asr(content: string | Uint8Array, sampleRate: number): Promise<s
             .join('\n')
         )
       } else if (response.status === 'error') {
+        console.error('Unexpected ASR error', response.error)
         reject(new Error(response.error))
       }
     })
       .then((spokestackSocket) => {
         spokestackSocket.on('error', reject)
         spokestackSocket.send(content)
-        // Send an empty string to signal that the transaction is done
-        spokestackSocket.send('')
+        // Send an empty buffer to signal that the transaction is done
+        spokestackSocket.send(Buffer.from(''))
       })
       .catch(reject)
   })

@@ -51,7 +51,7 @@ export interface SpokestackResponse {
    * the highest confidence transcript for the utterance is sent.
    * However, this will only be set to true after
    * signaling to Spokestack ASR that no more audio data is incoming.
-   * Signal this by sending an empty string (e.g. `socket.send('')`).
+   * Signal this by sending an empty buffer (e.g. `socket.send(Buffer.from(''))`).
    * See the source for `asr` for an example.
    */
   final: boolean
@@ -127,7 +127,7 @@ export default function asrService(
   }
 
   socket.on('message', (data: string) => {
-    console.log('Spokestack ASR socket message', data)
+    // console.log('Spokestack ASR socket message', data)
     try {
       const json: SpokestackResponse = JSON.parse(data)
       if (
