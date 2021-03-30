@@ -1,8 +1,9 @@
+import * as tf from '@tensorflow/tfjs'
+
 import { CommandModels, SpeechContext, SpeechProcessor } from '../types'
 import { SpeechConfig, SpeechEvent, SpeechEventType } from '../../client/types'
 
 import RingBuffer from '../RingBuffer'
-import type { Tensor } from '@tensorflow/tfjs'
 
 const defaultConfig = {
   melLength: 110,
@@ -79,9 +80,9 @@ export default class KeywordRecognizer implements SpeechProcessor {
   private models: CommandModels
   private hopSamples: number
   private sampleWindow = new RingBuffer<number>(0)
-  private encodeWindow = new RingBuffer<Tensor>(0)
-  private encodeState = self.tf.zeros([1])
-  private frameWindow = new RingBuffer<Tensor>(0)
+  private encodeWindow = new RingBuffer<tf.Tensor>(0)
+  private encodeState = tf.zeros([1])
+  private frameWindow = new RingBuffer<tf.Tensor>(0)
   private vadActive = false
 
   static async create(config: SpeechConfig) {
@@ -100,7 +101,6 @@ export default class KeywordRecognizer implements SpeechProcessor {
   }
 
   constructor(models: CommandModels, options: KeywordRecognizerConfig) {
-    const tf = self.tf
     this.models = models
     const config = (this.config = { ...defaultConfig, ...options })
 
@@ -109,7 +109,7 @@ export default class KeywordRecognizer implements SpeechProcessor {
     this.sampleWindow = new RingBuffer<number>(config.fftWidth)
 
     const melSamples = (config.melLength * config.sampleRate) / 1000 / this.hopSamples
-    this.frameWindow = new RingBuffer<Tensor>(melSamples)
+    this.frameWindow = new RingBuffer<tf.Tensor>(melSamples)
     const frameFill = tf.zeros([config.melWidth])
     this.frameWindow.fill(frameFill)
 
@@ -118,7 +118,7 @@ export default class KeywordRecognizer implements SpeechProcessor {
       const encodeLength = detectIn[1]
       const encodeWidth = detectIn[detectIn.length - 1]
 
-      this.encodeWindow = new RingBuffer<Tensor>(encodeLength)
+      this.encodeWindow = new RingBuffer<tf.Tensor>(encodeLength)
       const encodeFill = tf.fill([encodeWidth], -1.0)
       this.encodeWindow.fill(encodeFill)
     } else {
@@ -134,7 +134,6 @@ export default class KeywordRecognizer implements SpeechProcessor {
   }
 
   static async loadModels(baseUrl: string, sampleRate: number): Promise<CommandModels> {
-    const tf = self.tf
     return Promise.all([
       tf.loadGraphModel(`${baseUrl}/filter_${sampleRate}/model.json`),
       tf.loadGraphModel(`${baseUrl}/encode/model.json`),
@@ -166,32 +165,31 @@ export default class KeywordRecognizer implements SpeechProcessor {
     }
   }
 
-  async filter() {
-    const tf = self.tf
+  filter() {
     const frame = this.sampleWindow.toArray()
-    const filtered = this.models.filter.execute([tf.stack(frame)]) as Tensor
+    const result = this.models.filter.execute(tf.stack(frame))
+    const filtered = Array.isArray(result) ? result[0] : result
     this.frameWindow.rewind().seek(1)
     this.frameWindow.write(filtered)
-    await this.encode()
+    return this.encode()
   }
 
   async encode() {
-    const tf = self.tf
     const filtered = this.frameWindow.toArray()
     const stacked = tf.stack(filtered)
     const input = [tf.expandDims(stacked), this.encodeState]
-    const result = (await this.models.encode.executeAsync(input)) as Tensor[]
+    const result = (await this.models.encode.executeAsync(input)) as tf.Tensor[]
     this.encodeWindow.rewind().seek(1)
     this.encodeWindow.write(tf.squeeze(result[0]))
     this.encodeState = tf.squeeze(result[1], [0])
   }
 
   async classify(context: SpeechContext) {
-    const tf = self.tf
     const encoded = this.encodeWindow.toArray()
     const stacked = tf.stack(encoded)
     const input = tf.expandDims(stacked)
-    const detected = this.models.detect.execute([input]) as Tensor
+    const result = this.models.detect.execute(input)
+    const detected = Array.isArray(result) ? result[0] : result
     // look up class
     const clazz = tf.argMax(detected, 1).dataSync()[0]
     const keyword = this.config.keywordClasses[clazz]
@@ -216,7 +214,6 @@ export default class KeywordRecognizer implements SpeechProcessor {
   }
 
   reset() {
-    const tf = self.tf
     this.sampleWindow.reset()
 
     const frameFill = tf.zeros([this.config.melWidth])

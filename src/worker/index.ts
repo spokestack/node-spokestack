@@ -4,9 +4,6 @@
  * Licensed under the MIT license.
  * https://github.com/spokestack/node-spokestack/blob/develop/MIT-License.txt
  */
-importScripts('/tensorflow.js')
-
-import type * as tf from '@tensorflow/tfjs'
 
 import { SpeechConfig, SpeechEvent, SpeechEventType, Stage } from '../client/types'
 import { SpeechContext, SpeechProcessor } from './types'
@@ -14,12 +11,6 @@ import { SpeechContext, SpeechProcessor } from './types'
 import KeywordRecognizer from './processors/keyword'
 import VadTrigger from './processors/vad'
 import WakewordTrigger from './processors/wakeword'
-
-declare global {
-  interface WorkerGlobalScope {
-    tf: typeof tf
-  }
-}
 
 interface Frame {
   vad: boolean

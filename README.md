@@ -51,10 +51,20 @@ app.use(
   '/spokestack-web-worker.js',
   express.static(`./node_modules/spokestack/dist/web-worker.min.js`)
 )
-app.use('/tensorflow.js', express.static(`./node_modules/spokestack/dist/tensorflow.min.js`))
 ```
 
 With these made available to your front-end, the speech pipeline can be started.
+
+Another option is to copy the file from node_modules to your static/public folder during your build process.
+
+```json
+// In package.json
+"scripts": {
+  // ...
+  "copy:spokestack": "cp node_modules/spokestack/dist/web-worker.min.js public/spokestack-web-worker.js",
+  "build": "npm run copy:spokestack && next build"
+}
+```
 
 ## Setup
 

@@ -27,10 +27,6 @@ app.prepare().then(() => {
     '/spokestack-web-worker.js',
     express.static(`./node_modules/spokestack/dist/web-worker${dev ? '' : '.min'}.js`)
   )
-  expressApp.use(
-    '/tensorflow.js',
-    express.static(`./node_modules/spokestack/dist/tensorflow${dev ? '' : '.min'}.js`)
-  )
 
   expressApp.use('/graphql', bodyParser.json(), (req, res) => {
     const accept = req.headers.accept || ''

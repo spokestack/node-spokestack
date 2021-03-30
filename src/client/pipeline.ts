@@ -131,10 +131,6 @@ let pipeline: SpeechPipeline | undefined
  *   '/spokestack-web-worker.js',
  *   express.static(`./node_modules/spokestack/dist/web-worker.min.js`)
  * )
- * app.use(
- *   '/tensorflow.js',
- *   express.static(`./node_modules/spokestack/dist/tensorflow.min.js`)
- * )
  * ```
  *
  * ```ts

@@ -1,8 +1,9 @@
+import * as tf from '@tensorflow/tfjs'
+
 import { CommandModels, SpeechContext, SpeechProcessor } from '../types'
 import { SpeechConfig, SpeechEvent, SpeechEventType } from '../../client/types'
 
 import RingBuffer from '../RingBuffer'
-import type { Tensor } from '@tensorflow/tfjs'
 
 const defaultConfig = {
   melLength: 10,
@@ -74,9 +75,9 @@ export default class WakewordTrigger implements SpeechProcessor {
   private models: CommandModels
   private hopSamples: number
   private sampleWindow = new RingBuffer<number>(0)
-  private encodeWindow = new RingBuffer<Tensor>(0)
-  private encodeState = self.tf.zeros([1])
-  private frameWindow = new RingBuffer<Tensor>(0)
+  private encodeWindow = new RingBuffer<tf.Tensor>(0)
+  private encodeState = tf.zeros([1])
+  private frameWindow = new RingBuffer<tf.Tensor>(0)
   private vadActive = false
 
   static async create(config: SpeechConfig) {
@@ -88,7 +89,6 @@ export default class WakewordTrigger implements SpeechProcessor {
   }
 
   constructor(models: CommandModels, options: WakewordTriggerConfig) {
-    const tf = self.tf
     const config = (this.config = { ...defaultConfig, ...options })
     this.models = models
 
@@ -101,7 +101,7 @@ export default class WakewordTrigger implements SpeechProcessor {
     this.hopSamples = config.hopLength * (config.sampleRate / 1000)
     this.sampleWindow = new RingBuffer<number>(config.fftWidth)
     const melSamples = (config.melLength * config.sampleRate) / 1000 / this.hopSamples
-    this.frameWindow = new RingBuffer<Tensor>(melSamples)
+    this.frameWindow = new RingBuffer<tf.Tensor>(melSamples)
     const frameFill = tf.zeros([config.melWidth])
     this.frameWindow.fill(frameFill)
 
@@ -110,7 +110,7 @@ export default class WakewordTrigger implements SpeechProcessor {
       const encodeLength = detectIn[1]
       const encodeWidth = detectIn[detectIn.length - 1]
 
-      this.encodeWindow = new RingBuffer<Tensor>(encodeLength)
+      this.encodeWindow = new RingBuffer<tf.Tensor>(encodeLength)
       const encodeFill = tf.fill([encodeWidth], -1.0)
       this.encodeWindow.fill(encodeFill)
     } else {
@@ -126,7 +126,6 @@ export default class WakewordTrigger implements SpeechProcessor {
   }
 
   static async loadModels(baseUrl: string): Promise<CommandModels> {
-    const tf = self.tf
     return Promise.all([
       tf.loadGraphModel(`${baseUrl}/filter/model.json`),
       tf.loadGraphModel(`${baseUrl}/encode/model.json`),
@@ -161,32 +160,32 @@ export default class WakewordTrigger implements SpeechProcessor {
     }
   }
 
-  async filter(context: SpeechContext) {
+  filter(context: SpeechContext) {
     const frame = this.sampleWindow.toArray()
-    const filtered = this.models.filter.execute([self.tf.stack(frame)]) as Tensor
+    const filtered = this.models.filter.execute(tf.stack(frame))
     this.frameWindow.rewind().seek(1)
-    this.frameWindow.write(filtered)
-    await this.encode(context)
+    this.frameWindow.write(Array.isArray(filtered) ? filtered[0] : filtered)
+    return this.encode(context)
   }
 
   async encode(context: SpeechContext) {
-    const tf = self.tf
     const filtered = this.frameWindow.toArray()
     const stacked = tf.stack(filtered)
     const input = [tf.expandDims(stacked), this.encodeState]
-    const result = (await this.models.encode.executeAsync(input)) as Tensor[]
+    const result = (await this.models.encode.executeAsync(input)) as tf.Tensor[]
+    console.log(JSON.stringify(result))
     this.encodeWindow.rewind().seek(1)
     this.encodeWindow.write(tf.squeeze(result[0]))
     this.encodeState = result[1]
-    await this.detect(context)
+    return this.detect(context)
   }
 
-  async detect(context: SpeechContext) {
-    const tf = self.tf
+  detect(context: SpeechContext) {
     const encoded = this.encodeWindow.toArray()
     const stacked = tf.stack(encoded)
     const input = tf.expandDims(stacked)
-    const detected = this.models.detect.execute([input]) as Tensor
+    const result = this.models.detect.execute(input)
+    const detected = Array.isArray(result) ? result[0] : result
     const confidence = tf.max(detected).dataSync()[0]
 
     // console.log(`wakeword: ${confidence.toFixed(6)}`)
@@ -205,7 +204,6 @@ export default class WakewordTrigger implements SpeechProcessor {
   }
 
   reset() {
-    const tf = self.tf
     this.sampleWindow.reset()
 
     const frameFill = tf.zeros([this.config.melWidth])

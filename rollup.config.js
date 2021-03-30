@@ -1,3 +1,4 @@
+import alias from '@rollup/plugin-alias'
 import commonjs from '@rollup/plugin-commonjs'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import typescript from 'rollup-plugin-typescript2'
@@ -65,30 +66,20 @@ const client = {
   }
 }
 
-const tfjs = {
-  input: './custom_tfjs/custom_tfjs.js',
-  plugins: [
-    commonjs(),
-    nodeResolve({
-      browser: true
-    })
-  ],
-  output: {
-    compact: true,
-    format: 'iife',
-    name: 'tf',
-    file: 'dist/tensorflow.js'
-  },
-  watch: {
-    include: ['custom_tfjs/**']
-  }
-}
-
 const worker = {
   input: './src/worker/index.ts',
   plugins: [
+    alias({
+      entries: {
+        '@tensorflow/tfjs': './custom_tfjs/custom_tfjs.js'
+      }
+    }),
     typescript({
       tsconfig: 'src/worker/tsconfig.json'
+    }),
+    commonjs(),
+    nodeResolve({
+      browser: true
     })
   ],
   output: {
@@ -100,4 +91,4 @@ const worker = {
   }
 }
 
-export default [server, client, tfjs, worker]
+export default [server, client, worker]
