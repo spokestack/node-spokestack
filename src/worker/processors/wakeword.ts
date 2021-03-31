@@ -84,7 +84,7 @@ export default class WakewordTrigger implements SpeechProcessor {
     if (!config.baseWakewordUrl) {
       throw new Error('wakeword URL required')
     }
-    const models = await WakewordTrigger.loadModels(config.baseWakewordUrl)
+    const models = await WakewordTrigger.loadModels(config.baseWakewordUrl, config.fftWidth)
     return new WakewordTrigger(models, config as WakewordTriggerConfig)
   }
 
@@ -125,9 +125,9 @@ export default class WakewordTrigger implements SpeechProcessor {
     }
   }
 
-  static async loadModels(baseUrl: string): Promise<CommandModels> {
+  static async loadModels(baseUrl: string, fftWidth: number): Promise<CommandModels> {
     return Promise.all([
-      tf.loadGraphModel(`${baseUrl}/filter/model.json`),
+      tf.loadGraphModel(`${baseUrl}/filter_${fftWidth}/model.json`),
       tf.loadGraphModel(`${baseUrl}/encode/model.json`),
       tf.loadGraphModel(`${baseUrl}/detect/model.json`)
     ]).then((models) => {
@@ -172,8 +172,8 @@ export default class WakewordTrigger implements SpeechProcessor {
     const filtered = this.frameWindow.toArray()
     const stacked = tf.stack(filtered)
     const input = [tf.expandDims(stacked), this.encodeState]
-    const result = (await this.models.encode.executeAsync(input)) as tf.Tensor[]
-    // console.log(JSON.stringify(result))
+    const outputNodes = ['Identity', 'Identity_1']
+    const result = (await this.models.encode.executeAsync(input, outputNodes)) as tf.Tensor[]
     this.encodeWindow.rewind().seek(1)
     this.encodeWindow.write(tf.squeeze(result[0]))
     this.encodeState = result[1]
@@ -184,8 +184,7 @@ export default class WakewordTrigger implements SpeechProcessor {
     const encoded = this.encodeWindow.toArray()
     const stacked = tf.stack(encoded)
     const input = tf.expandDims(stacked)
-    const result = this.models.detect.execute(input)
-    const detected = Array.isArray(result) ? result[0] : result
+    const detected = this.models.detect.execute(input, 'Identity') as tf.Tensor
     const confidence = tf.max(detected).dataSync()[0]
 
     // console.log(`wakeword: ${confidence.toFixed(6)}`)
