@@ -178,11 +178,11 @@ export default class KeywordRecognizer implements SpeechProcessor {
     const filtered = this.frameWindow.toArray()
     const stacked = tf.stack(filtered)
     const input = [tf.expandDims(stacked), this.encodeState]
-    const outputNodes = ['Identity_1', 'Identity']
+    const outputNodes = ['Identity', 'Identity_1']
     const result = (await this.models.encode.executeAsync(input, outputNodes)) as tf.Tensor[]
     this.encodeWindow.rewind().seek(1)
     this.encodeWindow.write(tf.squeeze(result[0]))
-    this.encodeState = tf.squeeze(result[1], [0])
+    this.encodeState = result[1]
   }
 
   async classify(context: SpeechContext) {

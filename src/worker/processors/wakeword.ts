@@ -174,7 +174,6 @@ export default class WakewordTrigger implements SpeechProcessor {
     const input = [tf.expandDims(stacked), this.encodeState]
     const outputNodes = ['Identity', 'Identity_1']
     const result = (await this.models.encode.executeAsync(input, outputNodes)) as tf.Tensor[]
-    // console.log(JSON.stringify(result))
     this.encodeWindow.rewind().seek(1)
     this.encodeWindow.write(tf.squeeze(result[0]))
     this.encodeState = result[1]
