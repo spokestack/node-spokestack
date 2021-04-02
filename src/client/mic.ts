@@ -13,8 +13,14 @@ declare global {
 let stream: MediaStream | undefined
 
 export function startRecord(): Promise<MediaStream | void> {
+  const constraints = {
+    autoGainControl: true,
+    channelCount: 1,
+    echoCancellation: true,
+    noiseSuppression: true
+  }
   return navigator.mediaDevices
-    .getUserMedia({ audio: true })
+    .getUserMedia({ audio: constraints })
     .then((s) => (stream = s))
     .catch(console.error.bind(console))
 }
