@@ -2,14 +2,16 @@
 
 ### tldr;
 
-- Run the site with `npm start`
-- Rebuild docs with `npm run docs`
-- Prettier enforces the style guide and will format on commit.
+- Install dependencies with `npm run bootstrap`.
+- Build with `npm run build`, or watch for changes and rebuild on change with `npm start`.
+- Update docs by updating type definitions in code then running `npm run docs` to regenerate the README.
+
+Each example has its own README with usage instructions.
 
 **[Supported browsers](https://browserl.ist/?q=%3E0.35%25%2C+not+op_mini+all)**: (basically IE 11, modern desktop and mobile browsers)
 
 Contributions are always welcome. Before contributing please [search the issue tracker](https://github.com/spokestack/node-spokestack/issues); your issue
-may have already been discussed or fixed in `master`. To contribute,
+may have already been discussed or fixed in `develop`. To contribute,
 [fork](https://help.github.com/articles/fork-a-repo/) Spokestack, commit your changes,
 & [send a pull request](https://help.github.com/articles/using-pull-requests/).
 

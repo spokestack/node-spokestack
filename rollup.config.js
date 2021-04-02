@@ -23,7 +23,7 @@ const server = {
     banner: `/**
 * Custom tools for easy integration with the Spokestack API
 * Copyright Spokestack
-* https://github.com/spokestack/node-spokestack/blob/master/MIT-License.txt
+* https://github.com/spokestack/node-spokestack/blob/develop/MIT-License.txt
 */`,
     format: 'cjs',
     name: 'Spokestack',
@@ -56,7 +56,7 @@ const client = {
     banner: `/**
 * Custom tools for recording audio and processing voice on the client
 * Copyright Spokestack
-* https://github.com/spokestack/node-spokestack/blob/master/MIT-License.txt
+* https://github.com/spokestack/node-spokestack/blob/develop/MIT-License.txt
 */`,
     format: 'cjs',
     file: 'dist/client.js'

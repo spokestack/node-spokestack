@@ -2,7 +2,7 @@
 
 Please review the [guidelines for contributing](CONTRIBUTING.md) to this repository.
 
-- [ ] I am requesting to **pull a topic/feature/bugfix branch** (right side). In other words, not _master_.
+- [ ] I am requesting to **pull a topic/feature/bugfix branch** (right side). In other words, not _develop_.
 - [ ] I have run `npm test` against my changes and tests pass.
 - [ ] I have added or edited necessary types and generated documentation (`npm run docs`), or no docs changes are needed.
 
