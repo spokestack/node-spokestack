@@ -52,8 +52,15 @@ export interface SpeechConfig {
    *  for wakeword/keyword models
    */
   melWidth?: number
+  /**
+   *  length of the sliding window of wakeword/keyword encoder output
+   *  used as an input to the classifier, in milliseconds
+   */
+  encodeLength?: number
   /** size of the encoder output vector in wakeword/keyword models **/
   encodeWidth?: number
+  /** size of the encoder state vector in wakeword/keyword models **/
+  stateWidth?: number
   /** confidence threshold below which wakeword detections are
    *  considered invalid
    */

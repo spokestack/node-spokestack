@@ -8,7 +8,9 @@ import RingBuffer from '../RingBuffer'
 const defaultConfig = {
   melLength: 10,
   melWidth: 40,
+  encodeLength: 1000,
   encodeWidth: 128,
+  stateWidth: 128,
   hopLength: 10,
   wakeThreshold: 0.5
 }
@@ -64,8 +66,13 @@ export type WakewordTriggerConfig = Omit<WakewordOnlyConfig, 'baseWakewordUrl'> 
  *      used as an input to the encoder, in milliseconds
  *  1. **melWidth** (integer): The size of each mel spectrogram
  *      frame, in number of filterbank components
+ *  1. **encodeLength** (integer): the length of the sliding window
+ *      of encoder output used as an input to the classifier,
+ *      in milliseconds
  *  1. **encodeWidth** (integer): the size of the encoder output,
  *      in vector units
+ *  1. **stateWidth** (integer): the size of the encoder state,
+ *      in vector units (defaults to `encodeWidth`)
  *  1. **wakeThreshold** (double): the threshold of the classifier's
  *     posterior output, above which the trigger activates the pipeline,
  *     in the range [0, 1]
@@ -105,24 +112,11 @@ export default class WakewordTrigger implements SpeechProcessor {
     const frameFill = tf.zeros([config.melWidth])
     this.frameWindow.fill(frameFill)
 
-    const detectIn = this.models.detect.inputs[0].shape
-    if (detectIn) {
-      const encodeLength = detectIn[1]
-      const encodeWidth = detectIn[detectIn.length - 1]
-
-      this.encodeWindow = new RingBuffer<tf.Tensor>(encodeLength)
-      const encodeFill = tf.fill([encodeWidth], -1.0)
-      this.encodeWindow.fill(encodeFill)
-    } else {
-      throw new Error('unable to load the detect model')
-    }
-
-    const encodeIn = this.models.encode.inputs[1].shape
-    if (encodeIn) {
-      this.encodeState = tf.zeros([1, encodeIn[1]])
-    } else {
-      throw new Error('unable to load the encode model')
-    }
+    const encodeLength = (config.encodeLength * config.sampleRate) / 1000 / this.hopSamples
+    this.encodeWindow = new RingBuffer<tf.Tensor>(encodeLength)
+    const encodeFill = tf.fill([config.encodeWidth], -1.0)
+    this.encodeWindow.fill(encodeFill)
+    this.encodeState = tf.zeros([1, config.stateWidth])
   }
 
   static async loadModels(baseUrl: string, fftWidth: number): Promise<CommandModels> {
@@ -171,7 +165,7 @@ export default class WakewordTrigger implements SpeechProcessor {
   async encode(context: SpeechContext) {
     const filtered = this.frameWindow.toArray()
     const stacked = tf.stack(filtered)
-    const input = [tf.expandDims(stacked), this.encodeState]
+    const input = { encode_inputs: tf.expandDims(stacked), state_inputs: this.encodeState }
     const outputNodes = ['Identity', 'Identity_1']
     const result = (await this.models.encode.executeAsync(input, outputNodes)) as tf.Tensor[]
     this.encodeWindow.rewind().seek(1)
@@ -208,11 +202,8 @@ export default class WakewordTrigger implements SpeechProcessor {
     const frameFill = tf.zeros([this.config.melWidth])
     this.frameWindow.reset().fill(frameFill)
 
-    const detectIn = this.models.detect.inputs[0].shape as number[]
-    const encodeWidth = detectIn[detectIn.length - 1]
-    const encodeFill = tf.fill([encodeWidth], -1.0)
+    const encodeFill = tf.fill([this.config.encodeWidth], -1.0)
     this.encodeWindow.reset().fill(encodeFill)
-    const encodeIn = this.models.encode.inputs[1].shape as number[]
-    this.encodeState = tf.zeros([1, encodeIn[1]])
+    this.encodeState = tf.zeros([1, this.config.stateWidth])
   }
 }
