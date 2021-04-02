@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "bootstrap": "concurrently --raw \"npm i\" \"cd examples/with-next && npm i\"",
     "build": "npm run clean && rollup --config && npm run minify:worker",
     "clean": "rm -rf dist/",
     "docs": "typedoc --excludePrivate --plugin typedoc-plugin-markdown --hideBreadcrumbs --out docs --readme none src/index.ts src/client.ts && node tasks/docs.js",
