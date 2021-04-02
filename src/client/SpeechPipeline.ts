@@ -84,8 +84,11 @@ export default class SpeechPipeline {
    */
   async start(): Promise<SpeechPipeline> {
     this.worker = await this.initWorker()
-    const stream = await startRecord()
-    if (!stream) {
+    let stream: MediaStream
+    try {
+      stream = await startRecord()
+    } catch (e) {
+      console.error(e)
       throw new Error(
         `There was a problem starting the microphone. ${
           navigator.__polyfilledMediaDevices

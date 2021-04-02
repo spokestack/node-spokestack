@@ -12,17 +12,15 @@ declare global {
 
 let stream: MediaStream | undefined
 
-export function startRecord(): Promise<MediaStream | void> {
+export async function startRecord(): Promise<MediaStream> {
   const constraints = {
     autoGainControl: true,
     channelCount: 1,
     echoCancellation: true,
     noiseSuppression: true
   }
-  return navigator.mediaDevices
-    .getUserMedia({ audio: constraints })
-    .then((s) => (stream = s))
-    .catch(console.error.bind(console))
+  const s = await navigator.mediaDevices.getUserMedia({ audio: constraints })
+  return (stream = s)
 }
 
 export function stopRecord() {

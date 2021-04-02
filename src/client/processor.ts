@@ -21,8 +21,11 @@ export interface ProcessorReturnValue {
  */
 export async function startProcessor(): Promise<[Error] | [null, ProcessorReturnValue]> {
   stopProcessor()
-  const stream = await startRecord()
-  if (!stream) {
+  let stream: MediaStream
+  try {
+    stream = await startRecord()
+  } catch (e) {
+    console.error(e)
     return [
       new Error(
         `There was a problem starting the microphone. ${
