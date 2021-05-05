@@ -1,5 +1,5 @@
 {
   "watch": ["server", "../../dist/index.js"],
-  "exec": "ts-node --project tsconfig.server.json server/index.ts",
+  "exec": "cross-env TS_NODE_PROJECT=tsconfig.server.json node --inspect=5858 -r ts-node/register server/index.ts",
   "ext": "js ts"
 }

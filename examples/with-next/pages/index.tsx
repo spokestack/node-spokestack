@@ -27,7 +27,7 @@ interface CommandDemo {
 }
 
 interface State {
-  activeDemo: string | undefined
+  activeDemo: string | null
   error: string
   keyword: CommandDemo
   results: Repo[]
@@ -44,7 +44,7 @@ export default class Index extends PureComponent {
   private playing = false
   private initialized = false
   state: State = {
-    activeDemo: undefined,
+    activeDemo: null,
     error: '',
     keyword: { error: '', status: 'Idle', result: '' },
     results: [],
@@ -69,12 +69,13 @@ export default class Index extends PureComponent {
 
   componentDidMount() {
     this.client = createClient()
-    this.audio = new Audio()
   }
 
   componentWillUnmount() {
     this.client?.stop()
+    this.audio?.removeEventListener('play', this.play)
     this.audio?.removeEventListener('pause', this.pause)
+    this.audio?.removeEventListener('error', this.handleAudioError)
   }
 
   toggleWakeword = async () => {
@@ -180,28 +181,37 @@ export default class Index extends PureComponent {
     })
   }
 
-  initialize() {
+  initializeAudio() {
     if (this.initialized) {
       return
     }
     this.initialized = true
-    if (this.audio) {
-      // Play in response to a click
-      // so future plays do not require a click
-      this.audio.play()
-      this.audio.addEventListener('pause', this.pause)
-      this.audio.addEventListener('error', () => {
-        this.setState({ status: 'There was an error loading the audio.' })
-        if (this.state.activeDemo === 'searchStream') {
-          this.toggleRecordStream()
-        }
-      })
-    }
+    // Play in response to a click
+    // so future plays do not require a click
+    this.audio = new Audio()
+    this.audio.play()
+    this.audio.addEventListener('play', this.play)
+    this.audio.addEventListener('pause', this.pause)
+    this.audio.addEventListener('error', this.handleAudioError)
+  }
+
+  play = () => {
+    this.playing = true
+    this.setState({ status: 'Playing audio...' })
   }
 
   pause = () => {
     this.playing = false
     this.setState({ status: this.state.activeDemo === 'searchStream' ? 'Recording...' : 'Idle' })
+  }
+
+  handleAudioError = (error: ErrorEvent) => {
+    console.error(error)
+    this.playing = false
+    this.setState({ status: 'There was an error loading the audio.' })
+    if (this.state.activeDemo === 'searchStream') {
+      this.toggleRecordStream()
+    }
   }
 
   getPrompt(response: { total_count: number; items: { name: string }[] }) {
@@ -230,7 +240,7 @@ export default class Index extends PureComponent {
       })
       return
     }
-    this.setState({ searching: true, status: 'Searching...' })
+    this.setState({ searching: true })
     result
       .then(async (response) => {
         // console.log(`Got response for term: ${term}`)
@@ -251,8 +261,6 @@ export default class Index extends PureComponent {
           })
           const data = res.data && res.data.synthesizeText
           if (data.url && this.audio) {
-            this.setState({ status: 'Playing audio...' })
-            this.playing = true
             this.audio.src = data.url
             this.audio.play()
           }
@@ -273,7 +281,7 @@ export default class Index extends PureComponent {
     if (this.state.activeDemo || this.playing) {
       return
     }
-    this.initialize()
+    this.initializeAudio()
     this.setState({ activeDemo: 'search' })
     let buffer: AudioBuffer
     try {
@@ -318,52 +326,58 @@ export default class Index extends PureComponent {
   toggleRecordStream = async () => {
     const { activeDemo } = this.state
     if (activeDemo !== null && activeDemo !== 'searchStream') {
+      console.log('activeDemo', activeDemo)
       return
     }
     if (activeDemo === 'searchStream') {
+      console.log('Stopping recording stream')
       stopStream()
       this.setState({ activeDemo: null })
-    } else if (!this.playing) {
-      this.initialize()
+      return
+    }
+    if (this.playing) {
+      console.log('Cannot start stream. Currently playing audio')
+      return
+    }
+    this.initializeAudio()
+    try {
+      let ws: WebSocket
       try {
-        let ws: WebSocket
-        try {
-          ;[ws] = await startStream({ isPlaying: () => this.playing })
-        } catch (e) {
-          console.error(e)
-          this.setState({ activeDemo: null, error: e.message })
-          return
-        }
-        ws.addEventListener('open', () =>
-          this.setState({ activeDemo: 'searchStream', status: 'Recording...' })
-        )
-        ws.addEventListener('close', (event) => {
-          this.setState({
-            activeDemo: null,
-            status:
-              event.code === 1002
-                ? event.reason ||
-                  'There was a problem starting the record stream. Please refresh and try again.'
-                : 'Idle'
-          })
-        })
-        ws.addEventListener('error', (event) => {
-          console.error(event)
-          this.setState({
-            activeDemo: null,
-            status: 'There was a problem starting the record stream. Please refresh and try again.'
-          })
-        })
-        ws.addEventListener('message', (e) => {
-          this.updateTerm(e.data)
-        })
+        ;[ws] = await startStream({ isPlaying: () => this.playing })
       } catch (e) {
         console.error(e)
+        this.setState({ activeDemo: null, error: e.message })
+        return
+      }
+      ws.addEventListener('open', () =>
+        this.setState({ activeDemo: 'searchStream', status: 'Recording...' })
+      )
+      ws.addEventListener('close', (event) => {
+        this.setState({
+          activeDemo: null,
+          status:
+            event.code === 1002
+              ? event.reason ||
+                'There was a problem starting the record stream. Please refresh and try again.'
+              : 'Idle'
+        })
+      })
+      ws.addEventListener('error', (event) => {
+        console.error(event)
         this.setState({
           activeDemo: null,
           status: 'There was a problem starting the record stream. Please refresh and try again.'
         })
-      }
+      })
+      ws.addEventListener('message', (e) => {
+        this.updateTerm(e.data)
+      })
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        activeDemo: null,
+        status: 'There was a problem starting the record stream. Please refresh and try again.'
+      })
     }
   }
 

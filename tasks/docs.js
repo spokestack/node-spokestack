@@ -81,12 +81,13 @@ function getEnumContent(filename) {
 }
 
 data += getModuleFunctions('index.md', ['spokestackMiddleware', 'asrSocketServer'])
-
 data += getInterfaceContent('index.spokestackasrconfig.md')
-
+data += getModuleFunctions('index.md', ['googleASRSocketServer', 'setupSocketServer'])
+data += getInterfaceContent('index.setupspokestackconfig.md')
+data += getInterfaceContent('index.setupgoogleconfig.md')
 data += getModuleFunctions('index.md', [
+  'createSocketConnectionHandler',
   'asr',
-  'googleASRSocketServer',
   'googleASR',
   'spokestackASRService'
 ])
