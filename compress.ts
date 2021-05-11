@@ -12,6 +12,6 @@ minify(code, {
   }
 }).then((result) => {
   const minified = result.code
-  console.log(minified?.length)
+  console.log(`Worker minified size: ${(Math.floor(minified?.length / 10) * 10) / 1000}kb`)
   fs.writeFileSync('./dist/spokestack-web-worker.min.js', license + minified)
 })
