@@ -1,8 +1,7 @@
-import { Request, Response } from 'express'
-
 import encryptSecret from './encryptSecret'
 import fetch from 'node-fetch'
 import { v4 as uuid } from 'uuid'
+import type { Request, Response } from 'express'
 
 /**
  * Express middleware for adding a proxy to the Spokestack GraphQL API.
@@ -35,7 +34,7 @@ import { v4 as uuid } from 'uuid'
  * ```
  */
 export default function spokestackMiddleware(): (req: Request, res: Response) => void {
-  return function (req: Request, res: Response) {
+  return function (req, res) {
     if (!process.env.SS_API_CLIENT_ID) {
       res.status(500)
       res.send('SS_API_CLIENT_ID is not set in the server environment.')
