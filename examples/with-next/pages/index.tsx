@@ -27,7 +27,7 @@ interface CommandDemo {
 }
 
 interface State {
-  activeDemo: string | undefined
+  activeDemo: string | null
   error: string
   keyword: CommandDemo
   results: Repo[]
@@ -44,7 +44,7 @@ export default class Index extends PureComponent {
   private playing = false
   private initialized = false
   state: State = {
-    activeDemo: undefined,
+    activeDemo: null,
     error: '',
     keyword: { error: '', status: 'Idle', result: '' },
     results: [],
@@ -191,7 +191,8 @@ export default class Index extends PureComponent {
       this.audio.play()
       this.audio.addEventListener('pause', this.pause)
       this.audio.addEventListener('error', () => {
-        this.setState({ status: 'There was an error loading the audio.' })
+        this.setState({ status: 'There was an error playing the audio.' })
+        this.pause()
         if (this.state.activeDemo === 'searchStream') {
           this.toggleRecordStream()
         }
@@ -368,17 +369,8 @@ export default class Index extends PureComponent {
   }
 
   render() {
-    const {
-      activeDemo,
-      error,
-      keyword,
-      results,
-      searching,
-      status,
-      term,
-      total,
-      wakeword
-    } = this.state
+    const { activeDemo, error, keyword, results, searching, status, term, total, wakeword } =
+      this.state
     const isActive = !!activeDemo
     return (
       <Layout>
@@ -464,7 +456,7 @@ export default class Index extends PureComponent {
             display: grid;
             grid-template-columns: 1fr;
             grid-gap: 20px;
-            max-width: 300px;
+            max-width: 400px;
             margin: 1em 0;
           }
           .wrapper {
