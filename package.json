@@ -27,7 +27,7 @@
     "src",
     "client.js",
     "client.d.ts",
-    "MIT-License.txt",
+    "LICENSE",
     "README.md"
   ],
   "repository": {
@@ -40,7 +40,7 @@
     "node"
   ],
   "author": "Timmy Willison <4timmywil@gmail.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/spokestack/node-spokestack/issues"
   },
