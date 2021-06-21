@@ -51,6 +51,7 @@
     "@types/ws": "^7.4.5",
     "concurrently": "^6.2.0",
     "eslint": "^7.29.0",
+    "eslint-config-next": "^11.0.0",
     "eslint-plugin-react": "^7.24.0",
     "graphql-playground-middleware-express": "^1.7.22",
     "nodemon": "^2.0.7",
