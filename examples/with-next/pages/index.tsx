@@ -375,7 +375,7 @@ export default class Index extends PureComponent {
     return (
       <Layout>
         <h1>Test a wakeword model</h1>
-        <p>Press record and say, "Spokestack"</p>
+        <p>Press record and say, &ldquo;Spokestack&rdquo;</p>
         {wakeword.error && <p className="error">{wakeword.error}</p>}
         <div className="buttons">
           <button

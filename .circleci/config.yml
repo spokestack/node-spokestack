@@ -33,6 +33,10 @@ jobs:
           command: npm test
 
       - run:
+          name: Run example tests
+          command: cd examples/with-next && npm test
+
+      - run:
           name: Run build
           command: npm run build
 
