@@ -5,16 +5,16 @@ references:
     restore_cache:
       keys:
         # when lock file changes, use increasingly general patterns to restore cache
-        - npm-packages-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}-{{ checksum "examples/with-next/package-lock.json" }}
-        - npm-packages-v2-{{ .Branch }}-
-        - npm-packages-v2-
+        - npm-packages-v{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ checksum "package-lock.json" }}-{{ checksum "examples/with-next/package-lock.json" }}
+        - npm-packages-v{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
+        - npm-packages-v{{ .Environment.CACHE_VERSION }}-
 
   save_npm_cache: &save_npm_cache
     save_cache:
       paths:
         - node_modules/
         - examples/with-next/node_modules/
-      key: npm-packages-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}-{{ checksum "examples/with-next/package-lock.json" }}
+      key: npm-packages-v{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ checksum "package-lock.json" }}-{{ checksum "examples/with-next/package-lock.json" }}
 
 jobs:
   build:
