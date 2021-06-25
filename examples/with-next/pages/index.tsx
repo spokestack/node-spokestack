@@ -20,23 +20,20 @@ import debounce from 'lodash/debounce'
 import search from '../utils/search'
 import upload from '../utils/upload'
 
-interface CommandDemo {
-  error: string
+interface CommandDemo<T> {
+  error?: string
   status: string
-  result: string | boolean
+  result: T | null
 }
 
 interface State {
-  activeDemo: string | null
-  error: string
-  keyword: CommandDemo
-  nluResult: NluResult | null
-  results: Repo[]
-  searching: boolean
-  status: string
+  activeDemo: 'wakeword' | 'keyword' | 'search' | 'searchStream' | 'nlu' | 'nluStream' | null
+  keyword: CommandDemo<string>
+  loading: boolean
+  nlu: CommandDemo<NluResult>
+  search: CommandDemo<{ repos: Repo[]; total: number }>
   term: string
-  total: number
-  wakeword: CommandDemo
+  wakeword: CommandDemo<boolean>
 }
 
 export default class Index extends PureComponent {
@@ -46,14 +43,11 @@ export default class Index extends PureComponent {
   private initialized = false
   state: State = {
     activeDemo: null,
-    error: '',
     keyword: { error: '', status: 'Idle', result: '' },
-    nluResult: null,
-    results: [],
-    searching: false,
-    status: 'Idle',
+    loading: false,
+    nlu: { error: '', status: 'Idle', result: null },
+    search: { error: '', status: 'Idle', result: null },
     term: '',
-    total: 0,
     wakeword: { error: '', status: 'Idle', result: false }
   }
   updateTerm = debounce((term: string | undefined) => {
@@ -62,11 +56,17 @@ export default class Index extends PureComponent {
     }
   }, 500)
 
-  componentDidUpdate(_: Record<string, unknown>, { term: prevTerm }: State) {
-    const { searching, term } = this.state
-    if (!searching && term && term !== prevTerm) {
-      this.search()
-      this.nluInfer()
+  async componentDidUpdate(_: Record<string, unknown>, { term: prevTerm }: State) {
+    const { activeDemo, loading, term } = this.state
+    if (!loading && term && term !== prevTerm) {
+      if (activeDemo === 'search' || activeDemo === 'searchStream') {
+        await this.search()
+      } else if (activeDemo === 'nlu' || activeDemo === 'nluStream') {
+        await this.nluInfer()
+      }
+      if (activeDemo === 'search' || activeDemo === 'nlu') {
+        this.setState({ activeDemo: null })
+      }
     }
   }
 
@@ -97,7 +97,9 @@ export default class Index extends PureComponent {
                 this.setState({ wakeword: { error: '', result: true } })
                 break
               case SpeechEventType.Timeout:
-                this.setState({ wakeword: { error: 'Detected speech, but did not match' } })
+                this.setState({
+                  wakeword: { error: 'Detected speech, but did not match', result: false }
+                })
                 break
               case SpeechEventType.Error:
                 console.error(event.error)
@@ -106,14 +108,15 @@ export default class Index extends PureComponent {
             }
           }
         })
-        this.setState({ wakeword: { status: 'Listening...', result: '' } })
+        this.setState({ wakeword: { status: 'Listening...', result: false } })
       } catch (e) {
         this.setState({
           wakeword: {
+            result: false,
+            status: 'Idle',
             error:
               'This browser does not support wake word detection. Please try a Blink browser, such as Chrome, Edge, Opera, Vivaldi, or Brave.'
-          },
-          result: false
+          }
         })
         console.error(e)
         this.stopRecording()
@@ -177,7 +180,6 @@ export default class Index extends PureComponent {
     const { keyword, wakeword } = this.state
     this.setState({
       activeDemo: null,
-      status: 'Idle',
       keyword: { ...keyword, status: 'Idle' },
       wakeword: { ...wakeword, status: 'Idle' }
     })
@@ -194,18 +196,44 @@ export default class Index extends PureComponent {
       this.audio.play()
       this.audio.addEventListener('pause', this.pause)
       this.audio.addEventListener('error', () => {
-        this.setState({ status: 'There was an error playing the audio.' })
-        this.pause()
-        if (this.state.activeDemo === 'searchStream') {
-          this.toggleRecordStream()
+        const { activeDemo, search } = this.state
+        if (activeDemo === 'search' || activeDemo === 'searchStream') {
+          this.setState({
+            search: {
+              ...search,
+              error: 'There was an error playing the audio.',
+              status: 'Idle'
+            }
+          })
         }
+        this.pause()
+        this.stopStreaming()
       })
     }
   }
 
+  isStreaming() {
+    return this.state.activeDemo && this.state.activeDemo.indexOf('Stream') > -1
+  }
+
   pause = () => {
     this.playing = false
-    this.setState({ status: this.state.activeDemo === 'searchStream' ? 'Recording...' : 'Idle' })
+    const { activeDemo, nlu, search } = this.state
+    if (activeDemo === 'nlu' || activeDemo === 'nluStream') {
+      this.setState({
+        nlu: {
+          ...nlu,
+          status: activeDemo === 'nluStream' ? 'Recording...' : 'Idle'
+        }
+      })
+    } else if (activeDemo === 'search' || activeDemo === 'searchStream') {
+      this.setState({
+        search: {
+          ...search,
+          status: activeDemo === 'searchStream' ? 'Recording...' : 'Idle'
+        }
+      })
+    }
   }
 
   getPrompt(response: { total_count: number; items: { name: string }[] }) {
@@ -228,20 +256,25 @@ export default class Index extends PureComponent {
     const result = search(term)
     if (!result) {
       this.setState({
-        error: 'There was a problem with the search. Please check your connection.',
-        results: [],
-        total: 0
+        search: {
+          error: 'There was a problem with the search. Please check your connection.',
+          result: null,
+          status: 'Idle'
+        }
       })
       return
     }
-    this.setState({ searching: true, status: 'Searching...' })
-    result
+    this.setState({ loading: true, search: { status: 'Searching...' } })
+    return result
       .then(async (response) => {
         // console.log(`Got response for term: ${term}`)
-        this.setState({
-          results: response.items || [],
-          total: response.total_count
-        })
+        const searchState: State['search'] = {
+          status: 'Idle',
+          result: {
+            repos: response.items || [],
+            total: response.total_count
+          }
+        }
         if (this.client && this.audio) {
           const res = await this.client.query<{
             synthesizeText: RootQueryType['synthesizeText']
@@ -255,20 +288,22 @@ export default class Index extends PureComponent {
           })
           const data = res.data?.synthesizeText
           if (data?.url) {
-            this.setState({ status: 'Playing audio...' })
+            searchState.status = 'Playing audio...'
             this.playing = true
             this.audio.src = data.url
             this.audio.play()
           }
         }
-        this.setState({ searching: false })
+        this.setState({ loading: false, search: searchState })
       })
       .catch((err) => {
         this.setState({
-          error: err.message,
-          results: [],
-          searching: false,
-          total: 0
+          search: {
+            status: 'Idle',
+            error: err.message,
+            result: null
+          },
+          loading: false
         })
       })
   }
@@ -278,6 +313,7 @@ export default class Index extends PureComponent {
       return
     }
     const { term } = this.state
+    this.setState({ loading: true })
     try {
       const response = await this.client.query<{
         nluInfer: RootQueryType['nluInfer']
@@ -292,72 +328,130 @@ export default class Index extends PureComponent {
       })
       const data = response.data?.nluInfer
       if (data?.intent) {
-        this.setState({ nluIntent: data.intent })
+        this.setState({ loading: false, nlu: { error: '', status: 'Idle', result: data } })
       }
     } catch (e) {
       console.error(e)
       this.setState({
-        status: 'There was an error in the nluInfer query. Check logs or try again.'
+        loading: false,
+        nlu: {
+          error: 'There was an error in the nluInfer query. Check logs or try again.',
+          status: 'Idle',
+          result: null
+        }
       })
     }
   }
 
-  record3Seconds = async () => {
+  record3Seconds = async (demo: 'search' | 'nlu') => {
     if (this.state.activeDemo || this.playing) {
       return
     }
     this.initialize()
-    this.setState({ activeDemo: 'search' })
+    this.setState({ activeDemo: demo })
     let buffer: AudioBuffer
+    const updateDemo = (active: boolean, status: string, error = '') => {
+      const { nlu, search } = this.state
+      if (demo === 'search') {
+        this.setState({
+          activeDemo: active ? demo : null,
+          search: {
+            ...search,
+            error,
+            status
+          }
+        })
+      } else {
+        this.setState({
+          activeDemo: active ? demo : null,
+          nlu: {
+            ...nlu,
+            error,
+            status
+          }
+        })
+      }
+    }
     try {
       buffer = await record({
         time: 3,
         onProgress: (remaining) => {
-          this.setState({ status: `Recording..${remaining}` })
+          updateDemo(true, `Recording..${remaining}`)
         }
       })
     } catch (e) {
       console.error(e)
-      this.setState({ activeDemo: null, error: e.message })
+      updateDemo(false, 'Idle', e.message)
+      this.setState({ activeDemo: null })
       return
     }
-    this.setState({ activeDemo: null })
     upload(buffer)
       .then(({ text, message }) => {
         if (typeof text === 'string') {
           if (text) {
-            this.setState({ status: 'Idle' })
+            updateDemo(true, 'Idle')
             this.updateTerm(text)
           } else {
-            this.setState({
-              status:
-                'The audio was uploaded successfully, but the transcript was empty. Please check your microphone.'
-            })
+            updateDemo(
+              false,
+              'Idle',
+              'The audio was uploaded successfully, but the transcript was empty. Please check your microphone.'
+            )
           }
         } else {
-          this.setState({
-            status: message || 'There was a problem uploading the audio data. Please try again'
-          })
+          updateDemo(
+            false,
+            'Idle',
+            message || 'There was a problem uploading the audio data. Please try again.'
+          )
         }
       })
       .catch((error) => {
         console.error(error)
-        this.setState({
-          status: 'There was a problem uploading the audio data. Please try again'
-        })
+        updateDemo(false, 'Idle', 'There was a problem uploading the audio data. Please try again.')
       })
   }
 
-  toggleRecordStream = async () => {
-    const { activeDemo } = this.state
-    if (activeDemo !== null && activeDemo !== 'searchStream') {
-      return
-    }
-    if (activeDemo === 'searchStream') {
+  stopStreaming() {
+    if (this.isStreaming()) {
       stopStream()
       this.setState({ activeDemo: null })
+    }
+  }
+
+  toggleRecordStream = async (demo: 'searchStream' | 'nluStream') => {
+    const { activeDemo } = this.state
+    const streaming = this.isStreaming()
+    // Skip if another demo is active
+    if (activeDemo !== null && !streaming) {
+      return
+    }
+    if (streaming) {
+      this.stopStreaming()
     } else if (!this.playing) {
       this.initialize()
+      const updateDemo = (active: boolean, error = '') => {
+        const { nlu, search } = this.state
+        if (demo === 'searchStream') {
+          this.setState({
+            activeDemo: active ? demo : null,
+            search: {
+              ...search,
+              error,
+              status: active ? 'Recording...' : 'Idle'
+            }
+          })
+        } else {
+          this.setState({
+            activeDemo: active ? demo : null,
+            nlu: {
+              ...nlu,
+              error,
+              status: active ? 'Recording...' : 'Idle'
+            }
+          })
+        }
+      }
       try {
         let ws: WebSocket
         try {
@@ -367,52 +461,41 @@ export default class Index extends PureComponent {
           this.setState({ activeDemo: null, error: e.message })
           return
         }
-        ws.addEventListener('open', () =>
-          this.setState({ activeDemo: 'searchStream', status: 'Recording...' })
-        )
+        ws.addEventListener('open', () => {
+          updateDemo(true)
+        })
         ws.addEventListener('close', (event) => {
-          this.setState({
-            activeDemo: null,
-            status:
-              event.code === 1002
-                ? event.reason ||
-                  'There was a problem starting the record stream. Please refresh and try again.'
-                : 'Idle'
-          })
+          let error = ''
+          console.log(event)
+          if (event.code !== 1000) {
+            error =
+              event.reason ||
+              'An error occured and the socket has closed. Please refresh and try again.'
+          }
+          updateDemo(false, error)
         })
         ws.addEventListener('error', (event) => {
           console.error(event)
-          this.setState({
-            activeDemo: null,
-            status: 'There was a problem starting the record stream. Please refresh and try again.'
-          })
+          updateDemo(
+            false,
+            'An error occured and the socket has closed. Please refresh and try again.'
+          )
         })
         ws.addEventListener('message', (e) => {
           this.updateTerm(e.data)
         })
       } catch (e) {
         console.error(e)
-        this.setState({
-          activeDemo: null,
-          status: 'There was a problem starting the record stream. Please refresh and try again.'
-        })
+        updateDemo(
+          false,
+          'An error occured when attempting to start the stream. Please refresh and try again.'
+        )
       }
     }
   }
 
   render() {
-    const {
-      activeDemo,
-      error,
-      keyword,
-      nluResult,
-      results,
-      searching,
-      status,
-      term,
-      total,
-      wakeword
-    } = this.state
+    const { activeDemo, keyword, nlu, search, term, wakeword } = this.state
     const isActive = !!activeDemo
     return (
       <Layout>
@@ -431,6 +514,7 @@ export default class Index extends PureComponent {
           Status: <span id="wakeword-status">{wakeword.status}</span>
         </h4>
         {wakeword.result && <p>Detected!</p>}
+
         <hr />
         <h1>Test a keyword model</h1>
         <p>Press record and say a number between 0 and 9.</p>
@@ -447,54 +531,80 @@ export default class Index extends PureComponent {
           Status: <span id="keyword-status">{keyword.status}</span>
         </h4>
         {keyword.result && <p>Detected: {keyword.result}</p>}
+
+        <hr />
+        <h1>Test Minecraft Sample NLU Model</h1>
+        <p>
+          Try saying, &ldquo;How do I make a castle?&rdquo; That should return
+          &ldquo;RecipeIntent&rdquo;.
+        </p>
+        {nlu.error && <p className="error">{nlu.error}</p>}
+        <div className="buttons">
+          <button
+            disabled={isActive && activeDemo !== 'nlu'}
+            className="btn btn-primary"
+            onClick={() => this.record3Seconds('nlu')}>
+            Record 3 seconds
+          </button>
+          <button
+            disabled={isActive && activeDemo !== 'nluStream'}
+            className="btn btn-primary"
+            onClick={() => this.toggleRecordStream('nluStream')}>
+            {activeDemo === 'nluStream' ? 'Stop' : 'Start'} streaming
+          </button>
+        </div>
+        <h4>
+          Status: <span id="status">{nlu.status}</span>
+        </h4>
+        {nlu.result && (
+          <div>
+            <p>Search term: {term}</p>
+            <h4>Sample Minecraft NLU Result</h4>
+            <p>Intent: {nlu.result.intent}</p>
+            <p>Confidence: {nlu.result.confidence}</p>
+          </div>
+        )}
+
         <hr />
         <h1>Search GitHub for repositories using your voice</h1>
-        <p>We will also pass the asr result through a sample NLU model for Minecraft</p>
-        {error && <p className="error">{error}</p>}
+        {search.error && <p className="error">{search.error}</p>}
         <div className="buttons">
           <button
             disabled={isActive && activeDemo !== 'search'}
             className="btn btn-primary"
-            onClick={this.record3Seconds}>
+            onClick={() => this.record3Seconds('search')}>
             Record 3 seconds
           </button>
           <button
             disabled={isActive && activeDemo !== 'searchStream'}
             className="btn btn-primary"
-            onClick={this.toggleRecordStream}>
+            onClick={() => this.toggleRecordStream('searchStream')}>
             {activeDemo === 'searchStream' ? 'Stop' : 'Start'} streaming
           </button>
         </div>
         <h4>
-          Status: <span id="status">{status}</span>
+          Status: <span id="status">{search.status}</span>
         </h4>
         <hr />
-        {term && <p>Search term: {term}</p>}
-        {searching ? (
-          <p>Searching...</p>
-        ) : (
-          term && (
-            <div>
-              <h4>Sample Minecraft NLU Result</h4>
-              <p>Intent: {nluResult?.intent}</p>
-              <p>Confidence: {nluResult?.confidence}</p>
-              <hr />
-              <p className="total">
-                Found {total || 0} result{total > 1 ? 's' : ''}
-              </p>
-              <h3>Matching GitHub Repositories</h3>
-              {results.length > 0 ? (
-                <div className="results">
-                  {results.map((repo) => (
-                    <RepoLink key={repo.id} repo={repo} />
-                  ))}
-                </div>
-              ) : (
-                <h5>No results</h5>
-              )}
-            </div>
-          )
+        {search.result && (
+          <div>
+            <p>Search term: {term}</p>
+            <p className="total">
+              Found {search.result.total || 0} result{Number(search.result.total) > 1 ? 's' : ''}
+            </p>
+            <h3>Matching GitHub Repositories</h3>
+            {Number(search.result.repos?.length) > 0 ? (
+              <div className="results">
+                {search.result.repos.map((repo) => (
+                  <RepoLink key={repo.id} repo={repo} />
+                ))}
+              </div>
+            ) : (
+              <h5>No results</h5>
+            )}
+          </div>
         )}
+
         <style jsx>{`
           .header h1 {
             margin: 0;
