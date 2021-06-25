@@ -23,3 +23,18 @@ export const SynthesizeText = gql`
     }
   }
 `
+
+export const NluInfer = gql`
+  query nluInfer($input: String!, $model: String!, $source: NluModelSource = ACCOUNT) {
+    nluInfer(input: $input, model: $model, source: $source) {
+      confidence
+      intent
+      slots {
+        confidence
+        key
+        text
+        value
+      }
+    }
+  }
+`

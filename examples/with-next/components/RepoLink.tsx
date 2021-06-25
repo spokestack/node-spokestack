@@ -1,7 +1,13 @@
 import * as theme from '../theme'
 
 import React from 'react'
-import { Repo } from '../types'
+
+export interface Repo {
+  id: string
+  name: string
+  html_url: string
+  stargazers_count: number
+}
 
 interface Props {
   repo: Repo

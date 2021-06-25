@@ -1,0 +1,58 @@
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+}
+
+enum NluModelSource {
+  ACCOUNT
+  SHARED
+}
+
+"""Spokestack NLU inference results"""
+type NluResult {
+  confidence: Float!
+  intent: String!
+  slots: [NluSlot]
+}
+
+"""
+Spokestack NLU inference slot
+
+Slot values are dependent on their type, so the value is always returned
+as a JSON encoding of the slot value.
+"""
+type NluSlot {
+  confidence: Float!
+  key: String!
+  text: String
+  value: String!
+}
+
+type RootMutationType {
+  """Import an NLU model from a third party platform"""
+  nluImport(body: String!, name: String!, platform: String!): Boolean
+}
+
+type RootQueryType {
+  """Classify an utterance using an NLU model"""
+  nluInfer(input: String!, model: String!, source: NluModelSource = ACCOUNT): NluResult
+
+  """Generate an audio sample for a given voice/markdown pair"""
+  synthesizeMarkdown(markdown: String!, profile: SynthesisProfile = DEFAULT, voice: String!): SynthesisResult
+
+  """Generate an audio sample for a given voice/ssml pair"""
+  synthesizeSsml(profile: SynthesisProfile = DEFAULT, ssml: String!, voice: String!): SynthesisResult
+
+  """Generate an audio sample for a given voice/text pair"""
+  synthesizeText(profile: SynthesisProfile = DEFAULT, text: String!, voice: String!): SynthesisResult
+}
+
+enum SynthesisProfile {
+  ALEXA
+  DEFAULT
+  DISCORD
+}
+
+type SynthesisResult {
+  url: String
+}

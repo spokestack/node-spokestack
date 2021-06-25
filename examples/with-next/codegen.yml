@@ -1,0 +1,5 @@
+schema: apollo/schema.graphql
+generates:
+  ./types.ts:
+    plugins:
+      - typescript

@@ -8,13 +8,13 @@ import {
   stopStream
 } from 'spokestack/client'
 import React, { PureComponent } from 'react'
-import { Repo, SynthesisResult } from '../types'
+import { NluModelSource, NluResult, RootQueryType } from '../types'
 
 import { ApolloClient } from 'apollo-boost'
 import { DEFAULT_WIDTH } from '../theme'
 import Layout from '../components/Layout'
-import RepoLink from '../components/RepoLink'
-import { SynthesizeText } from '../apollo/queries'
+import RepoLink, { Repo } from '../components/RepoLink'
+import { NluInfer, SynthesizeText } from '../apollo/queries'
 import createClient from '../apollo/createClient'
 import debounce from 'lodash/debounce'
 import search from '../utils/search'
@@ -30,6 +30,7 @@ interface State {
   activeDemo: string | null
   error: string
   keyword: CommandDemo
+  nluResult: NluResult | null
   results: Repo[]
   searching: boolean
   status: string
@@ -47,6 +48,7 @@ export default class Index extends PureComponent {
     activeDemo: null,
     error: '',
     keyword: { error: '', status: 'Idle', result: '' },
+    nluResult: null,
     results: [],
     searching: false,
     status: 'Idle',
@@ -64,6 +66,7 @@ export default class Index extends PureComponent {
     const { searching, term } = this.state
     if (!searching && term && term !== prevTerm) {
       this.search()
+      this.nluInfer()
     }
   }
 
@@ -239,9 +242,9 @@ export default class Index extends PureComponent {
           results: response.items || [],
           total: response.total_count
         })
-        if (this.client) {
+        if (this.client && this.audio) {
           const res = await this.client.query<{
-            synthesizeText: SynthesisResult
+            synthesizeText: RootQueryType['synthesizeText']
           }>({
             fetchPolicy: 'no-cache',
             query: SynthesizeText,
@@ -250,8 +253,8 @@ export default class Index extends PureComponent {
               voice: 'demo-male'
             }
           })
-          const data = res.data && res.data.synthesizeText
-          if (data.url && this.audio) {
+          const data = res.data?.synthesizeText
+          if (data?.url) {
             this.setState({ status: 'Playing audio...' })
             this.playing = true
             this.audio.src = data.url
@@ -268,6 +271,35 @@ export default class Index extends PureComponent {
           total: 0
         })
       })
+  }
+
+  async nluInfer() {
+    if (!this.client) {
+      return
+    }
+    const { term } = this.state
+    try {
+      const response = await this.client.query<{
+        nluInfer: RootQueryType['nluInfer']
+      }>({
+        fetchPolicy: 'no-cache',
+        query: NluInfer,
+        variables: {
+          input: term,
+          model: 'Minecraft',
+          source: NluModelSource.Shared
+        }
+      })
+      const data = response.data?.nluInfer
+      if (data?.intent) {
+        this.setState({ nluIntent: data.intent })
+      }
+    } catch (e) {
+      console.error(e)
+      this.setState({
+        status: 'There was an error in the nluInfer query. Check logs or try again.'
+      })
+    }
   }
 
   record3Seconds = async () => {
@@ -369,8 +401,18 @@ export default class Index extends PureComponent {
   }
 
   render() {
-    const { activeDemo, error, keyword, results, searching, status, term, total, wakeword } =
-      this.state
+    const {
+      activeDemo,
+      error,
+      keyword,
+      nluResult,
+      results,
+      searching,
+      status,
+      term,
+      total,
+      wakeword
+    } = this.state
     const isActive = !!activeDemo
     return (
       <Layout>
@@ -388,7 +430,7 @@ export default class Index extends PureComponent {
         <h4>
           Status: <span id="wakeword-status">{wakeword.status}</span>
         </h4>
-        {wakeword.result && <p className="wrapper">Detected!</p>}
+        {wakeword.result && <p>Detected!</p>}
         <hr />
         <h1>Test a keyword model</h1>
         <p>Press record and say a number between 0 and 9.</p>
@@ -404,9 +446,10 @@ export default class Index extends PureComponent {
         <h4>
           Status: <span id="keyword-status">{keyword.status}</span>
         </h4>
-        {keyword.result && <p className="wrapper">Detected: {keyword.result}</p>}
+        {keyword.result && <p>Detected: {keyword.result}</p>}
         <hr />
         <h1>Search GitHub for repositories using your voice</h1>
+        <p>We will also pass the asr result through a sample NLU model for Minecraft</p>
         {error && <p className="error">{error}</p>}
         <div className="buttons">
           <button
@@ -426,12 +469,16 @@ export default class Index extends PureComponent {
           Status: <span id="status">{status}</span>
         </h4>
         <hr />
-        {term && <p className="wrapper">Search term: {term}</p>}
+        {term && <p>Search term: {term}</p>}
         {searching ? (
-          <p className="wrapper">Searching...</p>
+          <p>Searching...</p>
         ) : (
           term && (
-            <div className="wrapper">
+            <div>
+              <h4>Sample Minecraft NLU Result</h4>
+              <p>Intent: {nluResult?.intent}</p>
+              <p>Confidence: {nluResult?.confidence}</p>
+              <hr />
               <p className="total">
                 Found {total || 0} result{total > 1 ? 's' : ''}
               </p>
@@ -459,8 +506,9 @@ export default class Index extends PureComponent {
             max-width: 400px;
             margin: 1em 0;
           }
-          .wrapper {
+          p {
             width: 100%;
+            margin: 0;
           }
           .results {
             width: 100%;
