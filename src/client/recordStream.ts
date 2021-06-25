@@ -76,7 +76,7 @@ export async function startStream({
   })
 
   stop = function stopStream() {
-    ws.close()
+    ws.close(1000)
     return stopProcessor()
   }
   // Close on error
