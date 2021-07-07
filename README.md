@@ -27,6 +27,8 @@ To use the GraphQL API, node-spokestack includes [Express middleware](#spokestac
 
 The API is used to synthesize text-to-speech using various methods including raw text, [speech markdown](https://www.speechmarkdown.org), and [SSML](https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language).
 
+**Note**: The `voice` argument for all three TTS queries may be changed if you have created a custom voice using a [Spokestack Maker account](/pricing#maker) (use the string from your voice's "name" field). Otherwise, Spokestack's Free "demo-male" voice is used.
+
 It can also be used for [NLU classification](https://www.spokestack.io/docs/concepts/nlu).
 
 ![Spokestack GraphQL Introspection](./spokestack-graphql.png)
