@@ -96,12 +96,14 @@ export SS_API_CLIENT_SECRET=#"Secret key" field from Spokestack API token
 
 ### spokestackMiddleware
 
-▸ **spokestackMiddleware**(): _function_
+▸ **spokestackMiddleware**(): (`req`: `Request`, `res`: `Response`) => `void`
 
 Express middleware for adding a proxy to the Spokestack GraphQL API.
 A proxy is necessary to avoid exposing your Spokestack token secret on the client.
 Once a graphql route is in place, your client
 can use that with <a href="https://graphql.org/">GraphQL</a>.
+
+**`example`**
 
 ```js
 import { spokestackMiddleware } from 'spokestack'
@@ -116,6 +118,8 @@ expressApp.post('/graphql', bodyParser.json(), spokestackMiddleware())
 This is also convenient for setting up <a href="https://github.com/graphql/graphiql">graphiql introspection</a>.
 An example fetcher for graphiql on the client (browser only) might look like this:
 
+**`example`**
+
 ```js
 const graphQLFetcher = (graphQLParams) =>
   fetch('/graphql', {
@@ -127,13 +131,35 @@ const graphQLFetcher = (graphQLParams) =>
     .catch((response) => response.text())
 ```
 
-**Returns:** (`req`: Request, `res`: Response) => _void_
+#### Returns
 
-Defined in: [server/expressMiddleware.ts:36](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/expressMiddleware.ts#L36)
+`fn`
+
+▸ (`req`, `res`): `void`
+
+Express middleware for adding a proxy to the Spokestack GraphQL API.
+A proxy is necessary to avoid exposing your Spokestack token secret on the client.
+Once a graphql route is in place, your client
+can use that with <a href="https://graphql.org/">GraphQL</a>.
+
+##### Parameters
+
+| Name  | Type       |
+| :---- | :--------- |
+| `req` | `Request`  |
+| `res` | `Response` |
+
+##### Returns
+
+`void`
+
+#### Defined in
+
+[server/expressMiddleware.ts:39](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/expressMiddleware.ts#L39)
 
 ### asrSocketServer
 
-▸ **asrSocketServer**(`serverConfig`: WebSocket.ServerOptions, `asrConfig?`: _Omit_<_[SpokestackASRConfig](#SpokestackASRConfig)_, _sampleRate_\>): _void_
+▸ **asrSocketServer**(`serverConfig`, `asrConfig?`): `void`
 
 Adds a web socket server to the given HTTP server
 to stream ASR using Spokestack ASR.
@@ -150,56 +176,70 @@ server.listen(port, () => {
 })
 ```
 
-#### Parameters:
+#### Parameters
 
-| Name           | Type                                                                 |
-| :------------- | :------------------------------------------------------------------- |
-| `serverConfig` | WebSocket.ServerOptions                                              |
-| `asrConfig`    | _Omit_<_[SpokestackASRConfig](#SpokestackASRConfig)_, _sampleRate_\> |
+| Name           | Type                                                                   |
+| :------------- | :--------------------------------------------------------------------- |
+| `serverConfig` | `WebSocket.ServerOptions`                                              |
+| `asrConfig`    | `Omit`<`[SpokestackASRConfig](#SpokestackASRConfig)`, `"sampleRate"`\> |
 
-**Returns:** _void_
+#### Returns
 
-Defined in: [server/socketServer.ts:23](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/socketServer.ts#L23)
+`void`
+
+#### Defined in
+
+[server/socketServer.ts:23](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/socketServer.ts#L23)
 
 #### SpokestackASRConfig
 
 ##### format
 
-• `Optional` **format**: _LINEAR16_
+• `Optional` **format**: `LINEAR16`
 
-Defined in: [server/spokestackASRService.ts:9](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L9)
+#### Defined in
+
+[server/spokestackASRService.ts:9](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L9)
 
 ##### language
 
-• `Optional` **language**: _en_
+• `Optional` **language**: `"en"`
 
-Defined in: [server/spokestackASRService.ts:10](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L10)
+#### Defined in
+
+[server/spokestackASRService.ts:10](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L10)
 
 ##### limit
 
-• `Optional` **limit**: _number_
+• `Optional` **limit**: `number`
 
-Defined in: [server/spokestackASRService.ts:11](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L11)
+#### Defined in
+
+[server/spokestackASRService.ts:11](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L11)
 
 ##### sampleRate
 
-• **sampleRate**: _number_
+• **sampleRate**: `number`
 
-Defined in: [server/spokestackASRService.ts:12](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L12)
+#### Defined in
+
+[server/spokestackASRService.ts:12](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L12)
 
 ##### spokestackUrl
 
-• `Optional` **spokestackUrl**: _string_
+• `Optional` **spokestackUrl**: `string`
 
 Set a different location for the Spokestack socket URL.
 This is very rarely needed.
 Default: 'wss:api.spokestack.io/v1/asr/websocket'
 
-Defined in: [server/spokestackASRService.ts:27](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L27)
+#### Defined in
+
+[server/spokestackASRService.ts:27](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L27)
 
 ##### timeout
 
-• `Optional` **timeout**: _number_
+• `Optional` **timeout**: `number`
 
 Reset speech recognition and clear the transcript every `timeout`
 milliseconds.
@@ -208,11 +248,13 @@ the auth message is sent again to begin a new ASR transcation.
 Set to 0 to disable.
 Default: 3000
 
-Defined in: [server/spokestackASRService.ts:21](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L21)
+#### Defined in
+
+[server/spokestackASRService.ts:21](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L21)
 
 ### asr
 
-▸ **asr**(`content`: _string_ \| Uint8Array, `sampleRate`: _number_): _Promise_<string \| _null_\>
+▸ **asr**(`content`, `sampleRate`): `Promise`<`string` \| `null`\>
 
 A one-off method for processing speech to text
 using Spokestack ASR.
@@ -250,20 +292,24 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 })
 ```
 
-#### Parameters:
+#### Parameters
 
-| Name         | Type                   |
-| :----------- | :--------------------- |
-| `content`    | _string_ \| Uint8Array |
-| `sampleRate` | _number_               |
+| Name         | Type                     |
+| :----------- | :----------------------- |
+| `content`    | `string` \| `Uint8Array` |
+| `sampleRate` | `number`                 |
 
-**Returns:** _Promise_<string \| _null_\>
+#### Returns
 
-Defined in: [server/asr.ts:43](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/asr.ts#L43)
+`Promise`<`string` \| `null`\>
+
+#### Defined in
+
+[server/asr.ts:43](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/asr.ts#L43)
 
 ### googleASRSocketServer
 
-▸ **googleASRSocketServer**(`serverConfig`: WebSocket.ServerOptions): _void_
+▸ **googleASRSocketServer**(`serverConfig`): `void`
 
 Adds a web socket server to the given HTTP server
 to stream ASR using Google Speech.
@@ -280,19 +326,23 @@ server.listen(port, () => {
 })
 ```
 
-#### Parameters:
+#### Parameters
 
-| Name           | Type                    |
-| :------------- | :---------------------- |
-| `serverConfig` | WebSocket.ServerOptions |
+| Name           | Type                      |
+| :------------- | :------------------------ |
+| `serverConfig` | `WebSocket.ServerOptions` |
 
-**Returns:** _void_
+#### Returns
 
-Defined in: [server/socketServer.ts:108](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/socketServer.ts#L108)
+`void`
+
+#### Defined in
+
+[server/socketServer.ts:108](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/socketServer.ts#L108)
 
 ### googleASR
 
-▸ **googleASR**(`content`: _string_ \| Uint8Array, `sampleRate`: _number_): _Promise_<string \| _null_\>
+▸ **googleASR**(`content`, `sampleRate`): `Promise`<`string` \| `null`\>
 
 A one-off method for processing speech to text
 using Google Speech.
@@ -330,20 +380,24 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 })
 ```
 
-#### Parameters:
+#### Parameters
 
-| Name         | Type                   |
-| :----------- | :--------------------- |
-| `content`    | _string_ \| Uint8Array |
-| `sampleRate` | _number_               |
+| Name         | Type                     |
+| :----------- | :----------------------- |
+| `content`    | `string` \| `Uint8Array` |
+| `sampleRate` | `number`                 |
 
-**Returns:** _Promise_<string \| _null_\>
+#### Returns
 
-Defined in: [server/asr.ts:108](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/asr.ts#L108)
+`Promise`<`string` \| `null`\>
+
+#### Defined in
+
+[server/asr.ts:108](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/asr.ts#L108)
 
 ### spokestackASRService
 
-▸ **spokestackASRService**(`config`: _[SpokestackASRConfig](#SpokestackASRConfig)_, `onData`: (`response`: _[SpokestackResponse](#SpokestackResponse)_) => _void_): _Promise_<WebSocket\>
+▸ **spokestackASRService**(`config`, `onData`): `Promise`<`WebSocket`\>
 
 A low-level utility for working with the Spokestack ASR service directly.
 This should not be used most of the time. It is only for
@@ -351,30 +405,36 @@ custom, advanced integrations.
 See `asr` for one-off ASR and `asrSocketServer` for ASR streaming using
 a websocket server that can be added to any node server.
 
-#### Parameters:
+#### Parameters
 
 | Name     | Type                                                                |
 | :------- | :------------------------------------------------------------------ |
-| `config` | _[SpokestackASRConfig](#SpokestackASRConfig)_                       |
-| `onData` | (`response`: _[SpokestackResponse](#SpokestackResponse)_) => _void_ |
+| `config` | `[SpokestackASRConfig](#SpokestackASRConfig)`                       |
+| `onData` | (`response`: `[SpokestackResponse](#SpokestackResponse)`) => `void` |
 
-**Returns:** _Promise_<WebSocket\>
+#### Returns
 
-Defined in: [server/spokestackASRService.ts:74](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L74)
+`Promise`<`WebSocket`\>
+
+#### Defined in
+
+[server/spokestackASRService.ts:74](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L74)
 
 #### SpokestackResponse
 
 ##### error
 
-• `Optional` **error**: _string_
+• `Optional` **error**: `string`
 
 When the status is "error", the error message is available here.
 
-Defined in: [server/spokestackASRService.ts:48](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L48)
+#### Defined in
+
+[server/spokestackASRService.ts:48](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L48)
 
 ##### final
 
-• **final**: _boolean_
+• **final**: `boolean`
 
 The `final` key is used to indicate that
 the highest confidence transcript for the utterance is sent.
@@ -383,51 +443,63 @@ signaling to Spokestack ASR that no more audio data is incoming.
 Signal this by sending an empty buffer (e.g. `socket.send(Buffer.from(''))`).
 See the source for `asr` for an example.
 
-Defined in: [server/spokestackASRService.ts:57](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L57)
+#### Defined in
+
+[server/spokestackASRService.ts:57](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L57)
 
 ##### hypotheses
 
-• **hypotheses**: _ASRHypothesis_[]
+• **hypotheses**: `ASRHypothesis`[]
 
 This is a list of transcripts, each associated with their own
 confidence level from 0 to 1.
 It is an array to allow for the possibility of multiple
 transcripts in the API, but is almost always a list of one.
 
-Defined in: [server/spokestackASRService.ts:64](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L64)
+#### Defined in
+
+[server/spokestackASRService.ts:64](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L64)
 
 ##### status
 
-• **status**: _ok_ \| _error_
+• **status**: `"ok"` \| `"error"`
 
-Defined in: [server/spokestackASRService.ts:46](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L46)
+#### Defined in
+
+[server/spokestackASRService.ts:46](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L46)
 
 #### ASRHypothesis
 
 ##### confidence
 
-• **confidence**: _number_
+• **confidence**: `number`
 
 A number between 0 and 1 to indicate the
 tensorflow confidence level for the given transcript.
 
-Defined in: [server/spokestackASRService.ts:41](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L41)
+#### Defined in
+
+[server/spokestackASRService.ts:41](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L41)
 
 ##### transcript
 
-• **transcript**: _string_
+• **transcript**: `string`
 
-Defined in: [server/spokestackASRService.ts:42](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L42)
+#### Defined in
+
+[server/spokestackASRService.ts:42](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L42)
 
 #### ASRFormat
 
-• **LINEAR16**: = "PCM16LE"
+• **LINEAR16** = `"PCM16LE"`
 
-Defined in: [server/spokestackASRService.ts:5](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/spokestackASRService.ts#L5)
+#### Defined in
+
+[server/spokestackASRService.ts:5](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/spokestackASRService.ts#L5)
 
 ### encryptSecret
 
-▸ **encryptSecret**(`body`: _string_): _string_
+▸ **encryptSecret**(`body`): `string`
 
 This is a convenience method for properly authorizing
 requests to the Spokestack graphql API.
@@ -438,15 +510,19 @@ This should only be done on the server.
 See <a href="https://github.com/spokestack/node-spokestack/blob/develop/src/server/expressMiddleware.ts">server/expressMiddleware.ts</a>
 for example usage.
 
-#### Parameters:
+#### Parameters
 
 | Name   | Type     |
 | :----- | :------- |
-| `body` | _string_ |
+| `body` | `string` |
 
-**Returns:** _string_
+#### Returns
 
-Defined in: [server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/75400e4/src/server/encryptSecret.ts#L13)
+`string`
+
+#### Defined in
+
+[server/encryptSecret.ts:13](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/server/encryptSecret.ts#L13)
 
 ---
 
@@ -456,7 +532,7 @@ These functions are available exports from `spokestack/client`.
 
 ### record
 
-▸ **record**(`config?`: _[RecordConfig](#RecordConfig)_): _Promise_<AudioBuffer\>
+▸ **record**(`config?`): `Promise`<`AudioBuffer`\>
 
 A method to record audio for a given number of seconds
 
@@ -522,55 +598,71 @@ fetch('/asr', {
   .catch(console.error.bind(console))
 ```
 
-#### Parameters:
+#### Parameters
 
 | Name     | Type                            |
 | :------- | :------------------------------ |
-| `config` | _[RecordConfig](#RecordConfig)_ |
+| `config` | `[RecordConfig](#RecordConfig)` |
 
-**Returns:** _Promise_<AudioBuffer\>
+#### Returns
 
-Defined in: [client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/record.ts#L84)
+`Promise`<`AudioBuffer`\>
+
+#### Defined in
+
+[client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/record.ts#L84)
 
 #### RecordConfig
 
-##### onProgress
-
-• `Optional` **onProgress**: (`remaining`: _number_) => _void_
-
-A callback function to be called each second of recording.
-
-#### Parameters:
-
-| Name        | Type     |
-| :---------- | :------- |
-| `remaining` | _number_ |
-
-**Returns:** _void_
-
-Defined in: [client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/record.ts#L16)
-
-##### onStart
-
-• `Optional` **onStart**: () => _void_
-
-A callback function to be called when recording starts
-
-**Returns:** _void_
-
-Defined in: [client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/record.ts#L14)
-
 ##### time
 
-• `Optional` **time**: _number_
+• `Optional` **time**: `number`
 
 The total time to record. Default: 3
 
-Defined in: [client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/record.ts#L12)
+#### Defined in
+
+[client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/record.ts#L12)
+
+## Methods
+
+##### onProgress
+
+▸ `Optional` **onProgress**(`remaining`): `void`
+
+A callback function to be called each second of recording.
+
+#### Parameters
+
+| Name        | Type     |
+| :---------- | :------- |
+| `remaining` | `number` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/record.ts#L16)
+
+##### onStart
+
+▸ `Optional` **onStart**(): `void`
+
+A callback function to be called when recording starts
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/record.ts#L14)
 
 ### startStream
 
-▸ **startStream**(`__namedParameters`: StartStreamOptions): _Promise_<WebSocket, [*ProcessorReturnValue*]\>
+▸ **startStream**(`__namedParameters`): `Promise`<`WebSocket`, [`ProcessorReturnValue`]\>
 
 Returns a function to start recording using a native WebSocket.
 This assumes the socket is hosted on the current server.
@@ -591,19 +683,23 @@ try {
 }
 ```
 
-#### Parameters:
+#### Parameters
 
-| Name                | Type               |
-| :------------------ | :----------------- |
-| `__namedParameters` | StartStreamOptions |
+| Name                | Type                 |
+| :------------------ | :------------------- |
+| `__namedParameters` | `StartStreamOptions` |
 
-**Returns:** _Promise_<WebSocket, [*ProcessorReturnValue*]\>
+#### Returns
 
-Defined in: [client/recordStream.ts:43](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/recordStream.ts#L43)
+`Promise`<`WebSocket`, [`ProcessorReturnValue`]\>
+
+#### Defined in
+
+[client/recordStream.ts:43](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/recordStream.ts#L43)
 
 ### stopStream
 
-▸ **stopStream**(): _void_
+▸ **stopStream**(): `void`
 
 Stop the current recording stream if one exists.
 
@@ -612,13 +708,17 @@ import { stopStream } from 'spokestack/client'
 stopStream()
 ```
 
-**Returns:** _void_
+#### Returns
 
-Defined in: [client/recordStream.ts:96](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/recordStream.ts#L96)
+`void`
+
+#### Defined in
+
+[client/recordStream.ts:96](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/recordStream.ts#L96)
 
 ### convertFloat32ToInt16
 
-▸ **convertFloat32ToInt16**(`fp32Samples`: Float32Array): _Int16Array_
+▸ **convertFloat32ToInt16**(`fp32Samples`): `Int16Array`
 
 A utility method to convert Float32Array audio
 to an Int16Array to be passed directly to Speech APIs
@@ -631,19 +731,23 @@ const buffer = await record()
 const file = new File([convertFloat32ToInt16(buffer.getChannelData(0))], 'recording.raw')
 ```
 
-#### Parameters:
+#### Parameters
 
-| Name          | Type         |
-| :------------ | :----------- |
-| `fp32Samples` | Float32Array |
+| Name          | Type           |
+| :------------ | :------------- |
+| `fp32Samples` | `Float32Array` |
 
-**Returns:** _Int16Array_
+#### Returns
 
-Defined in: [client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/convertFloat32ToInt16.ts#L16)
+`Int16Array`
+
+#### Defined in
+
+[client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/convertFloat32ToInt16.ts#L16)
 
 ### startPipeline
 
-▸ **startPipeline**(`config`: _PipelineConfig_): _Promise_<_SpeechPipeline_\>
+▸ **startPipeline**(`config`): `Promise`<`SpeechPipeline`\>
 
 Create and immediately start a SpeechPipeline to process user
 speech using the specified configuration.
@@ -695,15 +799,19 @@ try {
 }
 ```
 
-#### Parameters:
+#### Parameters
 
-| Name     | Type             |
-| :------- | :--------------- |
-| `config` | _PipelineConfig_ |
+| Name     | Type                                        |
+| :------- | :------------------------------------------ |
+| `config` | `PipelineConfig`](client.md#pipelineconfig) |
 
-**Returns:** _Promise_<_SpeechPipeline_\>
+#### Returns
 
-Defined in: [client/pipeline.ts:161](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/pipeline.ts#L161)
+`Promise`<[`SpeechPipeline`\>
+
+#### Defined in
+
+[client/pipeline.ts:161](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/pipeline.ts#L161)
 
 #### SpeechPipeline
 
@@ -717,66 +825,82 @@ each of the stages processes it in order to, e.g., detect whether the user
 said a wakeword or transcribe an occurrence of a keyword. See documentation
 for the individual stages for more information on their purpose.
 
-\+ **new SpeechPipeline**(`config`: _SpeechPipelineConfig_): _SpeechPipeline_
+• **new SpeechPipeline**(`config`)
 
 Create a new speech pipeline.
 
-#### Parameters:
+#### Parameters
 
 | Name     | Type                   | Description                                                                                                                                                             |
 | :------- | :--------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `config` | _SpeechPipelineConfig_ | A SpeechPipelineConfig object describing basic pipeline configuration as well as options specific to certain stages (URLs to models, classes for keyword models, etc.). |
+| `config` | `SpeechPipelineConfig` | A SpeechPipelineConfig object describing basic pipeline configuration as well as options specific to certain stages (URLs to models, classes for keyword models, etc.). |
 
-**Returns:** _SpeechPipeline_
+#### Defined in
 
-Defined in: [client/SpeechPipeline.ts:40](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/SpeechPipeline.ts#L40)
+[client/SpeechPipeline.ts:49](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/SpeechPipeline.ts#L49)
 
 ## Methods
 
-▸ **start**(): _Promise_<_SpeechPipeline_\>
+▸ **start**(): `Promise`<`SpeechPipeline`](client.SpeechPipeline.md)\>
 
 Start processing audio with the pipeline. If this is the first use of the
 pipeline, the microphone permission will be requested from the user if
 they have not already granted it.
 
-**Returns:** _Promise_<_SpeechPipeline_\>
+#### Returns
 
-Defined in: [client/SpeechPipeline.ts:85](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/SpeechPipeline.ts#L85)
+`Promise`<[`SpeechPipeline`\>
 
-▸ **stop**(): _void_
+#### Defined in
+
+[client/SpeechPipeline.ts:85](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/SpeechPipeline.ts#L85)
+
+▸ **stop**(): `void`
 
 Stop the pipeline, destroying the internal audio processors and
 relinquishing the microphone.
 
-**Returns:** _void_
+#### Returns
 
-Defined in: [client/SpeechPipeline.ts:206](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/SpeechPipeline.ts#L206)
+`void`
+
+#### Defined in
+
+[client/SpeechPipeline.ts:206](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/SpeechPipeline.ts#L206)
 
 #### SpeechPipelineConfig
 
 ##### onEvent
 
-• `Optional` **onEvent**: _PipelineEventHandler_
+• `Optional` **onEvent**: `PipelineEventHandler`
 
-Defined in: [client/SpeechPipeline.ts:19](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/SpeechPipeline.ts#L19)
+#### Defined in
+
+[client/SpeechPipeline.ts:19](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/SpeechPipeline.ts#L19)
 
 ##### speechConfig
 
-• **speechConfig**: _SpeechConfig_
+• **speechConfig**: `SpeechConfig`
 
-Defined in: [client/SpeechPipeline.ts:16](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/SpeechPipeline.ts#L16)
+#### Defined in
+
+[client/SpeechPipeline.ts:16](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/SpeechPipeline.ts#L16)
 
 ##### stages
 
-• **stages**: _Stage_[]
+• **stages**: `Stage`[]
 
-Defined in: [client/SpeechPipeline.ts:17](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/SpeechPipeline.ts#L17)
+#### Defined in
+
+[client/SpeechPipeline.ts:17](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/SpeechPipeline.ts#L17)
 
 ##### workerUrl
 
-• `Optional` **workerUrl**: _string_
+• `Optional` **workerUrl**: `string`
 
-Defined in: [client/SpeechPipeline.ts:18](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/SpeechPipeline.ts#L18)
+#### Defined in
+
+[client/SpeechPipeline.ts:18](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/SpeechPipeline.ts#L18)
 
 #### PipelineProfile
 
@@ -793,61 +917,81 @@ by each profile are as follows:
   listens passively until a wakeword is recognized, then activates the
   pipeline so that ASR can be performed.
 
-• **Keyword**: = "KEYWORD"
+• **Keyword** = `"KEYWORD"`
 
 A profile that activates on voice activity and transcribes speech
 using pretrained keyword recognizer models that support a limited
 vocabulary.
 
-Defined in: [client/pipeline.ts:30](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/pipeline.ts#L30)
+#### Defined in
 
-• **Wakeword**: = "WAKEWORD"
+[client/pipeline.ts:30](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/pipeline.ts#L30)
+
+• **Wakeword** = `"WAKEWORD"`
 
 A profile that sends an `Activate` event when a wakeword is detected
 by a set of pretrained wakeword models. Once that event is received,
 subsequent audio should be sent to a speech recognizer for transcription.
 
-Defined in: [client/pipeline.ts:36](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/pipeline.ts#L36)
+#### Defined in
+
+[client/pipeline.ts:36](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/pipeline.ts#L36)
 
 #### SpeechEventType
 
-• **Activate**: = "ACTIVATE"
+• **Activate** = `"ACTIVATE"`
 
-Defined in: [client/types.ts:83](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L83)
+#### Defined in
 
-• **Deactivate**: = "DEACTIVATE"
+[client/types.ts:83](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L83)
 
-Defined in: [client/types.ts:84](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L84)
+• **Deactivate** = `"DEACTIVATE"`
 
-• **Error**: = "ERROR"
+#### Defined in
 
-Defined in: [client/types.ts:87](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L87)
+[client/types.ts:84](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L84)
 
-• **Recognize**: = "RECOGNIZE"
+• **Error** = `"ERROR"`
 
-Defined in: [client/types.ts:86](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L86)
+#### Defined in
 
-• **Timeout**: = "TIMEOUT"
+[client/types.ts:87](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L87)
 
-Defined in: [client/types.ts:85](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L85)
+• **Recognize** = `"RECOGNIZE"`
+
+#### Defined in
+
+[client/types.ts:86](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L86)
+
+• **Timeout** = `"TIMEOUT"`
+
+#### Defined in
+
+[client/types.ts:85](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L85)
 
 #### Stage
 
-• **KeywordRecognizer**: = "keyword"
+• **KeywordRecognizer** = `"keyword"`
 
-Defined in: [client/types.ts:100](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L100)
+#### Defined in
 
-• **VadTrigger**: = "vadTrigger"
+[client/types.ts:100](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L100)
 
-Defined in: [client/types.ts:98](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L98)
+• **VadTrigger** = `"vadTrigger"`
 
-• **WakewordTrigger**: = "wakeword"
+#### Defined in
 
-Defined in: [client/types.ts:99](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/types.ts#L99)
+[client/types.ts:98](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L98)
+
+• **WakewordTrigger** = `"wakeword"`
+
+#### Defined in
+
+[client/types.ts:99](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/types.ts#L99)
 
 ### stopPipeline
 
-▸ **stopPipeline**(): _void_
+▸ **stopPipeline**(): `void`
 
 Stop the speech pipeline and relinquish its resources,
 including the microphone.
@@ -856,28 +1000,36 @@ including the microphone.
 stopPipeline()
 ```
 
-**Returns:** _void_
+#### Returns
 
-Defined in: [client/pipeline.ts:195](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/pipeline.ts#L195)
+`void`
+
+#### Defined in
+
+[client/pipeline.ts:195](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/pipeline.ts#L195)
 
 ### countdown
 
-▸ **countdown**(`time`: _number_, `progress`: (`remaining`: _number_) => _void_, `complete`: () => _void_): _void_
+▸ **countdown**(`time`, `progress`, `complete`): `void`
 
 Countdown a number of seconds.
 This is used by record() to record a certain number of seconds.
 
-#### Parameters:
+#### Parameters
 
 | Name       | Type                              | Description                                      |
 | :--------- | :-------------------------------- | :----------------------------------------------- |
-| `time`     | _number_                          | Number of seconds                                |
-| `progress` | (`remaining`: _number_) => _void_ | Callback for each second (includes first second) |
-| `complete` | () => _void_                      | Callback for completion                          |
+| `time`     | `number`                          | Number of seconds                                |
+| `progress` | (`remaining`: `number`) => `void` | Callback for each second (includes first second) |
+| `complete` | () => `void`                      | Callback for completion                          |
 
-**Returns:** _void_
+#### Returns
 
-Defined in: [client/countdown.ts:8](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/countdown.ts#L8)
+`void`
+
+#### Defined in
+
+[client/countdown.ts:8](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/countdown.ts#L8)
 
 ---
 
@@ -887,7 +1039,7 @@ These are low-level functions if you need to work with your own audio processors
 
 ### startProcessor
 
-▸ **startProcessor**(): _Promise_<Error] \| [_null_, [*ProcessorReturnValue*]\>
+▸ **startProcessor**(): `Promise`<`Error`] \| [`null`, [`ProcessorReturnValue`]\>
 
 Underlying utility method for recording audio,
 used by the `record` and `recordStream` methods.
@@ -898,49 +1050,65 @@ See https://caniuse.com/#feat=mdn-api_audioworkletnode
 
 We'll switch to AudioWorklet when it does.
 
-**Returns:** _Promise_<Error] \| [_null_, [*ProcessorReturnValue*]\>
+#### Returns
 
-Defined in: [client/processor.ts:22](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/processor.ts#L22)
+`Promise`<`Error`] \| [`null`, [`ProcessorReturnValue`]\>
+
+#### Defined in
+
+[client/processor.ts:22](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/processor.ts#L22)
 
 #### ProcessorReturnValue
 
 ##### context
 
-• **context**: AudioContext
+• **context**: `AudioContext`
 
-Defined in: [client/processor.ts:8](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/processor.ts#L8)
+#### Defined in
+
+[client/processor.ts:8](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/processor.ts#L8)
 
 ##### processor
 
-• **processor**: ScriptProcessorNode
+• **processor**: `ScriptProcessorNode`
 
-Defined in: [client/processor.ts:9](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/processor.ts#L9)
+#### Defined in
+
+[client/processor.ts:9](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/processor.ts#L9)
 
 ### stopProcessor
 
-▸ **stopProcessor**(): _void_
+▸ **stopProcessor**(): `void`
 
 Underlying utility method to stop the current processor
 if it exists and disconnect the microphone.
 
-**Returns:** _void_
+#### Returns
 
-Defined in: [client/processor.ts:53](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/processor.ts#L53)
+`void`
+
+#### Defined in
+
+[client/processor.ts:53](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/processor.ts#L53)
 
 ### concatenateAudioBuffers
 
-▸ **concatenateAudioBuffers**(`buffer1`: AudioBuffer \| _null_, `buffer2`: AudioBuffer \| _null_, `context`: AudioContext): _null_ \| AudioBuffer
+▸ **concatenateAudioBuffers**(`buffer1`, `buffer2`, `context`): `null` \| `AudioBuffer`
 
 A utility method to concatenate two AudioBuffers
 
-#### Parameters:
+#### Parameters
 
-| Name      | Type                  |
-| :-------- | :-------------------- |
-| `buffer1` | AudioBuffer \| _null_ |
-| `buffer2` | AudioBuffer \| _null_ |
-| `context` | AudioContext          |
+| Name      | Type                    |
+| :-------- | :---------------------- |
+| `buffer1` | `AudioBuffer` \| `null` |
+| `buffer2` | `AudioBuffer` \| `null` |
+| `context` | `AudioContext`          |
 
-**Returns:** _null_ \| AudioBuffer
+#### Returns
 
-Defined in: [client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/75400e4/src/client/concatenateAudioBuffers.ts#L4)
+`null` \| `AudioBuffer`
+
+#### Defined in
+
+[client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/7820ba6/src/client/concatenateAudioBuffers.ts#L4)

@@ -1,7 +1,8 @@
+import type { Request, Response } from 'express'
+
 import encryptSecret from './encryptSecret'
 import fetch from 'node-fetch'
 import { v4 as uuid } from 'uuid'
-import type { Request, Response } from 'express'
 
 /**
  * Express middleware for adding a proxy to the Spokestack GraphQL API.
@@ -9,6 +10,7 @@ import type { Request, Response } from 'express'
  * Once a graphql route is in place, your client
  * can use that with <a href="https://graphql.org/">GraphQL</a>.
  *
+ * @example
  * ```js
  * import { spokestackMiddleware } from 'spokestack'
  * import bodyParser from 'body-parser'
