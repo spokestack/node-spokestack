@@ -2,6 +2,7 @@ node_modules
 .next
 .files
 dist/
+next-env.d.ts
 
 # local env files
 .env.local
