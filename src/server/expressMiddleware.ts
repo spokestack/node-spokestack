@@ -4,6 +4,23 @@ import encryptSecret from './encryptSecret'
 import fetch from 'node-fetch'
 import { v4 as uuid } from 'uuid'
 
+export interface SpokestackConfig {
+  /**
+   * clientID and clientSecret are required to use Spokestack's public API
+   * These API keys are free and can be generated
+   * in your spokestack.io account settings
+   */
+  clientId: string
+  clientSecret: string
+  /**
+   * Set a different location for the Spokestack domain.
+   * This is rarely needed.
+   * Spokestack uses this internally to test integration.
+   * Default: 'api.spokestack.io'
+   */
+  spokestackHostname?: string
+}
+
 /**
  * Express middleware for adding a proxy to the Spokestack GraphQL API.
  * A proxy is necessary to avoid exposing your Spokestack token secret on the client.
@@ -35,21 +52,36 @@ import { v4 as uuid } from 'uuid'
  *     .catch((response) => response.text())
  * ```
  */
-export default function spokestackMiddleware(): (req: Request, res: Response) => void {
+export default function spokestackMiddleware(
+  userConfig: SpokestackConfig
+): (req: Request, res: Response) => void {
+  const config: Required<SpokestackConfig> = {
+    spokestackHostname: 'api.spokestack.io',
+    ...userConfig
+  }
+  if (!config.clientId || !config.clientSecret) {
+    throw new Error(
+      'clientId and clientSecret are required config. Include them using environment variables then pass them to this function.'
+    )
+  }
   return function (req, res) {
-    if (!process.env.SS_API_CLIENT_ID) {
-      res.status(500)
-      res.send('SS_API_CLIENT_ID is not set in the server environment.')
-      return
-    }
     if (!req.body || !req.body.query) {
       res.status(400)
       res.send('Parameter required: "query"')
       return
     }
     const body = JSON.stringify(req.body)
-    const Authorization = `Spokestack ${process.env.SS_API_CLIENT_ID}:${encryptSecret(body)}`
-    fetch('https://api.spokestack.io/v1', {
+    const Authorization = `Spokestack ${config.clientId}:${encryptSecret(
+      body,
+      config.clientSecret
+    )}`
+    const url = new URL(
+      '/v1',
+      `${config.spokestackHostname.indexOf('localhost') > -1 ? 'http' : 'https'}://${
+        config.spokestackHostname
+      }`
+    )
+    fetch(url.href, {
       method: 'POST',
       headers: {
         Authorization,

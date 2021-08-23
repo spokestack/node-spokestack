@@ -1,3 +1,5 @@
+import { NluInfer, SynthesizeText } from '../apollo/queries'
+import { NluModelSource, NluResult, RootQueryType } from '../types'
 import {
   PipelineProfile,
   SpeechEventType,
@@ -8,13 +10,11 @@ import {
   stopStream
 } from 'spokestack/client'
 import React, { PureComponent } from 'react'
-import { NluModelSource, NluResult, RootQueryType } from '../types'
+import RepoLink, { Repo } from '../components/RepoLink'
 
 import { ApolloClient } from 'apollo-boost'
 import { DEFAULT_WIDTH } from '../theme'
 import Layout from '../components/Layout'
-import RepoLink, { Repo } from '../components/RepoLink'
-import { NluInfer, SynthesizeText } from '../apollo/queries'
 import createClient from '../apollo/createClient'
 import debounce from 'lodash/debounce'
 import search from '../utils/search'
@@ -72,12 +72,15 @@ export default class Index extends PureComponent {
 
   componentDidMount() {
     this.client = createClient()
-    this.audio = new Audio()
+    this.audio = document.createElement('audio')
+    document.body.appendChild(this.audio)
   }
 
   componentWillUnmount() {
     this.client?.stop()
-    this.audio?.removeEventListener('pause', this.pause)
+    if (this.audio) {
+      document.body.removeChild(this.audio)
+    }
   }
 
   toggleWakeword = async () => {
@@ -195,7 +198,9 @@ export default class Index extends PureComponent {
       // so future plays do not require a click
       this.audio.play()
       this.audio.addEventListener('pause', this.pause)
-      this.audio.addEventListener('error', () => {
+      this.audio.addEventListener('play', this.play)
+      this.audio.addEventListener('error', (error) => {
+        console.error('Player error', error)
         const { activeDemo, search } = this.state
         if (activeDemo === 'search' || activeDemo === 'searchStream') {
           this.setState({
@@ -216,24 +221,44 @@ export default class Index extends PureComponent {
     return this.state.activeDemo && this.state.activeDemo.indexOf('Stream') > -1
   }
 
-  pause = () => {
-    this.playing = false
+  play = () => {
+    if (!this.audio?.src) {
+      return
+    }
+    console.log('Playing', this.audio?.src)
+    this.playing = true
     const { activeDemo, nlu, search } = this.state
     if (activeDemo === 'nlu' || activeDemo === 'nluStream') {
       this.setState({
         nlu: {
           ...nlu,
-          status: activeDemo === 'nluStream' ? 'Recording...' : 'Idle'
+          status: 'Playing audio...'
         }
       })
     } else if (activeDemo === 'search' || activeDemo === 'searchStream') {
       this.setState({
         search: {
           ...search,
-          status: activeDemo === 'searchStream' ? 'Recording...' : 'Idle'
+          status: 'Playing audio...'
         }
       })
     }
+  }
+
+  pause = () => {
+    console.log('Paused')
+    this.playing = false
+    const { activeDemo, nlu, search } = this.state
+    this.setState({
+      nlu: {
+        ...nlu,
+        status: activeDemo === 'nluStream' ? 'Recording...' : 'Idle'
+      },
+      search: {
+        ...search,
+        status: activeDemo === 'searchStream' ? 'Recording...' : 'Idle'
+      }
+    })
   }
 
   getPrompt(response: { total_count: number; items: { name: string }[] }) {
@@ -288,9 +313,10 @@ export default class Index extends PureComponent {
           })
           const data = res.data?.synthesizeText
           if (data?.url) {
+            this.audio.pause()
             searchState.status = 'Playing audio...'
-            this.playing = true
             this.audio.src = data.url
+            this.audio.currentTime = 0
             this.audio.play()
           }
         }
@@ -344,7 +370,12 @@ export default class Index extends PureComponent {
   }
 
   record3Seconds = async (demo: 'search' | 'nlu') => {
-    if (this.state.activeDemo || this.playing) {
+    if (this.state.activeDemo) {
+      console.log('Demo already active', this.state.activeDemo)
+      return
+    }
+    if (this.playing) {
+      console.log('Audio is currently playing')
       return
     }
     this.initialize()
@@ -424,6 +455,7 @@ export default class Index extends PureComponent {
     const streaming = this.isStreaming()
     // Skip if another demo is active
     if (activeDemo !== null && !streaming) {
+      console.log('Another demo is active', activeDemo)
       return
     }
     if (streaming) {
@@ -455,7 +487,9 @@ export default class Index extends PureComponent {
       try {
         let ws: WebSocket
         try {
-          ;[ws] = await startStream({ isPlaying: () => this.playing })
+          ;[ws] = await startStream({
+            isPlaying: () => this.playing
+          })
         } catch (e) {
           console.error(e)
           this.setState({ activeDemo: null, error: e.message })
@@ -541,7 +575,7 @@ export default class Index extends PureComponent {
         {nlu.error && <p className="error">{nlu.error}</p>}
         <div className="buttons">
           <button
-            disabled={isActive && activeDemo !== 'nlu'}
+            disabled={isActive}
             className="btn btn-primary"
             onClick={() => this.record3Seconds('nlu')}>
             Record 3 seconds
@@ -570,7 +604,7 @@ export default class Index extends PureComponent {
         {search.error && <p className="error">{search.error}</p>}
         <div className="buttons">
           <button
-            disabled={isActive && activeDemo !== 'search'}
+            disabled={isActive}
             className="btn btn-primary"
             onClick={() => this.record3Seconds('search')}>
             Record 3 seconds

@@ -21,7 +21,10 @@ const useGoogleAsr = process.env.ASR_SERVICE === 'google'
 
 app.prepare().then(() => {
   const expressApp = express()
-  const middleware = spokestackMiddleware()
+  const middleware = spokestackMiddleware({
+    clientId: process.env.SS_API_CLIENT_ID!,
+    clientSecret: process.env.SS_API_CLIENT_SECRET!
+  })
 
   expressApp.use(
     '/spokestack-web-worker.js',
@@ -74,7 +77,11 @@ app.prepare().then(() => {
     }
     const fetcher = useGoogleAsr
       ? googleASR(content, Number(req.body.sampleRate))
-      : asr(content, Number(req.body.sampleRate))
+      : asr(content, {
+          clientId: process.env.SS_API_CLIENT_ID!,
+          clientSecret: process.env.SS_API_CLIENT_SECRET!,
+          sampleRate: Number(req.body.sampleRate)
+        })
     fetcher
       .then((text) => {
         res.status(200)
@@ -122,7 +129,13 @@ app.prepare().then(() => {
   if (useGoogleAsr) {
     googleASRSocketServer({ server })
   } else {
-    asrSocketServer({ server })
+    asrSocketServer(
+      { server },
+      {
+        clientId: process.env.SS_API_CLIENT_ID!,
+        clientSecret: process.env.SS_API_CLIENT_SECRET!
+      }
+    )
   }
   server.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`)

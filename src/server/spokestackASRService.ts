@@ -6,6 +6,13 @@ export enum ASRFormat {
 }
 
 export interface SpokestackASRConfig {
+  /**
+   * clientID and clientSecret are required to use Spokestack's public API
+   * These API keys are free and can be generated
+   * in your spokestack.io account settings
+   */
+  clientId: string
+  clientSecret: string
   format?: ASRFormat
   language?: 'en'
   limit?: number
@@ -20,11 +27,12 @@ export interface SpokestackASRConfig {
    */
   timeout?: number
   /**
-   * Set a different location for the Spokestack socket URL.
-   * This is very rarely needed.
-   * Default: 'wss:api.spokestack.io/v1/asr/websocket'
+   * Set a different location for the Spokestack domain.
+   * This is rarely needed.
+   * Spokestack uses this internally to test integration.
+   * Default: 'api.spokestack.io'
    */
-  spokestackUrl?: string
+  spokestackHostname?: string
 }
 
 interface SpokestackAuthMessage {
@@ -72,16 +80,24 @@ export interface SpokestackResponse {
  * a websocket server that can be added to any node server.
  */
 export default function asrService(
-  config: SpokestackASRConfig,
+  userConfig: SpokestackASRConfig,
   onData: (response: SpokestackResponse) => void
 ): Promise<WebSocket> {
-  if (!process.env.SS_API_CLIENT_ID) {
-    throw new Error('SS_API_CLIENT_ID is not set in the server environment.')
+  // Set defaults
+  const config: Required<SpokestackASRConfig> = {
+    spokestackHostname: 'api.spokestack.io',
+    format: ASRFormat.LINEAR16,
+    language: 'en',
+    limit: 1,
+    timeout: 3000,
+    ...userConfig
   }
-  const clientId = process.env.SS_API_CLIENT_ID
-  let timeout = Number(config.timeout)
+  if (!config.clientId || !config.clientSecret) {
+    throw new Error('clientId and clientSecret are required in the asr config')
+  }
+  const timeout = Number(config.timeout)
   if (isNaN(timeout)) {
-    timeout = 3000
+    throw new Error('timeout should be a number.')
   }
   const rate = Number(config.sampleRate)
   if (isNaN(rate)) {
@@ -91,7 +107,13 @@ export default function asrService(
   }
 
   // Open socket
-  const socket = new WebSocket(config.spokestackUrl || 'wss:api.spokestack.io/v1/asr/websocket')
+  const url = new URL(
+    '/v1/asr/websocket',
+    `${config.spokestackHostname.indexOf('localhost') > -1 ? 'ws' : 'wss'}://${
+      config.spokestackHostname
+    }`
+  )
+  const socket = new WebSocket(url.href)
 
   let prevTranscript: string | null = null
   let transcriptTimeout: NodeJS.Timeout
@@ -112,14 +134,14 @@ export default function asrService(
   function sendAuth() {
     console.log('Sending AUTH message')
     const body = JSON.stringify({
-      format: config.format || ASRFormat.LINEAR16,
-      language: config.language || 'en',
-      limit: config.limit || 1,
+      format: config.format,
+      language: config.language,
+      limit: config.limit,
       rate
     })
-    const signature = encryptSecret(body)
+    const signature = encryptSecret(body, config.clientSecret)
     const message: SpokestackAuthMessage = {
-      keyId: clientId,
+      keyId: config.clientId,
       signature,
       body
     }

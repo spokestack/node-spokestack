@@ -21,6 +21,7 @@ function addLinks(data) {
     .replace(/\bPipelineProfile([^.])/g, '[PipelineProfile](#PipelineProfile)$1')
     .replace(/\bStage([^.])/g, '[Stage](#Stage)$1')
     .replace(/\bRecordConfig([^.])/g, '[RecordConfig](#RecordConfig)$1')
+    .replace(/\bSpokestackConfig([^.])/g, '[SpokestackConfig](#SpokestackConfig)$1')
     .replace(/\bSpokestackASRConfig([^.])/g, '[SpokestackASRConfig](#SpokestackASRConfig)$1')
     .replace(/\bSpokestackResponse([^.])/g, '[SpokestackResponse](#SpokestackResponse)$1')
     .replace(/\bASRHypothesis([^.])/g, '[ASRHypothesis](#ASRHypothesis)$1')

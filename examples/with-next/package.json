@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.1.1",
-    "@graphql-codegen/typescript": "^2.1.0",
+    "@graphql-codegen/typescript": "^2.1.1",
     "@graphql-inspector/cli": "^2.7.0",
     "@types/color": "^3.0.2",
     "@types/dom-mediacapture-record": "^1.0.10",
@@ -110,9 +110,10 @@
       ],
       "prettier/prettier": "error",
       "no-unused-vars": "off",
-      "@typescript-eslint/explicit-module-boundary-types": 0,
-      "@typescript-eslint/no-var-requires": 0,
-      "@typescript-eslint/no-use-before-define": 0,
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/no-use-before-define": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

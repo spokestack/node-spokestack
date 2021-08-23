@@ -1,4 +1,5 @@
 import spokestackService, { SpokestackASRConfig } from './spokestackASRService'
+
 import { SpeechClient } from '@google-cloud/speech'
 import WebSocket from 'ws'
 import { getCookie } from '../cookies'
@@ -22,7 +23,7 @@ import { google } from '@google-cloud/speech/build/protos/protos'
  */
 export function asrSocketServer(
   serverConfig: WebSocket.ServerOptions,
-  asrConfig: Omit<SpokestackASRConfig, 'sampleRate'> = {}
+  asrConfig: Omit<SpokestackASRConfig, 'sampleRate'>
 ): void {
   const wss = new WebSocket.Server(serverConfig)
   console.log('Websocket started')

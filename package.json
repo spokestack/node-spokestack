@@ -47,11 +47,11 @@
   },
   "homepage": "https://github.com/spokestack/node-spokestack#readme",
   "dependencies": {
-    "@google-cloud/speech": "^4.5.6",
+    "@google-cloud/speech": "^4.8.0",
     "analyser-frequency-average": "^1.0.0",
     "node-fetch": "^2.6.1",
     "uuid": "^8.3.2",
-    "ws": "^8.0.0"
+    "ws": "^8.2.0"
   },
   "devDependencies": {
     "@babel/runtime": "^7.15.3",
@@ -74,7 +74,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^3.4.1",
     "husky": "^7.0.1",
     "mocha": "^9.1.0",
     "prettier": "^2.3.2",
@@ -124,9 +124,10 @@
       ],
       "prettier/prettier": "error",
       "no-unused-vars": "off",
-      "@typescript-eslint/explicit-module-boundary-types": 0,
-      "@typescript-eslint/no-var-requires": 0,
-      "@typescript-eslint/no-use-before-define": 0,
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/no-use-before-define": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

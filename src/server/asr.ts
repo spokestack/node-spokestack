@@ -1,5 +1,6 @@
+import spokestackService, { SpokestackASRConfig } from './spokestackASRService'
+
 import { SpeechClient } from '@google-cloud/speech'
-import spokestackService from './spokestackASRService'
 
 /**
  * A one-off method for processing speech to text
@@ -40,9 +41,12 @@ import spokestackService from './spokestackASRService'
  *
  * ```
  */
-export function asr(content: string | Uint8Array, sampleRate: number): Promise<string | null> {
+export function asr(
+  content: string | Uint8Array,
+  config: SpokestackASRConfig
+): Promise<string | null> {
   return new Promise((resolve, reject) => {
-    spokestackService({ sampleRate }, (response) => {
+    spokestackService(config, (response) => {
       // console.log('[asr] response', response)
       if (response.status === 'ok' && response.final) {
         resolve(
