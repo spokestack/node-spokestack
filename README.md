@@ -156,7 +156,7 @@ can use that with <a href="https://graphql.org/">GraphQL</a>.
 
 #### Defined in
 
-[server/expressMiddleware.ts:55](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/expressMiddleware.ts#L55)
+[server/expressMiddleware.ts:55](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/expressMiddleware.ts#L55)
 
 ### asrSocketServer
 
@@ -190,7 +190,7 @@ server.listen(port, () => {
 
 #### Defined in
 
-[server/socketServer.ts:24](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/socketServer.ts#L24)
+[server/socketServer.ts:24](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/socketServer.ts#L24)
 
 #### SpokestackASRConfig
 
@@ -204,7 +204,7 @@ in your spokestack.io account settings
 
 #### Defined in
 
-[server/spokestackASRService.ts:14](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L14)
+[server/spokestackASRService.ts:14](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L14)
 
 ##### clientSecret
 
@@ -212,7 +212,7 @@ in your spokestack.io account settings
 
 #### Defined in
 
-[server/spokestackASRService.ts:15](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L15)
+[server/spokestackASRService.ts:15](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L15)
 
 ##### format
 
@@ -220,7 +220,7 @@ in your spokestack.io account settings
 
 #### Defined in
 
-[server/spokestackASRService.ts:16](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L16)
+[server/spokestackASRService.ts:16](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L16)
 
 ##### language
 
@@ -228,7 +228,7 @@ in your spokestack.io account settings
 
 #### Defined in
 
-[server/spokestackASRService.ts:17](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L17)
+[server/spokestackASRService.ts:17](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L17)
 
 ##### limit
 
@@ -236,7 +236,7 @@ in your spokestack.io account settings
 
 #### Defined in
 
-[server/spokestackASRService.ts:18](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L18)
+[server/spokestackASRService.ts:18](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L18)
 
 ##### sampleRate
 
@@ -244,7 +244,7 @@ in your spokestack.io account settings
 
 #### Defined in
 
-[server/spokestackASRService.ts:19](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L19)
+[server/spokestackASRService.ts:19](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L19)
 
 ##### spokestackHostname
 
@@ -257,7 +257,7 @@ Default: 'api.spokestack.io'
 
 #### Defined in
 
-[server/spokestackASRService.ts:35](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L35)
+[server/spokestackASRService.ts:35](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L35)
 
 ##### timeout
 
@@ -272,7 +272,7 @@ Default: 3000
 
 #### Defined in
 
-[server/spokestackASRService.ts:28](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L28)
+[server/spokestackASRService.ts:28](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L28)
 
 ### asr
 
@@ -327,7 +327,7 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 
 #### Defined in
 
-[server/asr.ts:44](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/asr.ts#L44)
+[server/asr.ts:44](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/asr.ts#L44)
 
 ### googleASRSocketServer
 
@@ -360,7 +360,7 @@ server.listen(port, () => {
 
 #### Defined in
 
-[server/socketServer.ts:109](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/socketServer.ts#L109)
+[server/socketServer.ts:109](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/socketServer.ts#L109)
 
 ### googleASR
 
@@ -415,7 +415,7 @@ expressApp.post('/asr', fileUpload(), (req, res) => {
 
 #### Defined in
 
-[server/asr.ts:112](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/asr.ts#L112)
+[server/asr.ts:112](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/asr.ts#L112)
 
 ### spokestackASRService
 
@@ -440,7 +440,7 @@ a websocket server that can be added to any node server.
 
 #### Defined in
 
-[server/spokestackASRService.ts:82](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L82)
+[server/spokestackASRService.ts:82](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L82)
 
 #### SpokestackResponse
 
@@ -452,7 +452,7 @@ When the status is "error", the error message is available here.
 
 #### Defined in
 
-[server/spokestackASRService.ts:56](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L56)
+[server/spokestackASRService.ts:56](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L56)
 
 ##### final
 
@@ -467,7 +467,7 @@ See the source for `asr` for an example.
 
 #### Defined in
 
-[server/spokestackASRService.ts:65](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L65)
+[server/spokestackASRService.ts:65](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L65)
 
 ##### hypotheses
 
@@ -480,7 +480,7 @@ transcripts in the API, but is almost always a list of one.
 
 #### Defined in
 
-[server/spokestackASRService.ts:72](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L72)
+[server/spokestackASRService.ts:72](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L72)
 
 ##### status
 
@@ -488,7 +488,7 @@ transcripts in the API, but is almost always a list of one.
 
 #### Defined in
 
-[server/spokestackASRService.ts:54](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L54)
+[server/spokestackASRService.ts:54](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L54)
 
 #### ASRHypothesis
 
@@ -501,7 +501,7 @@ tensorflow confidence level for the given transcript.
 
 #### Defined in
 
-[server/spokestackASRService.ts:49](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L49)
+[server/spokestackASRService.ts:49](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L49)
 
 ##### transcript
 
@@ -509,7 +509,7 @@ tensorflow confidence level for the given transcript.
 
 #### Defined in
 
-[server/spokestackASRService.ts:50](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L50)
+[server/spokestackASRService.ts:50](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L50)
 
 #### ASRFormat
 
@@ -517,7 +517,7 @@ tensorflow confidence level for the given transcript.
 
 #### Defined in
 
-[server/spokestackASRService.ts:5](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/spokestackASRService.ts#L5)
+[server/spokestackASRService.ts:5](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/spokestackASRService.ts#L5)
 
 ### encryptSecret
 
@@ -544,7 +544,7 @@ This should only be done on the server.
 
 #### Defined in
 
-[server/encryptSecret.ts:12](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/server/encryptSecret.ts#L12)
+[server/encryptSecret.ts:12](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/server/encryptSecret.ts#L12)
 
 ---
 
@@ -632,7 +632,7 @@ fetch('/asr', {
 
 #### Defined in
 
-[client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/record.ts#L84)
+[client/record.ts:84](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/record.ts#L84)
 
 #### RecordConfig
 
@@ -644,7 +644,7 @@ The total time to record. Default: 3
 
 #### Defined in
 
-[client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/record.ts#L12)
+[client/record.ts:12](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/record.ts#L12)
 
 ## Methods
 
@@ -666,7 +666,7 @@ A callback function to be called each second of recording.
 
 #### Defined in
 
-[client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/record.ts#L16)
+[client/record.ts:16](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/record.ts#L16)
 
 ##### onStart
 
@@ -680,7 +680,7 @@ A callback function to be called when recording starts
 
 #### Defined in
 
-[client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/record.ts#L14)
+[client/record.ts:14](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/record.ts#L14)
 
 ### startStream
 
@@ -717,7 +717,7 @@ try {
 
 #### Defined in
 
-[client/recordStream.ts:43](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/recordStream.ts#L43)
+[client/recordStream.ts:43](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/recordStream.ts#L43)
 
 ### stopStream
 
@@ -736,7 +736,7 @@ stopStream()
 
 #### Defined in
 
-[client/recordStream.ts:96](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/recordStream.ts#L96)
+[client/recordStream.ts:96](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/recordStream.ts#L96)
 
 ### convertFloat32ToInt16
 
@@ -765,7 +765,7 @@ const file = new File([convertFloat32ToInt16(buffer.getChannelData(0))], 'record
 
 #### Defined in
 
-[client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/convertFloat32ToInt16.ts#L16)
+[client/convertFloat32ToInt16.ts:16](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/convertFloat32ToInt16.ts#L16)
 
 ### startPipeline
 
@@ -833,7 +833,7 @@ try {
 
 #### Defined in
 
-[client/pipeline.ts:161](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/pipeline.ts#L161)
+[client/pipeline.ts:161](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/pipeline.ts#L161)
 
 #### SpeechPipeline
 
@@ -859,7 +859,7 @@ Create a new speech pipeline.
 
 #### Defined in
 
-[client/SpeechPipeline.ts:49](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/SpeechPipeline.ts#L49)
+[client/SpeechPipeline.ts:49](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/SpeechPipeline.ts#L49)
 
 ## Methods
 
@@ -875,7 +875,7 @@ they have not already granted it.
 
 #### Defined in
 
-[client/SpeechPipeline.ts:85](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/SpeechPipeline.ts#L85)
+[client/SpeechPipeline.ts:85](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/SpeechPipeline.ts#L85)
 
 ▸ **stop**(): `void`
 
@@ -888,7 +888,7 @@ relinquishing the microphone.
 
 #### Defined in
 
-[client/SpeechPipeline.ts:206](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/SpeechPipeline.ts#L206)
+[client/SpeechPipeline.ts:206](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/SpeechPipeline.ts#L206)
 
 #### SpeechPipelineConfig
 
@@ -898,7 +898,7 @@ relinquishing the microphone.
 
 #### Defined in
 
-[client/SpeechPipeline.ts:19](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/SpeechPipeline.ts#L19)
+[client/SpeechPipeline.ts:19](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/SpeechPipeline.ts#L19)
 
 ##### speechConfig
 
@@ -906,7 +906,7 @@ relinquishing the microphone.
 
 #### Defined in
 
-[client/SpeechPipeline.ts:16](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/SpeechPipeline.ts#L16)
+[client/SpeechPipeline.ts:16](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/SpeechPipeline.ts#L16)
 
 ##### stages
 
@@ -914,7 +914,7 @@ relinquishing the microphone.
 
 #### Defined in
 
-[client/SpeechPipeline.ts:17](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/SpeechPipeline.ts#L17)
+[client/SpeechPipeline.ts:17](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/SpeechPipeline.ts#L17)
 
 ##### workerUrl
 
@@ -922,7 +922,7 @@ relinquishing the microphone.
 
 #### Defined in
 
-[client/SpeechPipeline.ts:18](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/SpeechPipeline.ts#L18)
+[client/SpeechPipeline.ts:18](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/SpeechPipeline.ts#L18)
 
 #### PipelineProfile
 
@@ -947,7 +947,7 @@ vocabulary.
 
 #### Defined in
 
-[client/pipeline.ts:30](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/pipeline.ts#L30)
+[client/pipeline.ts:30](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/pipeline.ts#L30)
 
 • **Wakeword** = `"WAKEWORD"`
 
@@ -957,7 +957,7 @@ subsequent audio should be sent to a speech recognizer for transcription.
 
 #### Defined in
 
-[client/pipeline.ts:36](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/pipeline.ts#L36)
+[client/pipeline.ts:36](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/pipeline.ts#L36)
 
 #### SpeechEventType
 
@@ -965,31 +965,31 @@ subsequent audio should be sent to a speech recognizer for transcription.
 
 #### Defined in
 
-[client/types.ts:83](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L83)
+[client/types.ts:83](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L83)
 
 • **Deactivate** = `"DEACTIVATE"`
 
 #### Defined in
 
-[client/types.ts:84](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L84)
+[client/types.ts:84](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L84)
 
 • **Error** = `"ERROR"`
 
 #### Defined in
 
-[client/types.ts:87](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L87)
+[client/types.ts:87](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L87)
 
 • **Recognize** = `"RECOGNIZE"`
 
 #### Defined in
 
-[client/types.ts:86](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L86)
+[client/types.ts:86](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L86)
 
 • **Timeout** = `"TIMEOUT"`
 
 #### Defined in
 
-[client/types.ts:85](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L85)
+[client/types.ts:85](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L85)
 
 #### Stage
 
@@ -997,19 +997,19 @@ subsequent audio should be sent to a speech recognizer for transcription.
 
 #### Defined in
 
-[client/types.ts:100](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L100)
+[client/types.ts:100](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L100)
 
 • **VadTrigger** = `"vadTrigger"`
 
 #### Defined in
 
-[client/types.ts:98](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L98)
+[client/types.ts:98](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L98)
 
 • **WakewordTrigger** = `"wakeword"`
 
 #### Defined in
 
-[client/types.ts:99](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/types.ts#L99)
+[client/types.ts:99](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/types.ts#L99)
 
 ### stopPipeline
 
@@ -1028,7 +1028,7 @@ stopPipeline()
 
 #### Defined in
 
-[client/pipeline.ts:195](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/pipeline.ts#L195)
+[client/pipeline.ts:195](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/pipeline.ts#L195)
 
 ### countdown
 
@@ -1051,7 +1051,7 @@ This is used by record() to record a certain number of seconds.
 
 #### Defined in
 
-[client/countdown.ts:8](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/countdown.ts#L8)
+[client/countdown.ts:8](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/countdown.ts#L8)
 
 ---
 
@@ -1078,7 +1078,7 @@ We'll switch to AudioWorklet when it does.
 
 #### Defined in
 
-[client/processor.ts:22](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/processor.ts#L22)
+[client/processor.ts:22](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/processor.ts#L22)
 
 #### ProcessorReturnValue
 
@@ -1088,7 +1088,7 @@ We'll switch to AudioWorklet when it does.
 
 #### Defined in
 
-[client/processor.ts:8](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/processor.ts#L8)
+[client/processor.ts:8](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/processor.ts#L8)
 
 ##### processor
 
@@ -1096,7 +1096,7 @@ We'll switch to AudioWorklet when it does.
 
 #### Defined in
 
-[client/processor.ts:9](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/processor.ts#L9)
+[client/processor.ts:9](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/processor.ts#L9)
 
 ### stopProcessor
 
@@ -1111,7 +1111,7 @@ if it exists and disconnect the microphone.
 
 #### Defined in
 
-[client/processor.ts:53](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/processor.ts#L53)
+[client/processor.ts:53](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/processor.ts#L53)
 
 ### concatenateAudioBuffers
 
@@ -1133,4 +1133,4 @@ A utility method to concatenate two AudioBuffers
 
 #### Defined in
 
-[client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/8c9f84a/src/client/concatenateAudioBuffers.ts#L4)
+[client/concatenateAudioBuffers.ts:4](https://github.com/spokestack/node-spokestack/blob/dca2d97/src/client/concatenateAudioBuffers.ts#L4)
