@@ -14,6 +14,7 @@ $ git clone git@github.com:spokestack/node-spokestack.git
 $ cd node-spokestack
 $ npm install
 $ cd examples/with-next
+$ cp .env.local.example. .env.local # Fill in your credentials here. See "Getting Spokestack Credentials" below.
 $ npm install
 $ npm run dev
 ```
@@ -23,6 +24,12 @@ Then visit http://localhost:3000 in your browser.
 Visit http://localhost:3000/graphql to view introspection docs on the Spokestack GraphQL API for synthesizing text to speech.
 
 See `server/index.ts` for example code using [Next.js][next] and [Express][express].
+
+## Getting Spokestack Credentials
+
+Getting Spokestack credentials is easy and free. Go to [spokestack.io](https://spokestack.io) and create an account. Create a token in the settings section, at [spokestack.io/account/settings#api](https://spokestack.io/account/settings#api). Note that you'll only be able to see the token secret once. If you accidentally leave the page, create another token.
+
+Once you have a token, copy `.env.local.example` to `.env.local` and add your credentials to that file.
 
 ### Run example using Google ASR instead of Spokestack ASR
 
