@@ -68,14 +68,7 @@ async function initStages(config: WorkerConfig) {
         break
     }
   }
-  try {
-    processors = await Promise.all(promises)
-  } catch (e) {
-    dispatch({
-      type: SpeechEventType.Error,
-      error: e.message
-    })
-  }
+  processors = await Promise.all(promises)
 }
 
 function initContext(config: SpeechConfig): SpeechContext {

@@ -412,7 +412,7 @@ export default class Index extends PureComponent {
       })
     } catch (e) {
       console.error(e)
-      updateDemo(false, 'Idle', e.message)
+      updateDemo(false, 'Idle', (e as Error).message)
       this.setState({ activeDemo: null })
       return
     }
@@ -492,7 +492,7 @@ export default class Index extends PureComponent {
           })
         } catch (e) {
           console.error(e)
-          this.setState({ activeDemo: null, error: e.message })
+          this.setState({ activeDemo: null, error: (e as Error).message })
           return
         }
         ws.addEventListener('open', () => {
@@ -540,7 +540,8 @@ export default class Index extends PureComponent {
           <button
             disabled={isActive && activeDemo !== 'wakeword'}
             className="btn btn-primary"
-            onClick={this.toggleWakeword}>
+            onClick={this.toggleWakeword}
+          >
             {activeDemo ? 'Stop' : 'Record'}
           </button>
         </div>
@@ -557,7 +558,8 @@ export default class Index extends PureComponent {
           <button
             disabled={isActive && activeDemo !== 'keyword'}
             className="btn btn-primary"
-            onClick={this.toggleKeyword}>
+            onClick={this.toggleKeyword}
+          >
             {activeDemo ? 'Stop' : 'Record'}
           </button>
         </div>
@@ -577,13 +579,15 @@ export default class Index extends PureComponent {
           <button
             disabled={isActive}
             className="btn btn-primary"
-            onClick={() => this.record3Seconds('nlu')}>
+            onClick={() => this.record3Seconds('nlu')}
+          >
             Record 3 seconds
           </button>
           <button
             disabled={isActive && activeDemo !== 'nluStream'}
             className="btn btn-primary"
-            onClick={() => this.toggleRecordStream('nluStream')}>
+            onClick={() => this.toggleRecordStream('nluStream')}
+          >
             {activeDemo === 'nluStream' ? 'Stop' : 'Start'} streaming
           </button>
         </div>
@@ -606,13 +610,15 @@ export default class Index extends PureComponent {
           <button
             disabled={isActive}
             className="btn btn-primary"
-            onClick={() => this.record3Seconds('search')}>
+            onClick={() => this.record3Seconds('search')}
+          >
             Record 3 seconds
           </button>
           <button
             disabled={isActive && activeDemo !== 'searchStream'}
             className="btn btn-primary"
-            onClick={() => this.toggleRecordStream('searchStream')}>
+            onClick={() => this.toggleRecordStream('searchStream')}
+          >
             {activeDemo === 'searchStream' ? 'Stop' : 'Start'} streaming
           </button>
         </div>
