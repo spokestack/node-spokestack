@@ -410,9 +410,9 @@ export default class Index extends PureComponent {
           updateDemo(true, `Recording..${remaining}`)
         }
       })
-    } catch (e) {
-      console.error(e)
-      updateDemo(false, 'Idle', (e as Error).message)
+    } catch (error) {
+      console.error(error)
+      updateDemo(false, 'Idle', (error as Error)?.message)
       this.setState({ activeDemo: null })
       return
     }
@@ -490,9 +490,9 @@ export default class Index extends PureComponent {
           ;[ws] = await startStream({
             isPlaying: () => this.playing
           })
-        } catch (e) {
-          console.error(e)
-          this.setState({ activeDemo: null, error: (e as Error).message })
+        } catch (error) {
+          console.error(error)
+          this.setState({ activeDemo: null, error: (error as Error)?.message })
           return
         }
         ws.addEventListener('open', () => {

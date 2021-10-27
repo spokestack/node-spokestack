@@ -68,7 +68,15 @@ async function initStages(config: WorkerConfig) {
         break
     }
   }
-  processors = await Promise.all(promises)
+  try {
+    processors = await Promise.all(promises)
+  } catch (error) {
+    console.error(error)
+    dispatch({
+      type: SpeechEventType.Error,
+      error: (error as Error)?.message || 'Unknown error initializing stages'
+    })
+  }
 }
 
 function initContext(config: SpeechConfig): SpeechContext {

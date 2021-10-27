@@ -24,7 +24,7 @@ import { google } from '@google-cloud/speech/build/protos/protos'
 export function asrSocketServer(
   serverConfig: WebSocket.ServerOptions,
   asrConfig: Omit<SpokestackASRConfig, 'sampleRate'>
-): void {
+): WebSocket.Server {
   const wss = new WebSocket.Server(serverConfig)
   console.log('Websocket started')
 
@@ -88,6 +88,8 @@ export function asrSocketServer(
   wss.on('error', (error) => {
     console.log('Websocket server error', error)
   })
+
+  return wss
 }
 
 /**
@@ -106,7 +108,7 @@ export function asrSocketServer(
  * })
  * ```
  */
-export function googleASRSocketServer(serverConfig: WebSocket.ServerOptions): void {
+export function googleASRSocketServer(serverConfig: WebSocket.ServerOptions): WebSocket.Server {
   const wss = new WebSocket.Server(serverConfig)
   console.log('Websocket started')
 
@@ -168,4 +170,6 @@ export function googleASRSocketServer(serverConfig: WebSocket.ServerOptions): vo
   wss.on('error', (error) => {
     console.log('Websocket server error', error)
   })
+
+  return wss
 }
