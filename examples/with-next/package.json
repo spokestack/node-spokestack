@@ -8,12 +8,8 @@
     "build": "npm run clean && tsc -p tsconfig.server.json && next build",
     "clean": "rm -rf .next/ dist/",
     "dev": "nodemon",
-    "format": "prettier --write \"**/*.tsx\" \"**/*.ts\" \"**/*.js\" \"**/*.md\" \"**/*.json\"",
-    "lint": "eslint \"**/*.{tsx,ts,js}\" && prettier --check \"**/*.md\" \"**/*.json\"",
     "schema": "node apollo/schema.js && graphql-codegen && prettier --write types.ts",
     "start": "cross-env NODE_ENV=production node dist/index.js",
-    "test": "concurrently --raw \"npm run lint\" \"npm run typescript\"",
-    "test:encrypt": "ts-node -p tsconfig.server.json server/encryptSecret.ts",
     "typescript": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [
@@ -48,81 +44,15 @@
     "@types/express": "^4.17.13",
     "@types/express-fileupload": "^1.1.7",
     "@types/lodash": "^4.14.176",
+    "@types/node": "^16.11.11",
     "@types/node-fetch": "^2.5.12",
     "@types/react": "^17.0.33",
     "@types/shelljs": "^0.8.9",
-    "@types/ws": "^8.2.0",
     "concurrently": "^6.3.0",
-    "eslint": "^8.1.0",
-    "eslint-config-next": "^12.0.1",
-    "eslint-plugin-react": "^7.26.1",
     "graphql-playground-middleware-express": "^1.7.22",
     "nodemon": "^2.0.14",
-    "prettier": "^2.4.1",
     "shelljs": "^0.8.4",
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "semi": false,
-    "singleQuote": true,
-    "arrowParens": "always",
-    "trailingComma": "none"
-  },
-  "eslintConfig": {
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint",
-      "react",
-      "prettier"
-    ],
-    "extends": [
-      "plugin:@typescript-eslint/recommended",
-      "plugin:react/recommended",
-      "prettier"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module",
-      "project": "./tsconfig.json",
-      "ecmaFeatures": {
-        "jsx": true
-      }
-    },
-    "globals": {
-      "ga": "readonly"
-    },
-    "settings": {
-      "react": {
-        "version": "detect"
-      }
-    },
-    "rules": {
-      "eqeqeq": [
-        "error",
-        "always",
-        {
-          "null": "ignore"
-        }
-      ],
-      "prettier/prettier": "error",
-      "no-unused-vars": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/no-var-requires": "off",
-      "@typescript-eslint/no-use-before-define": "off",
-      "@typescript-eslint/no-non-null-assertion": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "args": "after-used",
-          "argsIgnorePattern": "^_"
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "dist",
-    ".next"
-  ]
+  }
 }

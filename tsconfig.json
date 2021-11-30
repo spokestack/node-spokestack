@@ -19,13 +19,5 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": [
-    "client.d.ts",
-    "compress.ts",
-    "node_modules",
-    "examples",
-    "test",
-    "dist",
-    "src/worker"
-  ]
+  "exclude": ["client.d.ts", "compress.ts", "node_modules", "test", "dist", "src/worker"]
 }

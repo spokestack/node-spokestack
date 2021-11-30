@@ -17,8 +17,6 @@
     "release": "release-it",
     "start": "rollup --config -w",
     "test": "npm run lint && npm run test:unit",
-    "test:example:next": "cd examples/with-next && npm test",
-    "test:all": "concurrently --raw \"npm test\" \"npm run test:example:next\"",
     "test:unit": "cross-env TS_NODE_PROJECT=tsconfig.test.json mocha",
     "test:watch": "npm run test:unit -- -w",
     "typescript": "concurrently --raw \"tsc -p tsconfig.json --noEmit\" \"tsc -p src/worker/tsconfig.json --noEmit\""
@@ -67,10 +65,10 @@
     "@types/node-fetch": "^2.5.12",
     "@types/sinon": "^10.0.6",
     "@types/uuid": "^8.3.1",
-    "@types/ws": "^8.2.0",
+    "@types/ws": "^8.2.1",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
-    "concurrently": "^6.3.0",
+    "concurrently": "^6.4.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.1.0",
     "eslint-config-prettier": "^8.3.0",
@@ -141,7 +139,6 @@
   "eslintIgnore": [
     "custom_tfjs",
     "dist",
-    "examples",
     ".next",
     "*.d.ts"
   ],

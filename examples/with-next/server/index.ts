@@ -7,6 +7,7 @@ import {
 } from 'spokestack'
 import fileUpload, { UploadedFile } from 'express-fileupload'
 
+import type { Socket } from 'net'
 import WebSocket from 'ws'
 import bodyParser from 'body-parser'
 import { createServer } from 'http'
@@ -145,8 +146,8 @@ app.prepare().then(() => {
     // See https://github.com/vercel/next.js/commit/75748caf7f0617f14766fa3aa0286c7488308408
     // Handle the websocket connection only if
     // the path does not contain '_next'.
-    if (!req.url.includes('_next')) {
-      wss.handleUpgrade(req, socket, head, (ws) => {
+    if (!req.url?.includes('_next')) {
+      wss.handleUpgrade(req, socket as Socket, head, (ws) => {
         wss.emit('connection', ws, req)
       })
     }

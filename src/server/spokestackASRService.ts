@@ -184,12 +184,13 @@ export default function asrService(
       socket.once('message', (data: string) => {
         socket.removeEventListener('error', reject)
         socket.removeEventListener('close', reject)
+
         try {
           const json: SpokestackResponse = JSON.parse(data)
           if (json.status === 'ok') {
             resolve(socket)
           } else {
-            console.log(data)
+            console.log(json)
             reject(new Error('[Spokestack ASR]: Invalid Authentication message'))
           }
         } catch (e) {

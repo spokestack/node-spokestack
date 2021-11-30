@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "examples"],
+  "exclude": ["node_modules"],
   "paths": {
     "analyser-frequency-average": ["./types/analyser-frequency-average"],
     "@tensorflow/tfjs": ["./custom_tfjs/custom_tfjs"]

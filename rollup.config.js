@@ -1,6 +1,7 @@
 import alias from '@rollup/plugin-alias'
 import commonjs from '@rollup/plugin-commonjs'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
+import tsconfig from './tsconfig.json'
 import typescript from 'rollup-plugin-typescript2'
 
 const extensions = ['.js', '.ts']
@@ -12,6 +13,7 @@ const server = {
     typescript({
       useTsconfigDeclarationDir: true,
       tsconfigOverride: {
+        exclude: tsconfig.exclude.concat('examples'),
         compilerOptions: {
           declaration: true,
           declarationDir: './dist'
@@ -45,6 +47,7 @@ const client = {
     typescript({
       useTsconfigDeclarationDir: true,
       tsconfigOverride: {
+        exclude: tsconfig.exclude.concat('examples'),
         compilerOptions: {
           declaration: true,
           declarationDir: './dist'
