@@ -29,7 +29,7 @@
     "graphql-tag": "^2.12.5",
     "lodash": "^4.17.21",
     "next": "^12.0.1",
-    "node-fetch": "^2.6.5",
+    "node-fetch": "^3.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "spokestack": "file:../..",
